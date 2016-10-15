@@ -84,18 +84,21 @@
                 KillStealMenu.AddItem(new MenuItem("KillStealE", "Use E", true).SetValue(true));
             }
 
-            var rMenu = Menu.AddSubMenu(new Menu("R Settings", "R Settings"));
+            var MiscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             {
-                rMenu.AddItem(
-                    new MenuItem("RSwap", "If After Swap Enemies Count <= x", true).SetValue(new Slider(3, 1, 5)));
-                rMenu.AddItem(new MenuItem("RAlly", "If Target Under Ally Turret", true).SetValue(true));
-                rMenu.AddItem(new MenuItem("RSafe", "Dont Cast In Enemy Turret", true).SetValue(true));
-                rMenu.AddItem(new MenuItem("RKill", "If Target Can Kill", true).SetValue(true));
-                rMenu.AddItem(new MenuItem("DontrList", "Dont R List: ", true));
-                foreach (var target in HeroManager.Enemies)
+                var rMenu = MiscMenu.AddSubMenu(new Menu("R Settings", "R Settings"));
                 {
                     rMenu.AddItem(
-                        new MenuItem("Dontr" + target.ChampionName.ToLower(), target.ChampionName, true).SetValue(!AutoEnableList.Contains(target.ChampionName)));
+                        new MenuItem("RSwap", "If After Swap Enemies Count <= x", true).SetValue(new Slider(3, 1, 5)));
+                    rMenu.AddItem(new MenuItem("RAlly", "If Target Under Ally Turret", true).SetValue(true));
+                    rMenu.AddItem(new MenuItem("RSafe", "Dont Cast In Enemy Turret", true).SetValue(true));
+                    rMenu.AddItem(new MenuItem("RKill", "If Target Can Kill", true).SetValue(true));
+                    rMenu.AddItem(new MenuItem("DontrList", "Dont R List: ", true));
+                    foreach (var target in HeroManager.Enemies)
+                    {
+                        rMenu.AddItem(
+                            new MenuItem("Dontr" + target.ChampionName.ToLower(), target.ChampionName, true).SetValue(!AutoEnableList.Contains(target.ChampionName)));
+                    }
                 }
             }
 
@@ -482,7 +485,7 @@
                 if (Menu.Item("DrawDamage", true).GetValue<bool>())
                 {
                     foreach (
-                        var x in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
+                        var x in HeroManager.Enemies.Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
                     {
                         HpBarDraw.Unit = x;
                         HpBarDraw.DrawDmg((float)ComboDamage(x), new ColorBGRA(255, 204, 0, 170));

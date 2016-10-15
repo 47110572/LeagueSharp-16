@@ -85,14 +85,22 @@
 
             var MiscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             {
+                var EMenu = MiscMenu.AddSubMenu(new Menu("E Settings", "E Settings"));
+                {
+                    EMenu.AddItem(new MenuItem("AutoELast", "Auto E LastHit?", true).SetValue(true));
+                    EMenu.AddItem(new MenuItem("EToler", "E Damage Tolerance + -", true).SetValue(new Slider(0, -100)));
+                    EMenu.AddItem(new MenuItem("AutoSteal", "Auto Steal Mobs?", true).SetValue(true));
+                }
+
+                var RMenu = MiscMenu.AddSubMenu(new Menu("R Settings", "R Settings"));
+                {
+                    RMenu.AddItem(new MenuItem("AutoSave", "Auto R Save Ally?", true).SetValue(true));
+                    RMenu.AddItem(
+                        new MenuItem("AutoSaveHp", "Auto R| When Ally Health Percent <= x%", true).SetValue(new Slider(20)));
+                    RMenu.AddItem(new MenuItem("Balista", "Balista?", true).SetValue(true));
+                }
+
                 MiscMenu.AddItem(new MenuItem("Forcus", "Forcus Attack Passive Target", true).SetValue(true));
-                MiscMenu.AddItem(new MenuItem("AutoELast", "Auto E LastHit?", true).SetValue(true));
-                MiscMenu.AddItem(new MenuItem("EToler", "E Damage Tolerance + -", true).SetValue(new Slider(0, -100)));
-                MiscMenu.AddItem(new MenuItem("AutoSteal", "Auto Steal Mobs?", true).SetValue(true));
-                MiscMenu.AddItem(new MenuItem("AutoSave", "Auto R Save Ally?", true).SetValue(true));
-                MiscMenu.AddItem(
-                    new MenuItem("AutoSaveHp", "Auto R| When Ally Health Percent <= x%", true).SetValue(new Slider(20)));
-                MiscMenu.AddItem(new MenuItem("Balista", "Balista?", true).SetValue(true));
             }
 
             var DrawMenu = Menu.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -188,13 +196,16 @@
             {
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
-                    var target = Args.Target as Obj_AI_Hero;
-
-                    if (target != null && !target.IsDead && !target.IsZombie)
+                    if (Args.Target is Obj_AI_Hero)
                     {
-                        if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady())
+                        var target = (Obj_AI_Hero)Args.Target;
+
+                        if (!target.IsDead && !target.IsZombie)
                         {
-                            Q.CastTo(target);
+                            if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady())
+                            {
+                                Q.CastTo(target);
+                            }
                         }
                     }
                 }
@@ -513,7 +524,7 @@
                 if (Menu.Item("DrawDamage", true).GetValue<StringList>().SelectedIndex != 2)
                 {
                     foreach (
-                        var x in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
+                        var x in HeroManager.Enemies.Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
                     {
                         HpBarDraw.Unit = x;
                         HpBarDraw.DrawDmg(

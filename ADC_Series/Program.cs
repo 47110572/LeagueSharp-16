@@ -8,6 +8,7 @@
     {
         public static Menu Menu;
         public static Menu Championmenu;
+        public static Menu Utilitymenu;
         public static Obj_AI_Hero Me;
         public static Orbwalking.Orbwalker Orbwalker;
 
@@ -64,10 +65,15 @@
                 PredMenu.AddItem(new MenuItem("AboutxcsoftAIOPred", "xcsoft AIO Prediction -> xcsoft ALL In One Prediction"));
             }
 
-            Utility.AutoLevels.Init();
-            Utility.SkinChange.Init();
-            Utility.Offensive.Init();
-            Utility.Defensive.Init();
+            Utilitymenu = Menu.AddSubMenu(new Menu("Utility", "Utility"));
+            {
+                Utility.AutoLevels.Init();
+                Utility.AutoWard.Init();
+                Utility.TurnAround.Init();
+                Utility.SkinChange.Init();
+                Utility.Items.Init();
+                Utility.Cleaness.Init();
+            }
 
             Championmenu = Menu.AddSubMenu(new Menu("Pluging: " + Me.ChampionName, "Pluging: " + Me.ChampionName));
             {
@@ -161,7 +167,6 @@
 
             Menu.AddToMainMenu();
 
-            // Inject SPredcition Menu
             if (Menu.Item("SelectPred", true).GetValue<StringList>().SelectedIndex == 3)
             {
                 SPrediction.Prediction.Initialize(PredMenu);

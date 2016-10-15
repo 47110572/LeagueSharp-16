@@ -6,13 +6,18 @@
     using LeagueSharp.Common;
     using Orbwalking = Orbwalking;
 
-    internal class Defensive
+    internal class Cleaness
     {
         private static int UseCleanTime, CleanID;
-        private static int Dervish = 3137, Mercurial = 3139, Quicksilver = 3140, Mikaels = 3222;
+
+        private static readonly int Dervish = 3137;
+        private static readonly int Mercurial = 3139;
+        private static readonly int Quicksilver = 3140;
+        private static readonly int Mikaels = 3222;
+
         private static readonly List<BuffType> DebuffTypes = new List<BuffType>();
 
-        private static readonly Menu Menu = Program.Menu;
+        private static readonly Menu Menu = Program.Utilitymenu;
         private static readonly Obj_AI_Hero Me = Program.Me;
         private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
 
@@ -63,7 +68,7 @@
                 {
                     if (CanUseDervish() || CanUseMercurial() || CanUseMikaels() || CanUseQuicksilver())
                     {
-                        Items.UseItem(CleanID);
+                        LeagueSharp.Common.Items.UseItem(CleanID);
                         UseCleanTime = Utils.TickCount + 2500;
                     }
                 }
@@ -156,7 +161,7 @@
 
         private static bool CanUseQuicksilver()
         {
-            if (Items.HasItem(Quicksilver) && Items.CanUseItem(Quicksilver))
+            if (LeagueSharp.Common.Items.HasItem(Quicksilver) && LeagueSharp.Common.Items.CanUseItem(Quicksilver))
             {
                 CleanID = Quicksilver;
                 return true;
@@ -168,7 +173,7 @@
 
         private static bool CanUseMikaels()
         {
-            if (Items.HasItem(Mikaels) && Items.CanUseItem(Mikaels))
+            if (LeagueSharp.Common.Items.HasItem(Mikaels) && LeagueSharp.Common.Items.CanUseItem(Mikaels))
             {
                 CleanID = Mikaels;
                 return true;
@@ -180,7 +185,7 @@
 
         private static bool CanUseMercurial()
         {
-            if (Items.HasItem(Mercurial) && Items.CanUseItem(Mercurial))
+            if (LeagueSharp.Common.Items.HasItem(Mercurial) && LeagueSharp.Common.Items.CanUseItem(Mercurial))
             {
                 CleanID = Mercurial;
                 return true;
@@ -192,7 +197,7 @@
 
         private static bool CanUseDervish()
         {
-            if (Items.HasItem(Dervish) && Items.CanUseItem(Dervish))
+            if (LeagueSharp.Common.Items.HasItem(Dervish) && LeagueSharp.Common.Items.CanUseItem(Dervish))
             {
                 CleanID = Dervish;
                 return true;

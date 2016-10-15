@@ -82,13 +82,22 @@
                 KillStealMenu.AddItem(new MenuItem("KillStealW", "Use W", true).SetValue(true));
             }
 
-            var EMenu = Menu.AddSubMenu(new Menu("E Menu", "E Menu"));
+            var MiscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             {
-                EMenu.AddItem(new MenuItem("Anti", "Anti Gapcloser E", true).SetValue(true));
-                EMenu.AddItem(new MenuItem("CheckECast", "   Check E Cast", true));
-                EMenu.AddItem(new MenuItem("underE", "Dont E to Enemy Turret", true).SetValue(true));
-                EMenu.AddItem(new MenuItem("ECheck", "Check Wall/ Building", true).SetValue(true));
-                EMenu.AddItem(new MenuItem("SafeCheck", "Safe Check", true).SetValue(true));
+                var EMenu = MiscMenu.AddSubMenu(new Menu("E Settings", "E Settings"));
+                {
+                    EMenu.AddItem(new MenuItem("Anti", "Anti Gapcloser E", true).SetValue(true));
+                    EMenu.AddItem(new MenuItem("CheckECast", "   Check E Cast", true));
+                    EMenu.AddItem(new MenuItem("underE", "Dont E to Enemy Turret", true).SetValue(true));
+                    EMenu.AddItem(new MenuItem("ECheck", "Check Wall/ Building", true).SetValue(true));
+                    EMenu.AddItem(new MenuItem("SafeCheck", "Safe Check", true).SetValue(true));
+                }
+
+                var RMenu = MiscMenu.AddSubMenu(new Menu("R Settings", "R Settings"));
+                {
+                    RMenu.AddItem(new MenuItem("RMove", "Auto Move|If R Is Casting?", true).SetValue(true));
+                    RMenu.AddItem(new MenuItem("RYoumuu", "Auto Youmuu|If R Is Casting?", true).SetValue(true));
+                }
             }
 
             var DrawMenu = Menu.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -110,6 +119,12 @@
         {
             if (Me.IsDead)
             {
+                return;
+            }
+
+            if (Menu.Item("RMove", true).GetValue<bool>() && Me.HasBuff("LucianR"))
+            {
+                Me.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 return;
             }
 
@@ -189,12 +204,11 @@
         {
             if (Menu.Item("ComboELogic", true).GetValue<bool>() && E.IsReady())
             {
-                var range = E.Range + Orbwalking.GetRealAutoAttackRange(Me);
-                var target = TargetSelector.GetTarget(range, TargetSelector.DamageType.Physical);
+                var target = TargetSelector.GetTarget(975f, TargetSelector.DamageType.Physical);
 
-                if (target.IsValidTarget(range) && !Orbwalker.InAutoAttackRange(target))
+                if (target.IsValidTarget(975f) && !Orbwalker.InAutoAttackRange(target))
                 {
-                    Cast_E(target);
+                    Cast_E(target, true);
                 }
             }
 
@@ -202,10 +216,12 @@
             {
                 var target = TargetSelector.GetTarget(QExtend.Range, TargetSelector.DamageType.Physical);
 
-                if (CheckTarget(target, QExtend.Range) && target.DistanceToPlayer() > Q.Range)
+                if (CheckTarget(target, QExtend.Range) && target.DistanceToPlayer() > Q.Range &&
+                    (!E.IsReady() || (E.IsReady() && target.DistanceToPlayer() > 975f)))
                 {
                     var pred = QExtend.GetPrediction(target, true);
-                    var collisions = MinionManager.GetMinions(Me.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
+                    var collisions = MinionManager.GetMinions(Me.ServerPosition, Q.Range, MinionTypes.All,
+                        MinionTeam.NotAlly);
 
                     if (!collisions.Any())
                     {
@@ -214,7 +230,8 @@
 
                     foreach (var minion in collisions)
                     {
-                        var poly = new Geometry.Polygon.Rectangle(Me.ServerPosition, Me.ServerPosition.Extend(minion.ServerPosition, QExtend.Range), QExtend.Width);
+                        var poly = new Geometry.Polygon.Rectangle(Me.ServerPosition,
+                            Me.ServerPosition.Extend(minion.ServerPosition, QExtend.Range), QExtend.Width);
 
                         if (poly.IsInside(pred.UnitPosition))
                         {
@@ -246,7 +263,7 @@
 
             if (Me.ManaPercent >= Menu.Item("HarassMana", true).GetValue<Slider>().Value)
             {
-                if (Menu.Item("HarassW", true).GetValue<bool>() && Q.IsReady())
+                if (Menu.Item("HarassQ", true).GetValue<bool>() && Q.IsReady())
                 {
                     var target = TargetSelector.GetTarget(QExtend.Range, TargetSelector.DamageType.Physical);
 
@@ -259,7 +276,8 @@
                         else if (target.IsValidTarget(QExtend.Range) && Menu.Item("HarassQExtended", true).GetValue<bool>())
                         {
                             var pred = QExtend.GetPrediction(target, true);
-                            var collisions = MinionManager.GetMinions(Me.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
+                            var collisions = MinionManager.GetMinions(Me.ServerPosition, Q.Range, MinionTypes.All,
+                                MinionTeam.NotAlly);
 
                             if (!collisions.Any())
                             {
@@ -268,7 +286,8 @@
 
                             foreach (var minion in collisions)
                             {
-                                var poly = new Geometry.Polygon.Rectangle(Me.ServerPosition, Me.ServerPosition.Extend(minion.ServerPosition, QExtend.Range), QExtend.Width);
+                                var poly = new Geometry.Polygon.Rectangle(Me.ServerPosition,
+                                    Me.ServerPosition.Extend(minion.ServerPosition, QExtend.Range), QExtend.Width);
 
                                 if (poly.IsInside(pred.UnitPosition))
                                 {
@@ -339,6 +358,14 @@
             {
                 CastSpellTime = Utils.TickCount;
             }
+
+            if (Me.GetSpellSlot(Args.SData.Name) == SpellSlot.R && Menu.Item("RYoumuu", true).GetValue<bool>())
+            {
+                if (Items.HasItem(3142))
+                {
+                    Items.UseItem(3142);
+                }
+            }
         }
 
         private void OnDoCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
@@ -347,10 +374,10 @@
             {
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
-                    var target = Args.Target as Obj_AI_Hero;
-
-                    if (target != null)
+                    if (Args.Target is Obj_AI_Hero)
                     {
+                        var target = (Obj_AI_Hero) Args.Target;
+
                         if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady())
                         {
                             Cast_E(target);
@@ -430,7 +457,7 @@
                 if (Menu.Item("DrawDamage", true).GetValue<bool>())
                 {
                     foreach (
-                        var x in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
+                        var x in HeroManager.Enemies.Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
                     {
                         HpBarDraw.Unit = x;
                         HpBarDraw.DrawDmg((float)ComboDamage(x), new ColorBGRA(255, 204, 0, 170));
@@ -439,10 +466,10 @@
             }
         }
 
-        private void Cast_E(Obj_AI_Hero target)
+        private void Cast_E(Obj_AI_Hero target, bool FirstE = false)
         {
-            var castpos = Me.ServerPosition.Extend(Game.CursorPos, 220);
-            var maxepos = Me.ServerPosition.Extend(Game.CursorPos, E.Range);
+            var castpos = Me.ServerPosition.Extend(FirstE ? target.ServerPosition : Game.CursorPos, 220);
+            var maxepos = Me.ServerPosition.Extend(FirstE ? target.ServerPosition : Game.CursorPos, E.Range);
 
             if (castpos.UnderTurret(true) && Menu.Item("underE", true).GetValue<bool>())
             {

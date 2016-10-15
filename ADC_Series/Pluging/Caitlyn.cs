@@ -216,24 +216,23 @@
 
             if (CheckTarget(target, R.Range))
             {
+                if (E.CanCast(target) && Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady() &&
+                    Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady())
+                {
+                    E.Cast(target);
+                    Q.Cast(target);
+                }
+
                 if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady() && target.IsValidTarget(700) &&
-                    E.GetPrediction(target).CollisionObjects.Count == 0 && E.CanCast(target) && !Me.IsWindingUp)
+                    E.GetPrediction(target).CollisionObjects.Count == 0 && E.CanCast(target))
                 {
                     E.Cast(target);
                 }
 
                 if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && target.IsValidTarget(Q.Range) &&
-                    target.DistanceToPlayer() >= Menu.Item("ComboQRange", true).GetValue<Slider>().Value && !Me.IsWindingUp)
+                    target.DistanceToPlayer() >= Menu.Item("ComboQRange", true).GetValue<Slider>().Value)
                 {
                     Q.CastTo(target);
-                }
-
-                if (target.Health <= Q.GetDamage(target) + E.GetDamage(target) + Me.GetAutoAttackDamage(target) + 20 &&
-                    E.CanCast(target) && Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady() &&
-                    Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && !Me.IsWindingUp)
-                {
-                    E.Cast(target);
-                    Q.Cast(target);
                 }
 
                 if (Menu.Item("ComboW", true).GetValue<bool>() && W.IsReady() && target.IsValidTarget(W.Range) &&
@@ -433,7 +432,7 @@
                 if (Menu.Item("DrawDamage", true).GetValue<bool>())
                 {
                     foreach (
-                        var x in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
+                        var x in HeroManager.Enemies.Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
                     {
                         HpBarDraw.Unit = x;
                         HpBarDraw.DrawDmg((float)ComboDamage(x), new ColorBGRA(255, 204, 0, 170));

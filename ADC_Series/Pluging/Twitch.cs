@@ -43,6 +43,7 @@
                 ComboMenu.AddItem(new MenuItem("ComboEStack", "Use E | Min E Stack Count(Leave E Range Auto E)", true).SetValue(new Slider(3, 1, 6)));
                 ComboMenu.AddItem(new MenuItem("ComboEFull", "Use E | If enemy full stack", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(true));
+                ComboMenu.AddItem(new MenuItem("ComboRYouMuu", "Use R| Auto Youmuu?", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboRCount", "Use R | If enemies in counts >= x", true).SetValue(new Slider(3, 1, 5)));
                 ComboMenu.AddItem(new MenuItem("ComboRRange", "Use R | Search Enemy Range", true).SetValue(new Slider(800, 0, 1500)));
             }
@@ -79,9 +80,22 @@
                 DrawMenu.AddItem(new MenuItem("DrawDamage", "Draw ComboDamage", true).SetValue(true));
             }
 
+            Obj_AI_Base.OnDoCast += OnDoCast;
             Game.OnUpdate += OnUpdate;
             Game.OnNotify += OnNotify;
             Drawing.OnDraw += OnDraw;
+        }
+
+        private static void OnDoCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
+        {
+            if (Menu.Item("ComboRYouMuu", true).GetValue<bool>() && Orbwalker.GetTarget() != null &&
+                Orbwalker.GetTarget() is Obj_AI_Hero && Me.HasBuff("TwitchFullAutomatic"))
+            {
+                if (Items.HasItem(3142))
+                {
+                    Items.UseItem(3142);
+                }
+            }
         }
 
         private void OnUpdate(EventArgs Args)
@@ -288,7 +302,7 @@
                 if (Menu.Item("DrawDamage", true).GetValue<bool>())
                 {
                     foreach (
-                        var x in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
+                        var x in HeroManager.Enemies.Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
                     {
                         HpBarDraw.Unit = x;
                         HpBarDraw.DrawDmg((float)ComboDamage(x), new ColorBGRA(255, 204, 0, 170));

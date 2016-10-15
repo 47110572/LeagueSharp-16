@@ -74,11 +74,22 @@
 
             var MiscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             {
-                MiscMenu.AddItem(new MenuItem("AutoQ", "Auto Q?", true).SetValue(true));
-                MiscMenu.AddItem(new MenuItem("AutoE", "Auto E?", true).SetValue(true));
-                MiscMenu.AddItem(
-                    new MenuItem("AutoEHp", "Auto E| When Player HealthPercent <= x%", true).SetValue(new Slider(80)));
-                MiscMenu.AddItem(new MenuItem("AutoR", "Auto R?", true).SetValue(false));
+                var QMenu = MiscMenu.AddSubMenu(new Menu("Q Settings", "Q Settings"));
+                {
+                    QMenu.AddItem(new MenuItem("AutoQ", "Auto Q?", true).SetValue(true));
+                }
+
+                var EMenu = MiscMenu.AddSubMenu(new Menu("E Settings", "E Settings"));
+                {
+                    EMenu.AddItem(new MenuItem("AutoE", "Auto E?", true).SetValue(true));
+                    EMenu.AddItem(
+                        new MenuItem("AutoEHp", "Auto E| When Player HealthPercent <= x%", true).SetValue(new Slider(80)));
+                }
+
+                var RMenu = MiscMenu.AddSubMenu(new Menu("R Settings", "R Settings"));
+                {
+                    RMenu.AddItem(new MenuItem("AutoR", "Auto R?", true).SetValue(false));
+                }
             }
 
             var DrawMenu = Menu.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -384,7 +395,7 @@
                 if (Menu.Item("DrawDamage", true).GetValue<bool>())
                 {
                     foreach (
-                        var x in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
+                        var x in HeroManager.Enemies.Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
                     {
                         HpBarDraw.Unit = x;
                         HpBarDraw.DrawDmg((float)ComboDamage(x), new ColorBGRA(255, 204, 0, 170));

@@ -45,14 +45,6 @@
                 ComboMenu.AddItem(new MenuItem("ComboECheck", "Use E |Safe Check", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboEWall", "Use E |Wall Check", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(true));
-                ComboMenu.AddItem(new MenuItem("ComboRCheck", "Use R |Safe Check", true).SetValue(true));
-                ComboMenu.AddItem(new MenuItem("ComboRLogic", "Use R |Logic Cast", true).SetValue(true));
-                ComboMenu.AddItem(
-                    new MenuItem("ComboRRange", "Use R |Min Cast Range >= x", true).SetValue(new Slider(800, 0, 1500)));
-                ComboMenu.AddItem(
-                    new MenuItem("ComboRMaxRange", "Use R |Max Cast Range >= x", true).SetValue(new Slider(3000, 1500, 5000)));
-                ComboMenu.AddItem(
-                 new MenuItem("ComboRMin", "Use R| Min Hit Enemies >= x", true).SetValue(new Slider(2, 1, 5)));
             }
 
             var HarassMenu = Menu.AddSubMenu(new Menu("Harass", "Harass"));
@@ -101,10 +93,24 @@
 
             var MiscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             {
-                MiscMenu.AddItem(new MenuItem("Gapcloser", "Use E |Anti GapCloser", true).SetValue(true));
-                MiscMenu.AddItem(new MenuItem("AntiMelee", "Use E |Anti Melee", true).SetValue(true));
-                MiscMenu.AddItem(
-                    new MenuItem("SemiR", "Semi-manual R Key", true).SetValue(new KeyBind('T', KeyBindType.Press)));
+                var EMenu = MiscMenu.AddSubMenu(new Menu("E Settings", "E Settings"));
+                {
+                    EMenu.AddItem(new MenuItem("Gapcloser", "Anti GapCloser", true).SetValue(true));
+                    EMenu.AddItem(new MenuItem("AntiMelee", "Anti Melee", true).SetValue(true));
+                }
+
+                var RMenu = MiscMenu.AddSubMenu(new Menu("R Settings", "R Settings"));
+                {
+                    RMenu.AddItem(new MenuItem("AutoR", "Auto R?", true).SetValue(true));
+                    RMenu.AddItem(
+                        new MenuItem("RRange", "Use R |Min Cast Range >= x", true).SetValue(new Slider(800, 0, 1500)));
+                    RMenu.AddItem(
+                        new MenuItem("RMaxRange", "Use R |Max Cast Range >= x", true).SetValue(new Slider(3000, 1500, 5000)));
+                    RMenu.AddItem(
+                        new MenuItem("RMinCast", "Use R| Min Hit Enemies >= x", true).SetValue(new Slider(2, 1, 6)));
+                    RMenu.AddItem(
+                        new MenuItem("SemiR", "Semi-manual R Key", true).SetValue(new KeyBind('T', KeyBindType.Press)));
+                }
             }
 
             var DrawMenu = Menu.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -130,12 +136,18 @@
                 return;
             }
 
+            if (R.Level > 0)
+            {
+                R.Range = Menu.Item("RMaxRange", true).GetValue<Slider>().Value;
+            }
+
             if (Menu.Item("SemiR", true).GetValue<KeyBind>().Active && R.IsReady())
             {
                 OneKeyCastR();
             }
 
             KillSteal();
+            AutoRLogic();
 
             switch (Orbwalker.ActiveMode)
             {
@@ -152,6 +164,37 @@
                 case Orbwalking.OrbwalkingMode.LastHit:
                     LastHit();
                     break;
+            }
+        }
+
+        private void AutoRLogic()
+        {
+            if (Menu.Item("AutoR", true).GetValue<bool>() && R.IsReady() && Me.CountEnemiesInRange(1000) == 0)
+            {
+                foreach (
+                    var target in
+                    HeroManager.Enemies.Where(
+                        x =>
+                            x.IsValidTarget(R.Range) && CheckTargetSureCanKill(x) &&
+                            x.DistanceToPlayer() >= Menu.Item("RRange", true).GetValue<Slider>().Value))
+                {
+                    if (!target.CanMove() && target.IsValidTarget(EQ.Range) &&
+                        R.GetDamage(target) + Q.GetDamage(target)*3 >= target.Health + target.HPRegenRate*2)
+                    {
+                        R.Cast(target, true);
+                    }
+
+                    if (R.GetDamage(target) > target.Health + target.HPRegenRate*2 && target.Path.Length < 2 &&
+                        R.GetPrediction(target, true).Hitchance >= HitChance.High)
+                    {
+                        R.Cast(target, true);
+                    }
+
+                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo && Me.CountEnemiesInRange(800) == 0)
+                    {
+                        R.CastIfWillHit(target, Menu.Item("RMinCast", true).GetValue<Slider>().Value, true);
+                    }
+                }
             }
         }
 
@@ -254,43 +297,31 @@
 
                 if (Menu.Item("ComboR", true).GetValue<bool>() && R.IsReady())
                 {
-                    if (Menu.Item("ComboRCheck", true).GetValue<bool>() &&
-                        (Me.UnderTurret(true) || Me.CountEnemiesInRange(600) > 1))
+                    if (Me.UnderTurret(true) || Me.CountEnemiesInRange(800) > 1)
                     {
                         return;
                     }
 
-                    var rTarget =
-                        HeroManager.Enemies.FirstOrDefault(
-                            x => x.DistanceToPlayer() <= Menu.Item("ComboRMaxRange", true).GetValue<Slider>().Value &&
-                                 x.DistanceToPlayer() >= Menu.Item("ComboRRange", true).GetValue<Slider>().Value &&
-                                 CheckTargetSureCanKill(x) && HealthPrediction.GetHealthPrediction(x, 1000) > 0);
-
-                    if (rTarget != null)
+                    foreach (
+                        var rTarget in
+                        HeroManager.Enemies.Where(
+                            x =>
+                                x.IsValidTarget(R.Range) &&
+                                target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) &&
+                                CheckTargetSureCanKill(x) &&
+                                HealthPrediction.GetHealthPrediction(x, 2000) > 0))
                     {
-                        if (Menu.Item("ComboRLogic", true).GetValue<bool>())
+                        if (target.Health < R.GetDamage(rTarget) && R.GetPrediction(rTarget).Hitchance >= HitChance.High)
                         {
-                            if (rTarget.Health + rTarget.HPRegenRate * 2 <= R.GetDamage(target) &&
-                                rTarget.IsValidTarget(1500))
-                            {
-                                R.CastTo(rTarget);
-                            }
-                            else if (rTarget.IsValidTarget(Q.Range + E.Range - 200) &&
-                                rTarget.Health + rTarget.MagicalShield + rTarget.HPRegenRate * 2 <=
-                                R.GetDamage(rTarget) + Q.GetDamage(rTarget) + W.GetDamage(rTarget) &&
-                                Q.IsReady() && W.IsReady() &&
-                                rTarget.CountAlliesInRange(Q.Range + E.Range - 200) <= 1)
-                            {
-                                R.CastTo(rTarget);
-                            }
+                            R.Cast(rTarget, true);
                         }
-                    }
-                    else
-                    {
-                        R.CastIfWillHit(
-                            HeroManager.Enemies.FirstOrDefault(
-                                x => x.DistanceToPlayer() <= Menu.Item("ComboRMaxRange", true).GetValue<Slider>().Value),
-                            Menu.Item("ComboRMin", true).GetValue<Slider>().Value);
+
+                        if (rTarget.IsValidTarget(Q.Range + E.Range) &&
+                            R.GetDamage(rTarget) + (Q.IsReady() ? Q.GetDamage(rTarget) : 0) +
+                            (W.IsReady() ? W.GetDamage(rTarget) : 0) > rTarget.Health + rTarget.HPRegenRate*2)
+                        {
+                            R.Cast(rTarget, true);
+                        }
                     }
                 }
             }
@@ -441,16 +472,19 @@
                 {
                     if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                     {
-                        var target = (Obj_AI_Hero) Args.Target;
-
-                        if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && t.IsValidTarget(Q.Range))
+                        if (t is Obj_AI_Hero)
                         {
-                            Q.CastTo(target);
-                        }
+                            var target = (Obj_AI_Hero)Args.Target;
 
-                        if (Menu.Item("ComboW", true).GetValue<bool>() && W.IsReady() && t.IsValidTarget(W.Range))
-                        {
-                            W.CastTo(target);
+                            if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && t.IsValidTarget(Q.Range))
+                            {
+                                Q.CastTo(target);
+                            }
+
+                            if (Menu.Item("ComboW", true).GetValue<bool>() && W.IsReady() && t.IsValidTarget(W.Range))
+                            {
+                                W.CastTo(target);
+                            }
                         }
                     }
                     else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
@@ -525,7 +559,7 @@
                 if (Menu.Item("DrawDamage", true).GetValue<bool>())
                 {
                     foreach (
-                        var x in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
+                        var x in HeroManager.Enemies.Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
                     {
                         HpBarDraw.Unit = x;
                         HpBarDraw.DrawDmg((float)ComboDamage(x), new ColorBGRA(255, 204, 0, 170));

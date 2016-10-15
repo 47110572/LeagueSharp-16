@@ -6,7 +6,7 @@
 
     internal class AutoLevels
     {
-        private static readonly Menu Menu = Program.Menu;
+        private static readonly Menu Menu = Program.Utilitymenu;
         private static readonly Obj_AI_Hero Me = Program.Me;
 
         public static void Init()

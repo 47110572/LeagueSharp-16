@@ -37,7 +37,7 @@
             var ComboMenu = Menu.AddSubMenu(new Menu("Combo", "Combo"));
             {
                 ComboMenu.AddItem(new MenuItem("ComboQ", "Use Q", true).SetValue(true));
-                ComboMenu.AddItem(new MenuItem("ComboSaveMana", "Save Mana To Cast W&R", true).SetValue(true));
+                ComboMenu.AddItem(new MenuItem("ComboSaveMana", "Save Mana To Cast Q", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboW", "Use W", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(true));
@@ -67,24 +67,6 @@
                     new MenuItem("JungleClearMana", "When Player ManaPercent >= x%", true).SetValue(new Slider(30)));
             }
 
-            var RMenu = Menu.AddSubMenu(new Menu("R Menu", "R Menu"));
-            {
-                RMenu.AddItem(new MenuItem("AutoR", "Auto R?", true).SetValue(true));
-                RMenu.AddItem(new MenuItem("Interrupt", "Interrupt Danger Spells", true).SetValue(true));
-                RMenu.AddItem(
-                    new MenuItem("SemiR", "Semi-manual R Key", true).SetValue(new KeyBind('T', KeyBindType.Press)));
-                RMenu.AddItem(new MenuItem("AntiGapCloser", "Anti GapCloser", true).SetValue(true));
-                RMenu.AddItem(
-                    new MenuItem("AntiGapCloserHp", "AntiGapCloser |When Player HealthPercent <= x%", true).SetValue(
-                        new Slider(30)));
-                RMenu.AddItem(new MenuItem("AntiGapCloserRList", "AntiGapCloser R List:"));
-                foreach (var target in HeroManager.Enemies)
-                {
-                    RMenu.AddItem(new MenuItem("AntiGapCloserR" + target.ChampionName.ToLower(), 
-                        "GapCloser: " + target.ChampionName, true).SetValue(true));
-                }
-            }
-
             var KillStealMenu = Menu.AddSubMenu(new Menu("KillSteal", "KillSteal"));
             {
                 KillStealMenu.AddItem(new MenuItem("KillStealW", "KillSteal W", true).SetValue(true));
@@ -93,6 +75,27 @@
                 {
                     KillStealMenu.AddItem(new MenuItem("KillStealR" + target.ChampionName.ToLower(), 
                         "Kill: " + target.ChampionName, true).SetValue(true));
+                }
+            }
+
+            var MiscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
+            {
+                var RMenu = MiscMenu.AddSubMenu(new Menu("R Settings", "R Settings"));
+                {
+                    RMenu.AddItem(new MenuItem("AutoR", "Auto R?", true).SetValue(true));
+                    RMenu.AddItem(new MenuItem("Interrupt", "Interrupt Danger Spells", true).SetValue(true));
+                    RMenu.AddItem(
+                        new MenuItem("SemiR", "Semi-manual R Key", true).SetValue(new KeyBind('T', KeyBindType.Press)));
+                    RMenu.AddItem(new MenuItem("AntiGapCloser", "Anti GapCloser", true).SetValue(true));
+                    RMenu.AddItem(
+                        new MenuItem("AntiGapCloserHp", "AntiGapCloser |When Player HealthPercent <= x%", true).SetValue(
+                            new Slider(30)));
+                    RMenu.AddItem(new MenuItem("AntiGapCloserRList", "AntiGapCloser R List:"));
+                    foreach (var target in HeroManager.Enemies)
+                    {
+                        RMenu.AddItem(new MenuItem("AntiGapCloserR" + target.ChampionName.ToLower(),
+                            "GapCloser: " + target.ChampionName, true).SetValue(true));
+                    }
                 }
             }
 
@@ -158,12 +161,6 @@
 
                         if (target != null && !target.IsDead && !target.IsZombie)
                         {
-                            if (Menu.Item("ComboSaveMana", true).GetValue<bool>() && Me.Mana <
-                                (R.IsReady() ? R.Instance.ManaCost : 0) + W.Instance.ManaCost + Q.Instance.ManaCost)
-                            {
-                                return;
-                            }
-
                             if (Me.HasBuff("asheqcastready"))
                             {
                                 Q.Cast();
@@ -301,13 +298,50 @@
 
         private void Combo()
         {
+            if (Menu.Item("ComboR", true).GetValue<bool>() && R.IsReady())
+            {
+                foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(1200) && CheckTargetSureCanKill(x)))
+                {
+                    if (target.IsValidTarget(600) && Me.CountEnemiesInRange(600) >= 3 && target.CountAlliesInRange(200) >= 2)
+                    {
+                        R.CastTo(target);
+                    }
+
+                    if (target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) && target.DistanceToPlayer() <= 700 &&
+                        target.Health > Me.GetAutoAttackDamage(target) &&
+                        target.Health < R.GetDamage(target) + Me.GetAutoAttackDamage(target) * 3 &&
+                        !target.HasBuffOfType(BuffType.SpellShield))
+                    {
+                        R.CastTo(target);
+                    }
+
+                    if (target.DistanceToPlayer() <= 1000 &&
+                        (!target.CanMove || target.HasBuffOfType(BuffType.Stun) ||
+                        R.GetPrediction(target).Hitchance == HitChance.Immobile))
+                    {
+                        R.CastTo(target);
+                    }
+
+                    if (Me.CountEnemiesInRange(800) == 1 && target.IsValidTarget(800) &&
+                        target.Health <= Me.GetAutoAttackDamage(target) * 4 + R.GetDamage(target))
+                    {
+                        R.CastTo(target);
+                    }
+                }
+            }
+
             if (Menu.Item("ComboW", true).GetValue<bool>() && W.IsReady() && !Me.HasBuff("AsheQAttack"))
             {
-                var target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
-
-                if (CheckTarget(target, W.Range))
+                if ((Menu.Item("ComboSaveMana", true).GetValue<bool>() &&
+                     Me.Mana > (R.IsReady() ? R.Instance.ManaCost : 0) + W.Instance.ManaCost + Q.Instance.ManaCost) ||
+                    !Menu.Item("ComboSaveMana", true).GetValue<bool>())
                 {
-                    W.CastTo(target);
+                    var target = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
+
+                    if (CheckTarget(target, W.Range))
+                    {
+                        W.CastTo(target);
+                    }
                 }
             }
 
@@ -324,40 +358,6 @@
                     {
                         E.Cast(EPred.CastPosition);
                     }
-                }
-            }
-
-            if (!Menu.Item("ComboR", true).GetValue<bool>() || !R.IsReady())
-            {
-                return;
-            }
-
-            foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(1200)  && CheckTargetSureCanKill(x)))
-            {
-                if (target.IsValidTarget(600) && Me.CountEnemiesInRange(600) >= 3 && target.CountAlliesInRange(200) >= 2)
-                {
-                    R.CastTo(target);
-                }
-
-                if (target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) && target.DistanceToPlayer() <= 700 &&
-                    target.Health > Me.GetAutoAttackDamage(target) &&
-                    target.Health < R.GetDamage(target) + Me.GetAutoAttackDamage(target) * 3 &&
-                    !target.HasBuffOfType(BuffType.SpellShield))
-                {
-                    R.CastTo(target);
-                }
-
-                if (target.DistanceToPlayer() <= 1000 &&
-                    (!target.CanMove || target.HasBuffOfType(BuffType.Stun) || 
-                    R.GetPrediction(target).Hitchance == HitChance.Immobile))
-                {
-                    R.CastTo(target);
-                }
-
-                if (Me.CountEnemiesInRange(800) == 1 && target.IsValidTarget(800) &&
-                    target.Health <= Me.GetAutoAttackDamage(target) * 4 + R.GetDamage(target))
-                {
-                    R.CastTo(target);
                 }
             }
         }
@@ -466,7 +466,7 @@
                 if (Menu.Item("DrawDamage", true).GetValue<bool>())
                 {
                     foreach (
-                        var x in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
+                        var x in HeroManager.Enemies.Where(e => e.IsValidTarget() && !e.IsDead && !e.IsZombie))
                     {
                         HpBarDraw.Unit = x;
                         HpBarDraw.DrawDmg((float)ComboDamage(x), new ColorBGRA(255, 204, 0, 170));

@@ -683,6 +683,11 @@
                 AttackableUnit result = null;
                 var mode = ActiveMode;
 
+                if (mode == OrbwalkingMode.Flee)
+                {
+                    return null;
+                }
+
                 if (_forcedTarget.IsValidTarget() && InAutoAttackRange(_forcedTarget))
                 {
                     return _forcedTarget;
