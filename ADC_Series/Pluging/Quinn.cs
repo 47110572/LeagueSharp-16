@@ -334,6 +334,11 @@
 
         private void LaneClear()
         {
+            if (Me.UnderTurret(true))
+            {
+                return;
+            }
+
             if (Me.ManaPercent >= Menu.Item("LaneClearMana", true).GetValue<Slider>().Value)
             {
                 if (Menu.Item("LaneClearQ", true).GetValue<bool>() && Q.IsReady())

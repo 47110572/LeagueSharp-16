@@ -115,6 +115,10 @@
                         var kalista = new Pluging.Kalista();
                         Game.PrintChat("Flowers' ADC Series: " + Me.ChampionName + " Load Succeed! Credit: NightMoon");
                         break;
+                    case "Kindred":
+                        var kindred = new Pluging.Kindred();
+                        Game.PrintChat("Flowers' ADC Series: " + Me.ChampionName + " Load Succeed! Credit: NightMoon");
+                        break;
                     case "KogMaw":
                         var kogMaw = new Pluging.KogMaw();
                         Game.PrintChat("Flowers' ADC Series: " + Me.ChampionName + " Load Succeed! Credit: NightMoon");

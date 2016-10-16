@@ -84,7 +84,8 @@
             {
                 var EMenu = MiscMenu.AddSubMenu(new Menu("E Settings", "E Settings"));
                 {
-                    EMenu.AddItem(new MenuItem("SemiE", "Semi-manual E Key", true).SetValue(new KeyBind('E', KeyBindType.Press)));
+                    EMenu.AddItem(
+                        new MenuItem("SemiE", "Semi-manual E Key", true).SetValue(new KeyBind('E', KeyBindType.Press)));
                     foreach (var target in HeroManager.Enemies)
                     {
                         EMenu.AddItem(
@@ -182,12 +183,14 @@
             {
                 if (Menu.Item("KillStealE", true).GetValue<bool>() && E.IsReady())
                 {
-                    foreach (var target in from x in HeroManager.Enemies.Where(x => x.IsValidTarget(E.Range) && CheckTargetSureCanKill(x))
-                                          let etargetstacks = x.Buffs.Find(buff => buff.Name == "TristanaECharge")
-                                          where
-                                          R.GetDamage(x) + E.GetDamage(x) + etargetstacks?.Count * 0.30 * E.GetDamage(x) >=
-                                          x.Health
-                                          select x)
+                    foreach (
+                        var target in
+                        from x in HeroManager.Enemies.Where(x => x.IsValidTarget(E.Range) && CheckTargetSureCanKill(x))
+                        let etargetstacks = x.Buffs.Find(buff => buff.Name == "TristanaECharge")
+                        where
+                        R.GetDamage(x) + E.GetDamage(x) + etargetstacks?.Count*0.30*E.GetDamage(x) >=
+                        x.Health
+                        select x)
                     {
                         R.CastOnUnit(target);
                         return;
@@ -236,7 +239,8 @@
                     E.CastOnUnit(target, true);
                 }
 
-                if (Menu.Item("ComboR", true).GetValue<bool>() && R.IsReady() && Me.HealthPercent <= Menu.Item("ComboRHp", true).GetValue<Slider>().Value)
+                if (Menu.Item("ComboR", true).GetValue<bool>() && R.IsReady() &&
+                    Me.HealthPercent <= Menu.Item("ComboRHp", true).GetValue<Slider>().Value)
                 {
                     var dangerenemy = HeroManager.Enemies.Where(e => e.IsValidTarget(R.Range)).
                         OrderBy(enemy => enemy.Distance(Me)).FirstOrDefault();
@@ -270,7 +274,7 @@
 
                     if (Menu.Item("HarassEToMinion", true).GetValue<bool>())
                     {
-                        foreach (var minion in MinionManager.GetMinions(E.Range).Where(m => 
+                        foreach (var minion in MinionManager.GetMinions(E.Range).Where(m =>
                         m.Health < Me.GetAutoAttackDamage(m) && m.CountEnemiesInRange(m.BoundingRadius + 150) >= 1))
                         {
                             var etarget = E.GetTarget();
@@ -327,7 +331,7 @@
             )
             {
                 if (target.Health <
-                    Me.GetSpellDamage(target, SpellSlot.E)*(target.GetBuffCount("TristanaECharge")*0.30) +
+                    Me.GetSpellDamage(target, SpellSlot.E) * (target.GetBuffCount("TristanaECharge") * 0.30) +
                     Me.GetSpellDamage(target, SpellSlot.E))
                 {
                     E.CastOnUnit(target, true);
@@ -401,12 +405,15 @@
         {
             if (Menu.Item("Forcustarget", true).GetValue<bool>())
             {
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo ||
+                    Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
                 {
-                    foreach (var enemy in HeroManager.Enemies.Where(enemy => Orbwalking.InAutoAttackRange(enemy) && enemy.HasBuff("TristanaEChargeSound")))
+                    foreach (
+                        var enemy in
+                        HeroManager.Enemies.Where(
+                            enemy => Orbwalking.InAutoAttackRange(enemy) && enemy.HasBuff("TristanaEChargeSound")))
                     {
                         TargetSelector.SetTarget(enemy);
-                        return;
                     }
                 }
             }
@@ -421,7 +428,9 @@
                             {
                                 if (Menu.Item("ComboQOnlyPassive", true).GetValue<bool>())
                                 {
-                                    var Target = Args.Target.Type == GameObjectType.obj_AI_Hero ? (Obj_AI_Hero)Args.Target : null;
+                                    var Target = Args.Target.Type == GameObjectType.obj_AI_Hero
+                                        ? (Obj_AI_Hero) Args.Target
+                                        : null;
 
                                     if (Target != null &&
                                         (Target.HasBuff("TristanaEChargeSound") || Target.HasBuff("TristanaECharge")))

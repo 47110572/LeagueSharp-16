@@ -74,6 +74,7 @@
     <Compile Include="Common\Common.cs" />
     <Compile Include="Common\HpBarDraw.cs" />
     <Compile Include="Common\MultiLanguage.cs" />
+    <Compile Include="Pluging\Kindred.cs" />
     <Compile Include="Utility\AutoWard.cs" />
     <Compile Include="Utility\TurnAround.cs" />
     <Compile Include="Common\Lizzaran.SFX.NET.ListExtensions.cs" />

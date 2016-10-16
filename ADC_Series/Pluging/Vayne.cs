@@ -74,6 +74,7 @@
                 {
                     QMenu.AddItem(new MenuItem("QCheck", "Use Q|Safe Check?", true).SetValue(true));
                     QMenu.AddItem(new MenuItem("QTurret", "Use Q|Dont Cast To Turret", true).SetValue(true));
+                    QMenu.AddItem(new MenuItem("QMelee", "Use Q|Anti Melee", true).SetValue(true));
                 }
 
                 var EMenu = MiscMenu.AddSubMenu(new Menu("E Settings", "E Settings"));
@@ -118,6 +119,7 @@
                 DrawMenu.AddItem(new MenuItem("DrawDamage", "Draw ComboDamage", true).SetValue(true));
             }
 
+            Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
             Game.OnUpdate += OnUpdate;
             Orbwalking.BeforeAttack += BeforeAttack;
             Orbwalking.AfterAttack += AfterAttack;
@@ -125,6 +127,22 @@
             AntiGapcloser.OnEnemyGapcloser += OnEnemyGapcloser;
             GameObject.OnCreate += OnCreate;
             Drawing.OnDraw += OnDraw;
+        }
+
+        private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
+        {
+            if (sender == null || !sender.IsEnemy || !sender.IsMelee || sender.Type != Me.Type || Args.Target == null)
+            {
+                return;
+            }
+
+            if (Args.Target.IsMe)
+            {
+                if (Menu.Item("QMelee", true).GetValue<bool>() && Q.IsReady())
+                {
+                    Q.Cast(Me.Position.Extend(sender.Position, -Q.Range));
+                }
+            }
         }
 
         private void OnUpdate(EventArgs args)
@@ -312,6 +330,10 @@
                 if (Menu.Item("Forcus", true).GetValue<bool>() && CheckTarget(ForcusTarget))
                 {
                     TargetSelector.SetTarget(ForcusTarget);
+                }
+                else
+                {
+                    TargetSelector.SetTarget(null);
                 }
             }
         }
