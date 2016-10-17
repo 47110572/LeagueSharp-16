@@ -16,6 +16,7 @@
         public static Spell R;
         public static Menu Menu;
         public static Obj_AI_Hero Me;
+        public static Obj_AI_Hero rShotTarget;
         public static int SkinID;
         public static int LastPingT;
         public static int LastECast;
@@ -132,11 +133,6 @@
                 PredMenu.AddItem(
                     new MenuItem("SetHitchance", "HitChance: ", true).SetValue(
                         new StringList(new[] {"VeryHigh", "High", "Medium", "Low"})));
-                PredMenu.AddItem(new MenuItem("AboutCommonPred", "Common Prediction -> LeagueSharp.Commmon Prediction"));
-                PredMenu.AddItem(new MenuItem("AboutOKTWPred", "OKTW Prediction -> Sebby' Prediction"));
-                PredMenu.AddItem(new MenuItem("AboutSDKPred", "SDK Prediction -> LeagueSharp.SDKEx Prediction"));
-                PredMenu.AddItem(new MenuItem("AboutSPred", "SPrediction -> Shine' Prediction"));
-                PredMenu.AddItem(new MenuItem("AboutxcsoftAIOPred", "xcsoft AIO Prediction -> xcsoft ALL In One Prediction"));
             }
 
             var SkinMenu = Menu.AddSubMenu(new Menu("SkinChance", "SkinChance"));
@@ -416,29 +412,32 @@
                         return;
                     }
 
-                    R.Cast(R.GetPrediction(target).UnitPosition, true);
+                    if (R.Cast(R.GetPrediction(target).UnitPosition))
+                    {
+                        rShotTarget = target;
+                    }
                 }
 
                 if (R.Instance.Name == "JhinRShot")
                 {
-                    foreach (var t in HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range) && InRCone(x)))
+                    if (rShotTarget != null && rShotTarget.IsValidTarget(R.Range))
                     {
-                        if (!InRCone(t))
+                        if (!InRCone(rShotTarget))
                         {
                             return;
                         }
 
                         if (Menu.Item("RMenuSemi", true).GetValue<KeyBind>().Active)
                         {
-                            AutoUse(t);
-                            R.Cast(R.GetPrediction(t).UnitPosition, true);
+                            AutoUse(rShotTarget);
+                            R.CastTo(rShotTarget);
                         }
 
                         if (Menu.Item("ComboR", true).GetValue<bool>() &&
                             Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                         {
-                            AutoUse(t);
-                            R.Cast(R.GetPrediction(t).UnitPosition, true);
+                            AutoUse(rShotTarget);
+                            R.CastTo(rShotTarget);
                         }
 
                         if (!Menu.Item("RMenuAuto", true).GetValue<bool>())
@@ -446,8 +445,39 @@
                             return;
                         }
 
-                        AutoUse(t);
-                        R.Cast(R.GetPrediction(t).UnitPosition, true);
+                        AutoUse(rShotTarget);
+                        R.CastTo(rShotTarget);
+                    }
+                    else
+                    {
+                        foreach (var t in HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range) && InRCone(x)))
+                        {
+                            if (!InRCone(t))
+                            {
+                                return;
+                            }
+
+                            if (Menu.Item("RMenuSemi", true).GetValue<KeyBind>().Active)
+                            {
+                                AutoUse(t);
+                                R.Cast(R.GetPrediction(t).UnitPosition, true);
+                            }
+
+                            if (Menu.Item("ComboR", true).GetValue<bool>() &&
+                                Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                            {
+                                AutoUse(t);
+                                R.Cast(R.GetPrediction(t).UnitPosition, true);
+                            }
+
+                            if (!Menu.Item("RMenuAuto", true).GetValue<bool>())
+                            {
+                                return;
+                            }
+
+                            AutoUse(t);
+                            R.Cast(R.GetPrediction(t).UnitPosition, true);
+                        }
                     }
                 }
             }

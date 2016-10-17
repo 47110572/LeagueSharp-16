@@ -131,7 +131,8 @@
 
                         var poutput2 = SebbyLib.Prediction.Prediction.GetPrediction(predInput2);
 
-                        if (Spells.Speed != float.MaxValue && YasuoWindWall.CollisionYasuo(ObjectManager.Player.ServerPosition, poutput2.CastPosition))
+                        if (Spells.Speed != float.MaxValue &&
+                            YasuoWindWall.CollisionYasuo(ObjectManager.Player.ServerPosition, poutput2.CastPosition))
                         {
                             return;
                         }
@@ -140,7 +141,8 @@
                         {
                             Spells.Cast(poutput2.CastPosition, true);
                         }
-                        else if (predInput2.Aoe && poutput2.AoeTargetsHitCount > 1 && poutput2.Hitchance >= MinOKTWHitChance - 1)
+
+                        if (predInput2.Aoe && poutput2.AoeTargetsHitCount > 1 && poutput2.Hitchance >= MinOKTWHitChance - 1)
                         {
                             Spells.Cast(poutput2.CastPosition, true);
                         }
@@ -165,7 +167,8 @@
 
                         var poutput2 = SDKPrediction.GetPrediction(predInput2);
 
-                        if (Spells.Speed != float.MaxValue && YasuoWindWall.CollisionYasuo(ObjectManager.Player.ServerPosition, poutput2.CastPosition))
+                        if (Spells.Speed != float.MaxValue &&
+                            YasuoWindWall.CollisionYasuo(ObjectManager.Player.ServerPosition, poutput2.CastPosition))
                         {
                             return;
                         }
