@@ -10,20 +10,10 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Varus
+    internal class Varus : Program
     {
-        private static Spell Q;
-        private static Spell W;
-        private static Spell E;
-        private static Spell R;
-
-        private static float qRange = 1600f;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private float qRange = 1600f;
+        private new readonly Menu Menu = Championmenu;
 
         public Varus()
         {

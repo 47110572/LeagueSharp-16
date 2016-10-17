@@ -77,16 +77,14 @@
     <Compile Include="Pluging\Kindred.cs" />
     <Compile Include="Utility\AutoWard.cs" />
     <Compile Include="Utility\TurnAround.cs" />
-    <Compile Include="Common\Lizzaran.SFX.NET.ListExtensions.cs" />
     <Compile Include="Orbwalking\Orbwalking.cs" />
     <Compile Include="Pluging\Ashe.cs" />
     <Compile Include="Pluging\Caitlyn.cs" />
     <Compile Include="Pluging\Corki.cs" />
-    <Compile Include="Pluging\TODO\_Draven.cs" />
     <Compile Include="Pluging\Ezreal.cs" />
     <Compile Include="Pluging\Graves.cs" />
     <Compile Include="Pluging\Jhin.cs" />
-    <Compile Include="Pluging\TODO\_Jinx.cs" />
+    <Compile Include="Pluging\Jinx.cs" />
     <Compile Include="Pluging\Kalista.cs" />
     <Compile Include="Pluging\KogMaw.cs" />
     <Compile Include="Pluging\Lucian.cs" />

@@ -10,20 +10,10 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Twitch
+    internal class Twitch : Program
     {
-        private static Spell Q;
-        private static Spell W;
-        private static Spell E;
-        private static Spell R;
-
-        private static bool PlayerIsKillTarget;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private bool PlayerIsKillTarget;
+        private new readonly Menu Menu = Championmenu;
 
         public Twitch()
         {
@@ -86,7 +76,7 @@
             Drawing.OnDraw += OnDraw;
         }
 
-        private static void OnDoCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
+        private void OnDoCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
         {
             if (Menu.Item("ComboRYouMuu", true).GetValue<bool>() && Orbwalker.GetTarget() != null &&
                 Orbwalker.GetTarget() is Obj_AI_Hero && Me.HasBuff("TwitchFullAutomatic"))

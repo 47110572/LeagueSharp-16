@@ -4,10 +4,9 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    internal class AutoLevels
+    internal class AutoLevels : Program
     {
-        private static readonly Menu Menu = Program.Utilitymenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
+        private new static readonly Menu Menu = Utilitymenu;
 
         public static void Init()
         {

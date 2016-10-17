@@ -10,30 +10,20 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Urgot
+    internal class Urgot : Program
     {
-        private static Spell Q;
-        private static Spell Q1;
-        private static Spell W;
-        private static Spell E;
-        private static Spell R;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private new readonly Menu Menu = Championmenu;
 
         public Urgot()
         {
             Q = new Spell(SpellSlot.Q, 1000f);
-            Q1 = new Spell(SpellSlot.Q, 1200f);
+            QExtend = new Spell(SpellSlot.Q, 1200f);
             W = new Spell(SpellSlot.W);
             E = new Spell(SpellSlot.E, 900f);
             R = new Spell(SpellSlot.R, 550f);
 
             Q.SetSkillshot(0.25f, 60f, 1600f, true, SkillshotType.SkillshotLine);
-            Q1.SetSkillshot(0.25f, 60f, 1600f, false, SkillshotType.SkillshotLine);
+            QExtend.SetSkillshot(0.25f, 60f, 1600f, false, SkillshotType.SkillshotLine);
             E.SetSkillshot(0.25f, 120f, 1500f, false, SkillshotType.SkillshotCircle);
 
 
@@ -97,7 +87,7 @@
                     foreach (var target in HeroManager.Enemies)
                     {
                         rMenu.AddItem(
-                            new MenuItem("Dontr" + target.ChampionName.ToLower(), target.ChampionName, true).SetValue(!AutoEnableList.Contains(target.ChampionName)));
+                            new MenuItem("Dontr" + target.ChampionName.ToLower(), target.ChampionName, true).SetValue(true));
                     }
                 }
             }
@@ -155,7 +145,7 @@
                         }
                     }
 
-                    if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && target.IsValidTarget(Q1.Range))
+                    if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && target.IsValidTarget(QExtend.Range))
                     {
                         if (!HaveEBuff(target) && target.IsValidTarget(Q.Range))
                         {
@@ -169,9 +159,9 @@
                                 Q.CastTo(target);
                             }
                         }
-                        else if (target.IsValidTarget(Q1.Range) && HaveEBuff(target))
+                        else if (target.IsValidTarget(QExtend.Range) && HaveEBuff(target))
                         {
-                            Q1.Cast(target);
+                            QExtend.Cast(target);
                         }
                     }
 
@@ -259,9 +249,9 @@
         private void Combo()
         {
             var target = TargetSelector.GetSelectedTarget() ??
-                         TargetSelector.GetTarget(Q1.Range, TargetSelector.DamageType.Physical);
+                         TargetSelector.GetTarget(QExtend.Range, TargetSelector.DamageType.Physical);
 
-            if (CheckTarget(target, Q1.Range))
+            if (CheckTarget(target, QExtend.Range))
             {
                 if (Menu.Item("ComboR", true).GetValue<bool>() && R.IsReady() && target.IsValidTarget(R.Range))
                 {
@@ -319,7 +309,7 @@
                     }
                 }
 
-                if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && target.IsValidTarget(Q1.Range))
+                if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && target.IsValidTarget(QExtend.Range))
                 {
                     if (!HaveEBuff(target) && target.IsValidTarget(Q.Range))
                     {
@@ -333,9 +323,9 @@
                             Q.CastTo(target);
                         }
                     }
-                    else if (target.IsValidTarget(Q1.Range) && HaveEBuff(target))
+                    else if (target.IsValidTarget(QExtend.Range) && HaveEBuff(target))
                     {
-                        Q1.Cast(target);
+                        QExtend.Cast(target);
                     }
                 }
             }
@@ -351,9 +341,9 @@
             if (Me.ManaPercent >= Menu.Item("HarassMana", true).GetValue<Slider>().Value)
             {
                 var target = TargetSelector.GetSelectedTarget() ??
-                    TargetSelector.GetTarget(Q1.Range, TargetSelector.DamageType.Physical);
+                    TargetSelector.GetTarget(QExtend.Range, TargetSelector.DamageType.Physical);
 
-                if (CheckTarget(target, Q1.Range))
+                if (CheckTarget(target, QExtend.Range))
                 {
                     if (Menu.Item("HarassE", true).GetValue<bool>() && E.IsReady() && target.IsValidTarget(E.Range))
                     {
@@ -368,15 +358,15 @@
                         }
                     }
 
-                    if (Menu.Item("HarassQ", true).GetValue<bool>() && Q.IsReady() && target.IsValidTarget(Q1.Range))
+                    if (Menu.Item("HarassQ", true).GetValue<bool>() && Q.IsReady() && target.IsValidTarget(QExtend.Range))
                     {
                         if (!HaveEBuff(target) && target.IsValidTarget(Q.Range))
                         {
                             Q.CastTo(target);
                         }
-                        else if (target.IsValidTarget(Q1.Range) && HaveEBuff(target))
+                        else if (target.IsValidTarget(QExtend.Range) && HaveEBuff(target))
                         {
-                            Q1.Cast(target);
+                            QExtend.Cast(target);
                         }
                     }
                 }

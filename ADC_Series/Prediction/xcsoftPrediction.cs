@@ -9,7 +9,10 @@
 
     public static class xcsoftPrediction
     {
-        public static float PredHealth(Obj_AI_Base Target, Spell spell) => HealthPrediction.GetHealthPrediction(Target, (int)(ObjectManager.Player.Distance(Target) / spell.Speed), (int)(spell.Delay * 1000 + Game.Ping / 2));
+        public static float PredHealth(Obj_AI_Base Target, Spell spell)
+            =>
+            HealthPrediction.GetHealthPrediction(Target, (int) (ObjectManager.Player.Distance(Target)/spell.Speed),
+                (int) (spell.Delay*1000 + Game.Ping/2));
 
         public static void CastCircle(this Spell spell, Obj_AI_Base target)
         {
@@ -22,7 +25,9 @@
 
                 var pred = Prediction.GetPrediction(target, spell.Delay, spell.Width / 2, spell.Speed);
                 var castVec = (pred.UnitPosition.To2D() + target.ServerPosition.To2D()) / 2;
-                var castVec2 = ObjectManager.Player.ServerPosition.To2D() + Vector2.Normalize(pred.UnitPosition.To2D() - ObjectManager.Player.Position.To2D()) * (spell.Range);
+                var castVec2 = ObjectManager.Player.ServerPosition.To2D() +
+                               Vector2.Normalize(pred.UnitPosition.To2D() - ObjectManager.Player.Position.To2D())*
+                               spell.Range;
 
                 if (target.IsValidTarget(spell.Range))
                 {
@@ -43,6 +48,7 @@
                                ObjectManager.Player.ServerPosition.Distance(target.ServerPosition)/spell.Speed) <=
                               spell.Width*2/3) || !(castVec.Distance(pred.UnitPosition) <= spell.Width*1/2) ||
                             !(castVec.Distance(ObjectManager.Player.ServerPosition) <= spell.Range))
+                        {
                             if (castVec.Distance(pred.UnitPosition) > spell.Width*1/2 &&
                                 ObjectManager.Player.ServerPosition.Distance(pred.UnitPosition) <= spell.Range)
                             {
@@ -52,8 +58,11 @@
                             {
                                 spell.Cast(pred.CastPosition);
                             }
+                        }
                         else
+                        {
                             spell.Cast(castVec);
+                        }
                     }
                     else
                     {
@@ -98,7 +107,8 @@
             }
         }
 
-        public static void CastLine(this Spell spell, Obj_AI_Base target, float alpha = 0f, float colmini = float.MaxValue, bool HeroOnly = false, float BombRadius = 0f)
+        public static void CastLine(this Spell spell, Obj_AI_Base target, float alpha = 0f,
+            float colmini = float.MaxValue, bool HeroOnly = false, float BombRadius = 0f)
         {
             if (spell.Type != SkillshotType.SkillshotLine)
             {
@@ -111,14 +121,18 @@
             }
 
             var pred = Prediction.GetPrediction(target, spell.Delay, spell.Width / 2, spell.Speed);
-            var collision = spell.GetCollision(ObjectManager.Player.ServerPosition.To2D(), new List<Vector2> { pred.CastPosition.To2D() });
-            var minioncol = collision.Count(x => (HeroOnly == false ? x.IsMinion : (x is Obj_AI_Hero)));
-            var EditedVec = pred.UnitPosition.To2D() - Vector2.Normalize(pred.UnitPosition.To2D() - target.ServerPosition.To2D()) * (spell.Width * 2 / 5);
+            var collision = spell.GetCollision(ObjectManager.Player.ServerPosition.To2D(),
+                new List<Vector2> {pred.CastPosition.To2D()});
+            var minioncol = collision.Count(x => HeroOnly == false ? x.IsMinion : x is Obj_AI_Hero);
+            var EditedVec = pred.UnitPosition.To2D() -
+                            Vector2.Normalize(pred.UnitPosition.To2D() - target.ServerPosition.To2D())*(spell.Width*2/5);
             var EditedVec2 = (pred.UnitPosition.To2D() + target.ServerPosition.To2D()) / 2;
-            var collision2 = spell.GetCollision(ObjectManager.Player.ServerPosition.To2D(), new List<Vector2> { EditedVec });
-            var minioncol2 = collision2.Count(x => (HeroOnly == false ? x.IsMinion : (x is Obj_AI_Hero)));
-            var collision3 = spell.GetCollision(ObjectManager.Player.ServerPosition.To2D(), new List<Vector2> { EditedVec2 });
-            var minioncol3 = collision3.Count(x => (HeroOnly == false ? x.IsMinion : (x is Obj_AI_Hero)));
+            var collision2 = spell.GetCollision(ObjectManager.Player.ServerPosition.To2D(),
+                new List<Vector2> {EditedVec});
+            var minioncol2 = collision2.Count(x => HeroOnly == false ? x.IsMinion : x is Obj_AI_Hero);
+            var collision3 = spell.GetCollision(ObjectManager.Player.ServerPosition.To2D(),
+                new List<Vector2> {EditedVec2});
+            var minioncol3 = collision3.Count(x => HeroOnly == false ? x.IsMinion : x is Obj_AI_Hero);
 
             if (pred.Hitchance >= HitChance.VeryHigh)
             {
@@ -166,7 +180,8 @@
             }
         }
 
-        public static void CastCone(this Spell spell, Obj_AI_Base target, float alpha = 0f, float colmini = float.MaxValue, bool HeroOnly = false)
+        public static void CastCone(this Spell spell, Obj_AI_Base target, float alpha = 0f,
+            float colmini = float.MaxValue, bool HeroOnly = false)
         {
             if (spell.Type != SkillshotType.SkillshotCone)
             {
@@ -179,10 +194,15 @@
             }
 
             var pred = Prediction.GetPrediction(target, spell.Delay, spell.Width / 2, spell.Speed);
-            var collision = spell.GetCollision(ObjectManager.Player.ServerPosition.To2D(), new List<Vector2> { pred.CastPosition.To2D() });
-            var minioncol = collision.Count(x => (HeroOnly == false ? x.IsMinion : x is Obj_AI_Hero));
+            var collision = spell.GetCollision(ObjectManager.Player.ServerPosition.To2D(),
+                new List<Vector2> {pred.CastPosition.To2D()});
+            var minioncol = collision.Count(x => HeroOnly == false ? x.IsMinion : x is Obj_AI_Hero);
 
-            if (target.IsValidTarget(spell.Range - target.MoveSpeed * (spell.Delay + ObjectManager.Player.Distance(target.ServerPosition) / spell.Speed) + alpha) && minioncol <= colmini && pred.Hitchance >= HitChance.VeryHigh)
+            if (
+                target.IsValidTarget(spell.Range -
+                                     target.MoveSpeed*
+                                     (spell.Delay + ObjectManager.Player.Distance(target.ServerPosition)/spell.Speed) +
+                                     alpha) && minioncol <= colmini && pred.Hitchance >= HitChance.VeryHigh)
             {
                 spell.Cast(pred.CastPosition);
             }
@@ -197,7 +217,8 @@
 
             var pred = Prediction.GetPrediction(target, spell.Delay > 0 ? spell.Delay : 0.25f, spell.Range);
 
-            if (pred.Hitchance >= HitChance.High && pred.UnitPosition.Distance(ObjectManager.Player.ServerPosition) <= spell.Range)
+            if (pred.Hitchance >= HitChance.High &&
+                pred.UnitPosition.Distance(ObjectManager.Player.ServerPosition) <= spell.Range)
             {
                 spell.Cast();
             }
@@ -205,7 +226,9 @@
 
         public static void RMouse(this Spell spell)
         {
-            var ReverseVec = ObjectManager.Player.ServerPosition.To2D() - Vector2.Normalize(Game.CursorPos.To2D() - ObjectManager.Player.Position.To2D()) * (spell.Range);
+            var ReverseVec = ObjectManager.Player.ServerPosition.To2D() -
+                             Vector2.Normalize(Game.CursorPos.To2D() - ObjectManager.Player.Position.To2D())*
+                             spell.Range;
 
             if (!spell.IsReady())
             {
@@ -217,7 +240,8 @@
 
         public static void NMouse(this Spell spell)
         {
-            var NVec = ObjectManager.Player.ServerPosition.To2D() + Vector2.Normalize(Game.CursorPos.To2D() - ObjectManager.Player.Position.To2D()) * (spell.Range);
+            var NVec = ObjectManager.Player.ServerPosition.To2D() +
+                       Vector2.Normalize(Game.CursorPos.To2D() - ObjectManager.Player.Position.To2D())*spell.Range;
 
             if (!spell.IsReady())
             {
@@ -229,7 +253,9 @@
 
         public static void RTarget(this Spell spell, Obj_AI_Base Target)
         {
-            var ReverseVec = ObjectManager.Player.ServerPosition.To2D() - Vector2.Normalize(Target.ServerPosition.To2D() - ObjectManager.Player.Position.To2D()) * (spell.Range);
+            var ReverseVec = ObjectManager.Player.ServerPosition.To2D() -
+                             Vector2.Normalize(Target.ServerPosition.To2D() - ObjectManager.Player.Position.To2D())*
+                             spell.Range;
 
             if (!spell.IsReady())
             {
@@ -241,7 +267,9 @@
 
         public static void NTarget(this Spell spell, Obj_AI_Base Target)
         {
-            var Vec = ObjectManager.Player.ServerPosition.To2D() + Vector2.Normalize(Target.ServerPosition.To2D() - ObjectManager.Player.Position.To2D()) * (spell.Range);
+            var Vec = ObjectManager.Player.ServerPosition.To2D() +
+                      Vector2.Normalize(Target.ServerPosition.To2D() - ObjectManager.Player.Position.To2D())*
+                      spell.Range;
 
             if (!spell.IsReady())
             {
@@ -253,7 +281,10 @@
 
         public static bool CanHit(this Spell spell, Obj_AI_Base T, float Drag = 0f)
         {
-            return T.IsValidTarget(spell.Range + Drag - ((T.Distance(ObjectManager.Player.ServerPosition) - spell.Range) / spell.Speed + spell.Delay) * T.MoveSpeed);
+            return
+                T.IsValidTarget(spell.Range + Drag -
+                                ((T.Distance(ObjectManager.Player.ServerPosition) - spell.Range)/spell.Speed +
+                                 spell.Delay)*T.MoveSpeed);
         }
     }
 }

@@ -10,20 +10,10 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Graves
+    internal class Graves : Program
     {
-        private static Spell Q;
-        private static Spell W;
-        private static Spell E;
-        private static Spell R;
-
-        private static float SearchERange;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private readonly float SearchERange;
+        private new readonly Menu Menu = Championmenu;
 
         public Graves()
         {

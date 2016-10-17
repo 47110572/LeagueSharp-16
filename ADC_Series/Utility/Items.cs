@@ -5,11 +5,9 @@
     using LeagueSharp.Common;
     using Orbwalking = Orbwalking;
 
-    internal class Items
+    internal class Items : Program
     {
-        private static readonly Menu Menu = Program.Utilitymenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        private new static readonly Menu Menu = Utilitymenu;
 
         public static void Init()
         {

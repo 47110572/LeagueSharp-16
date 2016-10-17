@@ -10,18 +10,9 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Ashe
+    internal class Ashe : Program
     {
-        private static Spell Q;
-        private static Spell W;
-        private static Spell E;
-        private static Spell R;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private new readonly Menu Menu = Championmenu;
 
         public Ashe()
         {
@@ -302,14 +293,16 @@
             {
                 foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(1200) && CheckTargetSureCanKill(x)))
                 {
-                    if (target.IsValidTarget(600) && Me.CountEnemiesInRange(600) >= 3 && target.CountAlliesInRange(200) >= 2)
+                    if (target.IsValidTarget(600) && Me.CountEnemiesInRange(600) >= 3 && target.CountAlliesInRange(200) <= 2)
                     {
                         R.CastTo(target);
                     }
 
-                    if (target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) && target.DistanceToPlayer() <= 700 &&
+                    if (Me.CountEnemiesInRange(800) == 1 &&
+                        target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) &&
+                        target.DistanceToPlayer() <= 700 &&
                         target.Health > Me.GetAutoAttackDamage(target) &&
-                        target.Health < R.GetDamage(target) + Me.GetAutoAttackDamage(target) * 3 &&
+                        target.Health < R.GetDamage(target) + Me.GetAutoAttackDamage(target)*3 &&
                         !target.HasBuffOfType(BuffType.SpellShield))
                     {
                         R.CastTo(target);
@@ -318,12 +311,6 @@
                     if (target.DistanceToPlayer() <= 1000 &&
                         (!target.CanMove || target.HasBuffOfType(BuffType.Stun) ||
                         R.GetPrediction(target).Hitchance == HitChance.Immobile))
-                    {
-                        R.CastTo(target);
-                    }
-
-                    if (Me.CountEnemiesInRange(800) == 1 && target.IsValidTarget(800) &&
-                        target.Health <= Me.GetAutoAttackDamage(target) * 4 + R.GetDamage(target))
                     {
                         R.CastTo(target);
                     }

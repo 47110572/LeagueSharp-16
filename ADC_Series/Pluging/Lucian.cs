@@ -10,21 +10,10 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Lucian
+    internal class Lucian : Program
     {
-        private static Spell Q;
-        private static Spell QExtend;
-        private static Spell W;
-        private static Spell E;
-        private static Spell R;
-
-        private static int CastSpellTime;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private int CastSpellTime;
+        private new readonly Menu Menu = Championmenu;
 
         public Lucian()
         {
@@ -374,10 +363,10 @@
             {
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
-                    if (Args.Target is Obj_AI_Hero)
-                    {
-                        var target = (Obj_AI_Hero) Args.Target;
+                    var target = Args.Target as Obj_AI_Hero;
 
+                    if (target != null)
+                    {
                         if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady())
                         {
                             Cast_E(target);

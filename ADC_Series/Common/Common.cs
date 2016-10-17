@@ -218,14 +218,45 @@
             }
         }
 
-        public static string[] AutoEnableList =
+        public static void OktwCast(this Spell Spells, Obj_AI_Base target, bool AOE = false)
         {
-            "Annie", "Ahri", "Akali", "Anivia", "Annie", "Brand", "Cassiopeia", "Diana", "Evelynn", "FiddleSticks", "Fizz", "Gragas", "Heimerdinger", "Karthus",
-             "Kassadin", "Katarina", "Kayle", "Kennen", "Leblanc", "Lissandra", "Lux", "Malzahar", "Mordekaiser", "Morgana", "Nidalee", "Orianna",
-             "Ryze", "Sion", "Swain", "Syndra", "Teemo", "TwistedFate", "Veigar", "Viktor", "Vladimir", "Xerath", "Ziggs", "Zyra", "Velkoz", "Azir", "Ekko",
-             "Ashe", "Caitlyn", "Corki", "Draven", "Ezreal", "Graves", "Jayce", "Jinx", "KogMaw", "Lucian", "MasterYi", "MissFortune", "Quinn", "Shaco", "Sivir",
-             "Talon", "Tristana", "Twitch", "Urgot", "Varus", "Vayne", "Yasuo", "Zed", "Kindred", "AurelionSol"
-        };
+            SebbyLib.Prediction.SkillshotType CoreType2 = SebbyLib.Prediction.SkillshotType.SkillshotLine;
+
+            if (Spells.Type == SkillshotType.SkillshotCircle)
+            {
+                CoreType2 = SebbyLib.Prediction.SkillshotType.SkillshotCircle;
+            }
+
+            var predInput2 = new SebbyLib.Prediction.PredictionInput
+            {
+                Aoe = AOE,
+                Collision = Spells.Collision,
+                Speed = Spells.Speed,
+                Delay = Spells.Delay,
+                Range = Spells.Range,
+                From = ObjectManager.Player.ServerPosition,
+                Radius = Spells.Width,
+                Unit = target,
+                Type = CoreType2
+            };
+
+            var poutput2 = SebbyLib.Prediction.Prediction.GetPrediction(predInput2);
+
+            if (Spells.Speed != float.MaxValue && YasuoWindWall.CollisionYasuo(ObjectManager.Player.ServerPosition, poutput2.CastPosition))
+            {
+                return;
+            }
+
+            if (poutput2.Hitchance >= MinOKTWHitChance)
+            {
+                Spells.Cast(poutput2.CastPosition, true);
+            }
+            else if (predInput2.Aoe && poutput2.AoeTargetsHitCount > 1 && poutput2.Hitchance >= MinOKTWHitChance - 1)
+            {
+                Spells.Cast(poutput2.CastPosition, true);
+            }
+        }
+
 
         public static bool CheckTarget(Obj_AI_Base target, float range = float.MaxValue)
         {

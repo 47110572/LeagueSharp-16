@@ -10,20 +10,10 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Kalista
+    internal class Kalista : Program
     {
-        private static Spell Q;
-        private static Spell W;
-        private static Spell E;
-        private static Spell R;
-
-        private static int lastWCast, lastECast;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private int lastWCast;
+        private int lastECast;
 
         public Kalista()
         {
@@ -153,8 +143,7 @@
                                                                          Orbwalking.InAutoAttackRange(x) &&
                                                                          x.HasBuff("kalistacoopstrikemarkally")))
                     {
-                        TargetSelector.SetTarget(enemy);
-                        return;
+                        Orbwalker.ForceTarget(enemy);
                     }
                 }
                 else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
@@ -196,10 +185,10 @@
             {
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
-                    if (Args.Target is Obj_AI_Hero)
-                    {
-                        var target = (Obj_AI_Hero)Args.Target;
+                    var target = Args.Target as Obj_AI_Hero;
 
+                    if (target != null)
+                    {
                         if (!target.IsDead && !target.IsZombie)
                         {
                             if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady())

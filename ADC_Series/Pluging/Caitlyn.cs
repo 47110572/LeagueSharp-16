@@ -11,21 +11,11 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Caitlyn
+    internal class Caitlyn : Program
     {
-        private static Spell Q;
-        private static Spell W;
-        private static Spell E;
-        private static Spell R;
-
-        private static int LastQTime;
-        private static int LastWTime;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private int LastQTime;
+        private int LastWTime;
+        private new readonly Menu Menu = Championmenu;
 
         public Caitlyn()
         {

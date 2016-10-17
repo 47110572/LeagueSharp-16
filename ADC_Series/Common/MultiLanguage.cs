@@ -1,6 +1,4 @@
-﻿using LeagueSharp;
-
-namespace Flowers_ADC_Series.Common
+﻿namespace Flowers_ADC_Series.Common
 {
     using System;
     using System.Collections.Generic;

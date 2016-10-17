@@ -10,18 +10,9 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Quinn
+    internal class Quinn : Program
     {
-        private static Spell Q;
-        private static Spell W;
-        private static Spell E;
-        private static Spell R;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private new readonly Menu Menu = Championmenu;
 
         public Quinn()
         {
@@ -136,8 +127,7 @@
                 {
                     foreach (var enemy in HeroManager.Enemies.Where(x => !x.IsDead && !x.IsZombie && HavePassive(x)))
                     {
-                        TargetSelector.SetTarget(enemy);
-                        return;
+                        Orbwalker.ForceTarget(enemy);
                     }
                 }
                 else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)

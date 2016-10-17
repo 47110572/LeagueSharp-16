@@ -48,16 +48,24 @@
         public static int BrainFarmInt = -100;
         public static int LastAttackCommandT;
         public static int LastMoveCommandT;
+
         public static bool _missileLaunched;
         public static bool DisableNextAttack;
         public static bool Attack = true;
         public static bool Move = true;
+
         public static float _minDistance = 400;
+
         public static AttackableUnit _lastTarget;
+
         public static Vector3 LastMoveCommandPosition = Vector3.Zero;
+
         public static List<Obj_AI_Base> MinionListAA = new List<Obj_AI_Base>();
+
         public static readonly Obj_AI_Hero Player;
+
         public static readonly string _championName;
+
         public static readonly Random _random = new Random(DateTime.Now.Millisecond);
 
         public static int Delay { get; private set; }
@@ -231,7 +239,8 @@
                        >= LastAATick + Player.AttackCastDelay * 1000 + extraWindup);
         }
 
-        public static void MoveTo(Vector3 position, float holdAreaRadius = 0, bool overrideTimer = false, bool useFixedDistance = true, bool randomizeMinDistance = true)
+        public static void MoveTo(Vector3 position, float holdAreaRadius = 0, bool overrideTimer = false,
+            bool useFixedDistance = true, bool randomizeMinDistance = true)
         {
             var playerPosition = Player.ServerPosition;
 
@@ -295,7 +304,8 @@
             LastMoveCommandT = Utils.GameTimeTickCount;
         }
 
-        public static void Orbwalk(AttackableUnit target, Vector3 position, float extraWindup = 90, float holdAreaRadius = 0, bool useFixedDistance = true, bool randomizeMinDistance = true)
+        public static void Orbwalk(AttackableUnit target, Vector3 position, float extraWindup = 90,
+            float holdAreaRadius = 0, bool useFixedDistance = true, bool randomizeMinDistance = true)
         {
             if (Utils.GameTimeTickCount - LastAttackCommandT < 70 + Math.Min(60, Game.Ping))
             {

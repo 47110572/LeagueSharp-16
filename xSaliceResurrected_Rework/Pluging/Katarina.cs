@@ -162,87 +162,83 @@
             {
                 if (mode == 0)
                 {
+                    var itemTarget = TargetSelector.GetTarget(750, TargetSelector.DamageType.Physical);
+
+                    if (itemTarget != null && E.IsReady())
                     {
-                        var itemTarget = TargetSelector.GetTarget(750, TargetSelector.DamageType.Physical);
+                        var dmg = GetComboDamage(itemTarget);
 
-                        if (itemTarget != null && E.IsReady())
-                        {
-                            var dmg = GetComboDamage(itemTarget);
+                        ItemManager.Target = itemTarget;
 
-                            ItemManager.Target = itemTarget;
+                        if (dmg > itemTarget.Health - 50)
+                            ItemManager.KillableTarget = true;
 
-                            if (dmg > itemTarget.Health - 50)
-                                ItemManager.KillableTarget = true;
-
-                            ItemManager.UseTargetted = true;
-                        }
+                        ItemManager.UseTargetted = true;
+                    }
 
 
-                        if (Menu.Item("UseQCombo", true).GetValue<bool>() && Q.IsReady() &&
-                            target.IsValidTarget(Q.Range))
-                        {
-                            Q.Cast(target);
-                        }
+                    if (Menu.Item("UseQCombo", true).GetValue<bool>() && Q.IsReady() &&
+                        target.IsValidTarget(Q.Range))
+                    {
+                        Q.Cast(target);
+                    }
 
-                        if (Menu.Item("UseECombo", true).GetValue<bool>() && E.IsReady() &&
-                            target.IsValidTarget(E.Range) &&
-                            Utils.TickCount - E.LastCastAttemptT > 0 &&
-                            Player.Distance(target.Position) > eDis && !Q.IsReady())
-                        {
-                            if (Menu.Item("smartE", true).GetValue<bool>() &&
-                                Player.CountEnemiesInRange(500) > 2 &&
-                                (!R.IsReady() || !(RSpell.State == SpellState.Surpressed && R.Level > 0)))
-                                return;
+                    if (Menu.Item("UseECombo", true).GetValue<bool>() && E.IsReady() &&
+                        target.IsValidTarget(E.Range) &&
+                        Utils.TickCount - E.LastCastAttemptT > 0 &&
+                        Player.Distance(target.Position) > eDis && !Q.IsReady())
+                    {
+                        if (Menu.Item("smartE", true).GetValue<bool>() &&
+                            Player.CountEnemiesInRange(500) > 2 &&
+                            (!R.IsReady() || !(RSpell.State == SpellState.Surpressed && R.Level > 0)))
+                            return;
 
-                            var delay = Menu.Item("E_Delay_Slider", true).GetValue<Slider>().Value;
+                        var delay = Menu.Item("E_Delay_Slider", true).GetValue<Slider>().Value;
 
-                            Orbwalker.SetAttack(false);
-                            Orbwalker.SetMovement(false);
-                            E.Cast(target, true);
-                            E.LastCastAttemptT = Utils.TickCount + delay;
-                        }
+                        Orbwalker.SetAttack(false);
+                        Orbwalker.SetMovement(false);
+                        E.Cast(target, true);
+                        E.LastCastAttemptT = Utils.TickCount + delay;
                     }
                 }
                 else if (mode == 1)
                 {
+                    var itemTarget = TargetSelector.GetTarget(750, TargetSelector.DamageType.Physical);
+
+                    if (itemTarget != null && E.IsReady())
                     {
-                        var itemTarget = TargetSelector.GetTarget(750, TargetSelector.DamageType.Physical);
+                        var dmg = GetComboDamage(itemTarget);
 
-                        if (itemTarget != null && E.IsReady())
-                        {
-                            var dmg = GetComboDamage(itemTarget);
+                        ItemManager.Target = itemTarget;
 
-                            ItemManager.Target = itemTarget;
+                        if (dmg > itemTarget.Health - 50)
+                            ItemManager.KillableTarget = true;
 
-                            if (dmg > itemTarget.Health - 50)
-                                ItemManager.KillableTarget = true;
+                        ItemManager.UseTargetted = true;
+                    }
 
-                            ItemManager.UseTargetted = true;
-                        }
+                    if (Menu.Item("UseECombo", true).GetValue<bool>() && E.IsReady() &&
+                        target.IsValidTarget(E.Range) &&
+                        Utils.TickCount - E.LastCastAttemptT > 0 &&
+                        Player.Distance(target.Position) > eDis)
+                    {
+                        if (Menu.Item("smartE", true).GetValue<bool>() &&
+                            Player.CountEnemiesInRange(500) > 2 &&
+                            (!R.IsReady() || !(RSpell.State == SpellState.Surpressed && R.Level > 0)))
+                            return;
 
-                        if (Menu.Item("UseECombo", true).GetValue<bool>() && E.IsReady() &&
-                            target.IsValidTarget(E.Range) &&
-                            Utils.TickCount - E.LastCastAttemptT > 0 &&
-                            Player.Distance(target.Position) > eDis)
-                        {
-                            if (Menu.Item("smartE", true).GetValue<bool>() &&
-                                Player.CountEnemiesInRange(500) > 2 &&
-                                (!R.IsReady() || !(RSpell.State == SpellState.Surpressed && R.Level > 0)))
-                                return;
+                        var delay = Menu.Item("E_Delay_Slider", true).GetValue<Slider>().Value;
 
-                            var delay = Menu.Item("E_Delay_Slider", true).GetValue<Slider>().Value;
+                        Orbwalker.SetAttack(false);
+                        Orbwalker.SetMovement(false);
+                        E.Cast(target, true);
+                        E.LastCastAttemptT = Utils.TickCount + delay;
+                    }
 
-                            Orbwalker.SetAttack(false);
-                            Orbwalker.SetMovement(false);
-                            E.Cast(target, true);
-                            E.LastCastAttemptT = Utils.TickCount + delay;
-                        }
-
-                        if (Menu.Item("UseQCombo", true).GetValue<bool>() && Q.IsReady() &&
-                            target.IsValidTarget(Q.Range))
-                        {
-                            Q.Cast(target, true);
-                        }
+                    if (Menu.Item("UseQCombo", true).GetValue<bool>() && Q.IsReady() &&
+                        target.IsValidTarget(Q.Range))
+                    {
+                        Q.Cast(target, true);
                     }
                 }
 
@@ -523,7 +519,7 @@
 
         private void CancelUlt(Obj_AI_Hero target)
         {
-            if (Player.IsChannelingImportantSpell() || Player.HasBuff("katarinarsound"))
+            if (Player.IsChannelingImportantSpell() || Player.HasBuff("katarinarsound", true))
             {
                 Player.IssueOrder(GameObjectOrder.MoveTo, target.ServerPosition);
                 R.LastCastAttemptT = 0;
@@ -542,7 +538,6 @@
                 R.LastCastAttemptT = 0;
                 Player.IssueOrder(GameObjectOrder.MoveTo, target);
             }
-
         }
 
         private void AutoW()
@@ -588,10 +583,9 @@
             }
         }
 
-        protected override void ObjAiHeroOnOnIssueOrder(Obj_AI_Base sender, GameObjectIssueOrderEventArgs args)
+        protected override void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
-            if (args.Order == GameObjectOrder.AttackUnit && Menu.Item("disableaa").GetValue<bool>() &&
-                Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (Menu.Item("disableaa").GetValue<bool>() && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 args.Process = false;
             }
@@ -639,7 +633,6 @@
                 case Orbwalking.OrbwalkingMode.CustomMode:
                     break;
                 case Orbwalking.OrbwalkingMode.Flee:
-                    Orbwalking.MoveTo(Game.CursorPos);
                     WardJumper.WardJump();
                     break;
                 default:

@@ -10,19 +10,10 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Ezreal
+    internal class Ezreal : Program
     {
-        private static Spell Q;
-        private static Spell W;
-        private static Spell E;
-        private static Spell R;
-        private static Spell EQ;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private float lastSpellCast;
+        private new readonly Menu Menu = Championmenu;
 
         public Ezreal()
         {
@@ -111,6 +102,15 @@
                     RMenu.AddItem(
                         new MenuItem("SemiR", "Semi-manual R Key", true).SetValue(new KeyBind('T', KeyBindType.Press)));
                 }
+
+                var stackMenu = MiscMenu.AddSubMenu(new Menu("Auto Stack", "Auto Stack"));
+                {
+                    stackMenu.AddItem(new MenuItem("AutoStack", "Auto Stack?", true).SetValue(true));
+                    stackMenu.AddItem(new MenuItem("AutoStackQ", "Use Q", true).SetValue(true));
+                    stackMenu.AddItem(new MenuItem("AutoStackW", "Use W", true).SetValue(true));
+                    stackMenu.AddItem(
+                        new MenuItem("AutoStackMana", "When Player ManaPercent >= x%", true).SetValue(new Slider(80)));
+                }
             }
 
             var DrawMenu = Menu.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -146,6 +146,7 @@
                 OneKeyCastR();
             }
 
+            AutoStackLogic();
             KillSteal();
             AutoRLogic();
 
@@ -164,6 +165,45 @@
                 case Orbwalking.OrbwalkingMode.LastHit:
                     LastHit();
                     break;
+            }
+        }
+
+        private void AutoStackLogic()
+        {
+            if (Me.IsRecalling())
+            {
+                return;
+            }
+
+            if (Menu.Item("AutoStack", true).GetValue<bool>() &&
+                Me.ManaPercent >= Menu.Item("AutoStackMana", true).GetValue<Slider>().Value)
+            {
+                if (Utils.TickCount - lastSpellCast < 4100)
+                {
+                    return;
+                }
+             
+                if (!Items.HasItem(3003) && !Items.HasItem(3004) && !Items.HasItem(3070))
+                {
+                    return;
+                }
+
+                if (Me.CountEnemiesInRange(1000) == 0 &&
+                    !MinionManager.GetMinions(Me.Position, Q.Range, MinionTypes.All, MinionTeam.NotAlly).Any())
+                {
+                    if (Menu.Item("AutoStackQ", true).GetValue<bool>() && Q.IsReady() &&
+                        Utils.TickCount - lastSpellCast > 4100)
+                    {
+                        Q.Cast(Game.CursorPos);
+                        lastSpellCast = Utils.TickCount;
+                    }
+                    else if (Menu.Item("AutoStackW", true).GetValue<bool>() && W.IsReady() &&
+                             Utils.TickCount - lastSpellCast > 4100)
+                    {
+                        W.Cast(Game.CursorPos);
+                        lastSpellCast = Utils.TickCount;
+                    }
+                }
             }
         }
 

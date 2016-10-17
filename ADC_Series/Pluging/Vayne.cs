@@ -10,17 +10,9 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Vayne
+    internal class Vayne : Program
     {
-        private static Spell Q;
-        private static Spell E;
-        private static Spell R;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private new readonly Menu Menu = Championmenu;
 
         public Vayne()
         {
@@ -329,11 +321,11 @@
 
                 if (Menu.Item("Forcus", true).GetValue<bool>() && CheckTarget(ForcusTarget))
                 {
-                    TargetSelector.SetTarget(ForcusTarget);
+                    Orbwalker.ForceTarget(ForcusTarget);
                 }
                 else
                 {
-                    TargetSelector.SetTarget(null);
+                    Orbwalker.ForceTarget(null);
                 }
             }
         }

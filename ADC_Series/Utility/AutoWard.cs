@@ -9,7 +9,7 @@
     using Orbwalking = Orbwalking;
     using ItemData = LeagueSharp.Common.Data.ItemData;
 
-    internal class AutoWard //This Part From SFX Utility 
+    internal class AutoWard : Program //This Part From SFX Utility 
     {
         private const float CheckInterval = 333f;
         private const float MaxRange = 600f;
@@ -17,6 +17,8 @@
 
         private static float lastCheckTime = Environment.TickCount;
         private static float lastRevealTime;
+
+        private static readonly List<ChampionObject> championObject = new List<ChampionObject>();
 
         private static readonly HashSet<SpellData> SpellList = new HashSet<SpellData>
         {
@@ -31,11 +33,7 @@
             new SpellData("Twitch", SpellSlot.Q)
         };
 
-        public static readonly List<ChampionObject> championObject = new List<ChampionObject>();
-
-        private static readonly Menu Menu = Program.Utilitymenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
+        private new static readonly Menu Menu = Utilitymenu;
 
         internal static void Init()
         {

@@ -10,25 +10,14 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Jhin
+    internal class Jhin : Program
     {
-        private static Spell Q;
-        private static Spell W;
-        private static Spell E;
-        private static Spell R;
-
-        public static int LastPingT;
-        public static int LastECast;
-        public static int LastShowNoit;
-        public static bool IsAttack;
-
-        public static Vector2 PingLocation;
-
-        private static readonly Menu Menu = Program.Championmenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
-        private static readonly Orbwalking.Orbwalker Orbwalker = Program.Orbwalker;
-
-        private static HpBarDraw HpBarDraw = new HpBarDraw();
+        private int LastPingT;
+        private int LastECast;
+        private int LastShowNoit;
+        private bool IsAttack;
+        private Vector2 PingLocation;
+        private new readonly Menu Menu = Championmenu;
 
         public Jhin()
         {

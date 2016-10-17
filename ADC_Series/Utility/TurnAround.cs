@@ -6,19 +6,18 @@
     using LeagueSharp.Common;
     using System.Collections.Generic;
 
-    internal class TurnAround //This Part From SFX Utility 
+    internal class TurnAround : Program //This Part From SFX Utility 
     {
         private static float blockMovementTime;
         private static Vector3 lastMove;
+
+        private new static readonly Menu Menu = Utilitymenu;
 
         private static readonly List<SpellInfo> spellInfos = new List<SpellInfo>
         {
             new SpellInfo("cassiopeia", "cassiopeiapetrifyinggaze", 1000f, false, true, 0.85f),
             new SpellInfo("tryndamere", "mockingshout", 900f, false, false, 0.65f)
         };
-
-        private static readonly Menu Menu = Program.Utilitymenu;
-        private static readonly Obj_AI_Hero Me = Program.Me;
 
         internal static void Init()
         {
