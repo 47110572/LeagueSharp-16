@@ -42,6 +42,9 @@
     <Reference Include="LeagueSharp.Common">
       <HintPath>D:\qMLQe\I5QEqMLQe\References\LeagueSharp.Common.dll</HintPath>
     </Reference>
+    <Reference Include="SebbyLib">
+      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\SebbyLib.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX">
       <HintPath>D:\qMLQe\I5QEqMLQe\References\SharpDX.dll</HintPath>
     </Reference>

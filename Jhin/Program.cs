@@ -384,7 +384,11 @@
                 {
                     if (Menu.Item("RMenuSemi", true).GetValue<KeyBind>().Active)
                     {
-                        R.Cast(R.GetPrediction(target).UnitPosition, true);
+                        if (R.Cast(R.GetPrediction(target).UnitPosition))
+                        {
+                            rShotTarget = target;
+                            return;
+                        }
                     }
 
                     if (!Menu.Item("RMenuAuto", true).GetValue<bool>())
@@ -412,9 +416,15 @@
                         return;
                     }
 
+                    if (SebbyLib.OktwCommon.IsSpellHeroCollision(target, R))
+                    {
+                        return;
+                    }
+
                     if (R.Cast(R.GetPrediction(target).UnitPosition))
                     {
                         rShotTarget = target;
+                        return;
                     }
                 }
 
@@ -431,6 +441,7 @@
                         {
                             AutoUse(rShotTarget);
                             R.CastTo(rShotTarget);
+                            return;
                         }
 
                         if (Menu.Item("ComboR", true).GetValue<bool>() &&
@@ -438,6 +449,7 @@
                         {
                             AutoUse(rShotTarget);
                             R.CastTo(rShotTarget);
+                            return;
                         }
 
                         if (!Menu.Item("RMenuAuto", true).GetValue<bool>())
@@ -447,10 +459,14 @@
 
                         AutoUse(rShotTarget);
                         R.CastTo(rShotTarget);
+
                     }
                     else
                     {
-                        foreach (var t in HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range) && InRCone(x)))
+                        foreach (
+                            var t in
+                            HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range) && InRCone(x))
+                                .OrderBy(x => x.Health))
                         {
                             if (!InRCone(t))
                             {
@@ -461,6 +477,7 @@
                             {
                                 AutoUse(t);
                                 R.Cast(R.GetPrediction(t).UnitPosition, true);
+                                return;
                             }
 
                             if (Menu.Item("ComboR", true).GetValue<bool>() &&
@@ -468,6 +485,7 @@
                             {
                                 AutoUse(t);
                                 R.Cast(R.GetPrediction(t).UnitPosition, true);
+                                return;
                             }
 
                             if (!Menu.Item("RMenuAuto", true).GetValue<bool>())
@@ -477,6 +495,7 @@
 
                             AutoUse(t);
                             R.Cast(R.GetPrediction(t).UnitPosition, true);
+                            return;
                         }
                     }
                 }
