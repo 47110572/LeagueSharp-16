@@ -27,8 +27,8 @@
 
         private static readonly string[] SupportList =
         {
-            "Ashe", "Caitlyn", "Corki", "Ezreal", "Graves", "Jhin", "Jinx", "Kalista", "Kindred", "KogMaw", "Lucian",
-            "Missfortune", "Quinn", "Sivir", "Tristana", "Twitch", "Urgot", "Varus", "Vayne"
+            "Ashe", "Caitlyn", "Corki", "Draven", "Ezreal", "Graves", "Jhin", "Jinx", "Kalista", "Kindred", "KogMaw",
+            "Lucian", "Missfortune", "Quinn", "Sivir", "Tristana", "Twitch", "Urgot", "Varus", "Vayne"
         };
 
         private static void Main(string[] Args)
@@ -115,9 +115,9 @@
                     case "Corki":
                         var corki = new Pluging.Corki();
                         break;
-                    //case "Draven":
-                    //    var draven = new Pluging.Draven();
-                    //    break;
+                    case "Draven":
+                        var draven = new Pluging.Draven();
+                        break;
                     case "Ezreal":
                         var ezreal = new Pluging.Ezreal();
                         break;

@@ -76,7 +76,7 @@
                 var EMenu = MiscMenu.AddSubMenu(new Menu("E Settings", "E Settings"));
                 {
                     EMenu.AddItem(new MenuItem("Anti", "Anti Gapcloser E", true).SetValue(true));
-                    EMenu.AddItem(new MenuItem("CheckECast", "   Check E Cast", true));
+                    EMenu.AddItem(new MenuItem("ShortELogic", "Smart Short E Logic", true).SetValue(true));
                     EMenu.AddItem(new MenuItem("underE", "Dont E to Enemy Turret", true).SetValue(true));
                     EMenu.AddItem(new MenuItem("ECheck", "Check Wall/ Building", true).SetValue(true));
                     EMenu.AddItem(new MenuItem("SafeCheck", "Safe Check", true).SetValue(true));
@@ -479,18 +479,18 @@
             }
 
             if (Orbwalking.InAutoAttackRange(target) &&
-                target.ServerPosition.Distance(castpos) < Orbwalking.GetAttackRange(Me))
+                target.ServerPosition.Distance(castpos) <= Orbwalking.GetRealAutoAttackRange(Me))
             {
-                E.Cast(castpos, true);
+                E.Cast(Menu.Item("ShortELogic", true).GetValue<bool>() ? castpos : maxepos, true);
             }
-            else if (!Orbwalking.InAutoAttackRange(target) && target.ServerPosition.Distance(castpos) > 
-                Orbwalking.GetAttackRange(Me))
+            else if (!Orbwalking.InAutoAttackRange(target) && target.ServerPosition.Distance(castpos) <= 
+                Orbwalking.GetRealAutoAttackRange(Me))
             {
-                E.Cast(castpos, true);
+                E.Cast(Menu.Item("ShortELogic", true).GetValue<bool>() ? castpos : maxepos, true);
             }
             else if (!Orbwalking.InAutoAttackRange(target) &&
-                     target.ServerPosition.Distance(castpos) > Orbwalking.GetAttackRange(Me) &&
-                     target.ServerPosition.Distance(maxepos) < Orbwalking.GetAttackRange(Me))
+                     target.ServerPosition.Distance(castpos) > Orbwalking.GetRealAutoAttackRange(Me) &&
+                     target.ServerPosition.Distance(maxepos) <= Orbwalking.GetRealAutoAttackRange(Me))
             {
                 E.Cast(maxepos, true);
             }

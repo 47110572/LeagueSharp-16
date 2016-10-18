@@ -350,22 +350,25 @@
 
         private void OnCreate(GameObject sender, EventArgs Args)
         {
-            var Rengar = HeroManager.Enemies.Find(heros => heros.ChampionName.Equals("Rengar"));
-            var Khazix = HeroManager.Enemies.Find(heros => heros.ChampionName.Equals("Khazix"));
-
-            if (Menu.Item("AntiRengar", true).GetValue<bool>() && Rengar != null)
+            if (R.IsReady())
             {
-                if (sender.Name == "Rengar_LeapSound.troy" && sender.Position.Distance(Me.Position) < R.Range)
+                var Rengar = HeroManager.Enemies.Find(heros => heros.ChampionName.Equals("Rengar"));
+                var Khazix = HeroManager.Enemies.Find(heros => heros.ChampionName.Equals("Khazix"));
+
+                if (Menu.Item("AntiRengar", true).GetValue<bool>() && Rengar != null)
                 {
-                    R.CastOnUnit(Rengar, true);
+                    if (sender.Name == "Rengar_LeapSound.troy" && sender.Position.Distance(Me.Position) < R.Range)
+                    {
+                        R.CastOnUnit(Rengar, true);
+                    }
                 }
-            }
 
-            if (Menu.Item("AntiKhazix", true).GetValue<bool>() && Khazix != null)
-            {
-                if (sender.Name == "Khazix_Base_E_Tar.troy" && sender.Position.Distance(Me.Position) <= 300)
+                if (Menu.Item("AntiKhazix", true).GetValue<bool>() && Khazix != null)
                 {
-                    R.CastOnUnit(Khazix, true);
+                    if (sender.Name == "Khazix_Base_E_Tar.troy" && sender.Position.Distance(Me.Position) <= 300)
+                    {
+                        R.CastOnUnit(Khazix, true);
+                    }
                 }
             }
         }

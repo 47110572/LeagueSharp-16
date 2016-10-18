@@ -35,7 +35,6 @@
                 ComboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboRTeam", "Use R|Team Fight", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboRSolo", "Use R|Solo Mode", true).SetValue(true));
-                ComboMenu.AddItem(new MenuItem("ComboRMove", "Use R|Target Cant Move", true).SetValue(true));
             }
 
             var HarassMenu = Menu.AddSubMenu(new Menu("Harass", "Harass"));
@@ -464,24 +463,17 @@
                 foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(1200) && CheckTargetSureCanKill(x)))
                 {
                     if (Menu.Item("ComboRTeam", true).GetValue<bool>() && target.IsValidTarget(600) &&
-                        Me.CountEnemiesInRange(600) >= 3 &&
-                        target.CountAlliesInRange(200) <= 2 && target.HealthPercent < 50)
+                        Me.CountEnemiesInRange(600) >= 2 &&
+                        target.CountAlliesInRange(200) <= 3 && target.HealthPercent < 50)
                     {
                         R.CastTo(target);
                     }
 
-                    if (Menu.Item("ComboRSolo", true).GetValue<bool>() && Me.CountEnemiesInRange(800) <= 2 &&
+                    if (Menu.Item("ComboRSolo", true).GetValue<bool>() && Me.CountEnemiesInRange(1500) <= 2 &&
                         target.DistanceToPlayer() > Q.Range &&
                         target.DistanceToPlayer() < bigGunRange &&
                         target.Health > Me.GetAutoAttackDamage(target) &&
                         target.Health < R.GetDamage(target) + Me.GetAutoAttackDamage(target)*3)
-                    {
-                        R.CastTo(target);
-                    }
-
-                    if (Menu.Item("ComboRMove", true).GetValue<bool>() && target.DistanceToPlayer() <= 1000 &&
-                        (!target.CanMove || target.HasBuffOfType(BuffType.Stun) ||
-                         R.GetPrediction(target).Hitchance == HitChance.Immobile))
                     {
                         R.CastTo(target);
                     }

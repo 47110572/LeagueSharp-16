@@ -388,9 +388,13 @@
                 var damage = 0d;
 
                 damage += ObjectManager.Player.GetAutoAttackDamage(target) +
-                          (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).IsReady()
-                              ? ObjectManager.Player.GetSpellDamage(target, SpellSlot.Q)
-                              : 0d) +
+                          (ObjectManager.Player.ChampionName == "Draven"
+                              ? (Pluging.Draven.AxeCount > 0
+                                  ? ObjectManager.Player.GetSpellDamage(target, SpellSlot.Q)
+                                  : 0)
+                              : (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).IsReady()
+                                  ? ObjectManager.Player.GetSpellDamage(target, SpellSlot.Q)
+                                  : 0d)) +
                           (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.W).IsReady()
                               ? ObjectManager.Player.GetSpellDamage(target, SpellSlot.W)
                               : 0d) +
@@ -630,6 +634,21 @@
         public static float DistanceToPlayer(this Vector2 position)
         {
             return ObjectManager.Player.Distance(position);
+        }
+
+        public static float DistanceToMouse(this Obj_AI_Base source)
+        {
+            return Game.CursorPos.Distance(source.Position);
+        }
+
+        public static float DistanceToMouse(this Vector3 position)
+        {
+            return position.To2D().DistanceToMouse();
+        }
+
+        public static float DistanceToMouse(this Vector2 position)
+        {
+            return Game.CursorPos.Distance(position.To3D());
         }
     }
 }
