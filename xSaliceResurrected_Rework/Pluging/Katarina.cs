@@ -36,7 +36,6 @@
                 combo.AddItem(new MenuItem("smartE", "Smart E with R CD ", true).SetValue(false));
                 combo.AddItem(new MenuItem("UseRCombo", "Use R", true).SetValue(true));
                 combo.AddItem(new MenuItem("comboMode", "Mode", true).SetValue(new StringList(new[] { "QEW", "EQW" })));
-                combo.AddItem(new MenuItem("disableaa", "Disable AA").SetValue(true));
                 Menu.AddSubMenu(combo);
             }
 
@@ -519,7 +518,7 @@
 
         private void CancelUlt(Obj_AI_Hero target)
         {
-            if (Player.IsChannelingImportantSpell() || Player.HasBuff("katarinarsound", true))
+            if (Player.IsChannelingImportantSpell() || Player.HasBuff("katarinarsound"))
             {
                 Player.IssueOrder(GameObjectOrder.MoveTo, target.ServerPosition);
                 R.LastCastAttemptT = 0;
@@ -528,7 +527,7 @@
 
         private void ShouldCancel()
         {
-            if (Player.CountEnemiesInRange(500) < 1)
+            if (!HeroManager.Enemies.Any(x => x.IsValidTarget(R.Range)))
             {
                 var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
 
@@ -580,14 +579,6 @@
             if (castedSlot == SpellSlot.R)
             {
                 R.LastCastAttemptT = Utils.TickCount;
-            }
-        }
-
-        protected override void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
-        {
-            if (Menu.Item("disableaa").GetValue<bool>() && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-            {
-                args.Process = false;
             }
         }
 
