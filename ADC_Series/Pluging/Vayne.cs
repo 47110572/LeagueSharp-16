@@ -278,7 +278,7 @@
 
                     if (minion != null)
                     {
-                        Q.Cast(minion.Position);
+                        Q.Cast(Me.CountEnemiesInRange(1000) > 0 ? Game.CursorPos : minion.Position);
                         Orbwalker.ForceTarget(minions.FirstOrDefault());
                     }
                 }
