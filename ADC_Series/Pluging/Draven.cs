@@ -96,7 +96,7 @@
                             150, 1500)));
                     qSettings.AddItem(new MenuItem("UnderTurret", "Dont Cast In Under Turret", true).SetValue(true));
                     qSettings.AddItem(new MenuItem("CheckSafe", "Check Axe Position is Safe", true).SetValue(true));
-                    qSettings.AddItem(new MenuItem("ForceCatch", "Force Catch Axe", true).SetValue(false));
+                    qSettings.AddItem(new MenuItem("MaxAxeCount", "Max Axe Count <= x", true).SetValue(new Slider(2, 1, 3)));
                 }
 
                 var wSettings = MiscMenu.AddSubMenu(new Menu("W Settings", "W Settings"));
@@ -193,7 +193,8 @@
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
-                    if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && AxeCount < 2)
+                    if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() &&
+                        AxeCount < Menu.Item("MaxAxeCount", true).GetValue<Slider>().Value)
                     {
                         var target = Args.Target as Obj_AI_Hero;
 
