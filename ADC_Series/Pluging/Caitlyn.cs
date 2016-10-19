@@ -385,8 +385,7 @@
 
                 if (CheckTarget(target, E.Range))
                 {
-                    if (target.Health >= Q.GetDamage(target) + E.GetDamage(target) &&
-                        E.GetPrediction(target).CollisionObjects.Count == 0 && E.CanCast(target))
+                    if (E.GetPrediction(target).CollisionObjects.Count == 0 && E.CanCast(target))
                     {
                         E.Cast(target);
                         Q.CastTo(target);
