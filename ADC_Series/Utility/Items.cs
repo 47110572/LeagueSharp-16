@@ -11,11 +11,12 @@
 
         public static void Init()
         {
-            var OffensiveMenu = Menu.AddSubMenu(new Menu("Items", "Items"));
+            var ItemsMenu = Menu.AddSubMenu(new Menu("Items", "Items"));
             {
-                OffensiveMenu.AddItem(new MenuItem("Youmuus", "Use Youmuu's Ghostblade", true).SetValue(true));
-                OffensiveMenu.AddItem(new MenuItem("Cutlass", "Use Bilgewater Cutlass", true).SetValue(true));
-                OffensiveMenu.AddItem(new MenuItem("Botrk", "Use Blade of the Ruined King", true).SetValue(true));
+                ItemsMenu.AddItem(new MenuItem("Youmuus", "Use Youmuu's Ghostblade", true).SetValue(true));
+                ItemsMenu.AddItem(new MenuItem("Cutlass", "Use Bilgewater Cutlass", true).SetValue(true));
+                ItemsMenu.AddItem(new MenuItem("Botrk", "Use Blade of the Ruined King", true).SetValue(true));
+                ItemsMenu.AddItem(new MenuItem("BlueTrinket", "Auto Buy Blue Trinket", true).SetValue(true));
             }
 
             Game.OnUpdate += OnUpdate;
@@ -54,6 +55,12 @@
                         LeagueSharp.Common.Items.UseItem(3153, target);
                     }
                 }
+            }
+
+            if (Menu.Item("BlueTrinket", true).GetValue<bool>() && !LeagueSharp.Common.Items.HasItem(3363) &&
+                Me.Level >= 9 && Me.InFountain())
+            {
+                Me.BuyItem(ItemId.Farsight_Orb_Trinket);
             }
         }
     }
