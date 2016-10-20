@@ -31,6 +31,8 @@
             {
                 ComboMenu.AddItem(new MenuItem("ComboQ", "Use Q", true).SetValue(true));
                 ComboMenu.AddItem(
+                    new MenuItem("ComboQCount", "Use Q| Min Hit Count >= x", true).SetValue(new Slider(2, 1, 5)));
+                ComboMenu.AddItem(
                     new MenuItem("ComboQRange", "Use Q| Min Range >= x", true).SetValue(new Slider(700, 500, 1250)));
                 ComboMenu.AddItem(new MenuItem("ComboW", "Use W", true).SetValue(true));
                 ComboMenu.AddItem(
@@ -223,6 +225,7 @@
                     target.DistanceToPlayer() >= Menu.Item("ComboQRange", true).GetValue<Slider>().Value)
                 {
                     Q.CastTo(target);
+                    Q.CastIfWillHit(target, Menu.Item("ComboQCount", true).GetValue<Slider>().Value, true);
                 }
 
                 if (Menu.Item("ComboW", true).GetValue<bool>() && W.IsReady() && target.IsValidTarget(W.Range) &&

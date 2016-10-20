@@ -7,6 +7,8 @@
 
     internal class Items : Program
     {
+        private static LeagueSharp.Common.Items.Item BlutTrinket = new LeagueSharp.Common.Items.Item(3363);
+
         private new static readonly Menu Menu = Utilitymenu;
 
         public static void Init()
@@ -57,8 +59,12 @@
                 }
             }
 
-            if (Menu.Item("BlueTrinket", true).GetValue<bool>() && !LeagueSharp.Common.Items.HasItem(3363) &&
-                Me.Level >= 9 && Me.InFountain())
+            if (!Menu.Item("BlueTrinket", true).GetValue<bool>() || !BlutTrinket.IsOwned())
+            {
+                return;
+            }
+
+            if (Me.Level >= 9 && Me.InShop())
             {
                 Me.BuyItem(ItemId.Farsight_Orb_Trinket);
             }
