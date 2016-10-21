@@ -442,6 +442,11 @@
                 !(Q.IsReady() && wTarget.IsValidTarget(Q.Range) &&
                 wTarget.Health < Me.GetSpellDamage(wTarget, SpellSlot.Q)))
             {
+                if (Orbwalker.InAutoAttackRange(wTarget) && wTarget.Health <= Me.GetAutoAttackDamage(wTarget, true))
+                {
+                    return;
+                }
+
                 W.CastTo(wTarget);
                 return;
             }

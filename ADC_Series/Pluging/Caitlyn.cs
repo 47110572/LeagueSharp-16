@@ -196,6 +196,11 @@
                     HeroManager.Enemies.Where(
                         x => x.IsValidTarget(Q.Range) && CheckTargetSureCanKill(x) && x.Health < Q.GetDamage(x)))
                 {
+                    if (Orbwalker.InAutoAttackRange(target) && target.Health <= Me.GetAutoAttackDamage(target, true))
+                    {
+                        continue;
+                    }
+
                     Q.CastTo(target);
                 }
             }

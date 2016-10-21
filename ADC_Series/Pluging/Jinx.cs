@@ -356,6 +356,11 @@
             {
                 foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(W.Range) && x.Health < W.GetDamage(x)))
                 {
+                    if (Orbwalker.InAutoAttackRange(target) && target.Health <= Me.GetAutoAttackDamage(target, true))
+                    {
+                        continue;
+                    }
+
                     W.CastTo(target);
                     return;
                 }
