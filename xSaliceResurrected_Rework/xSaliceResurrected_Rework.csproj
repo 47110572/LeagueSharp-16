@@ -65,6 +65,7 @@
     <Compile Include="Base\Champion.cs" />
     <Compile Include="Pluging\Chogath.cs" />
     <Compile Include="Pluging\Katarina.cs" />
+    <Compile Include="Utilities\CommonPredEx.cs" />
     <Compile Include="Utilities\Initiator.cs" />
     <Compile Include="Pluging\Zyra.cs" />
     <Compile Include="Pluging\Irelia.cs" />
@@ -72,12 +73,6 @@
     <Compile Include="Pluging\Rumble.cs" />
     <Compile Include="Pluging\Vladimir.cs" />
     <Compile Include="Managers\SummonerManager.cs" />
-    <Compile Include="Prediction\PredictionCommon.cs" />
-    <Compile Include="Prediction\CommonPredEx.cs" />
-    <Compile Include="Prediction\OKTWPrediction.cs" />
-    <Compile Include="Prediction\SDKPrediction.cs" />
-    <Compile Include="Prediction\xcsoftPrediction.cs" />
-    <Compile Include="Prediction\YasuoWindWall.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

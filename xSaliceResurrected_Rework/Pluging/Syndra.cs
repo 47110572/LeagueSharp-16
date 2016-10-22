@@ -290,12 +290,11 @@
                 var wTarget = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Magical);
 
                 var grabbableObj = Get_Nearest_orb();
-                var wToggleState = Player.Spellbook.GetSpell(SpellSlot.W).ToggleState;
 
                 if (wTarget == null)
                     return;
 
-                if (grabbableObj != null && wToggleState == 1)
+                if (grabbableObj != null && !W.Instance.Name.ToLower().Contains("cast"))
                 {
                     if (Utils.TickCount - W.LastCastAttemptT > Game.Ping && W.IsReady())
                     {
@@ -308,7 +307,7 @@
                     }
                 }
 
-                if (wToggleState != 1 && Get_Current_Orb() != null)
+                if (W.Instance.Name.ToLower().Contains("cast") && Get_Current_Orb() != null)
                 {
                     W.From = Get_Current_Orb().ServerPosition;
                     var pred = W.GetPrediction(wTarget);

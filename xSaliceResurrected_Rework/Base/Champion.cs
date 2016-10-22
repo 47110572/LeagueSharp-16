@@ -47,9 +47,8 @@
 
         private void GameOnLoad()
         {
-            Game.PrintChat("<font color = \"#FFB6C1\">xSalice's Ressurected AIO</font> by <font color = \"#00FFFF\">xSalice</font>, imsosharp Fix, NightMoon Rework!");
-            Game.PrintChat("---------------------------------");
-            Game.PrintChat("Change Log: Rewrite Done! Now just need to fix the question.(Prediction Change in Next Update)");
+            Game.PrintChat(
+                "<font color = \"#FFB6C1\">xSalice's Ressurected AIO</font> by <font color = \"#00FFFF\">xSalice</font>, imsosharp Update, NightMoon Rework!");
 
             Menu = new Menu("xSalice's " + Player.ChampionName, Player.ChampionName, true);
 

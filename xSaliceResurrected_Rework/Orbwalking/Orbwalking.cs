@@ -1164,11 +1164,19 @@
                         return;
                     }
 
+                    if (ObjectManager.Player.Buffs.Any(x => x.Name.ToLower().Contains("katarinar")) ||
+                        Player.IsChannelingImportantSpell())
+                    {
+                        return;
+                    }
+
                     Move = Menu.Item("EnableOrbwalker").GetValue<bool>();
 
                     var target = GetTarget();
 
-                    Orbwalk(target, _orbwalkingPoint.To2D().IsValid() ? _orbwalkingPoint : Game.CursorPos, Menu.Item("ExtraWindup").GetValue<Slider>().Value, Math.Max(Menu.Item("HoldPosRadius").GetValue<Slider>().Value, 30));
+                    Orbwalk(target, _orbwalkingPoint.To2D().IsValid() ? _orbwalkingPoint : Game.CursorPos,
+                        Menu.Item("ExtraWindup").GetValue<Slider>().Value,
+                        Math.Max(Menu.Item("HoldPosRadius").GetValue<Slider>().Value, 30));
                 }
                 catch (Exception e)
                 {

@@ -148,6 +148,12 @@
 
         private void Combo()
         {
+            if (ObjectManager.Player.Buffs.Any(x => x.Name.ToLower().Contains("katarinar")) ||
+                Player.IsChannelingImportantSpell())
+            {
+                return;
+            }
+
             var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
 
             var mode = Menu.Item("comboMode", true).GetValue<StringList>().SelectedIndex;
@@ -262,6 +268,12 @@
 
         private void Harass()
         {
+            if (ObjectManager.Player.Buffs.Any(x => x.Name.ToLower().Contains("katarinar")) ||
+                Player.IsChannelingImportantSpell())
+            {
+                return;
+            }
+
             var qTarget = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
             var wTarget = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Magical);
             var eTarget = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
@@ -313,6 +325,11 @@
 
         private void LastHit()
         {
+            if (ObjectManager.Player.Buffs.Any(x => x.Name.ToLower().Contains("katarinar")) ||
+                Player.IsChannelingImportantSpell())
+            {
+                return;
+            }
             var allMinions = MinionManager.GetMinions(Player.ServerPosition, Q.Range, MinionTypes.All,
                 MinionTeam.NotAlly);
 
@@ -352,6 +369,11 @@
 
         private void Farm()
         {
+            if (ObjectManager.Player.Buffs.Any(x => x.Name.ToLower().Contains("katarinar")) ||
+                Player.IsChannelingImportantSpell())
+            {
+                return;
+            }
             var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range,
                 MinionTypes.All, MinionTeam.NotAlly);
             var allMinionsE = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, E.Range,
@@ -388,6 +410,11 @@
         }
         private void JungleFarm()
         {
+            if (ObjectManager.Player.Buffs.Any(x => x.Name.ToLower().Contains("katarinar")) ||
+                Player.IsChannelingImportantSpell())
+            {
+                return;
+            }
             var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range,
                 MinionTypes.All, MinionTeam.Neutral);
             var allMinionsW = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range,
@@ -413,8 +440,11 @@
             if (!Menu.Item("smartKS", true).GetValue<bool>())
                 return;
 
-            if (Menu.Item("rCancel", true).GetValue<bool>() && Player.CountEnemiesInRange(570) > 1)
+            if (Menu.Item("rCancel", true).GetValue<bool>() &&
+                HeroManager.Enemies.Any(x => !x.IsDead && !x.IsZombie && x.IsValidTarget(500)))
+            {
                 return;
+            }
 
             foreach (var target in HeroManager.Enemies.Where(
                 x => x.IsValidTarget(1375) && !x.HasBuffOfType(BuffType.Invulnerability))
@@ -518,25 +548,26 @@
 
         private void CancelUlt(Obj_AI_Hero target)
         {
-            if (Player.IsChannelingImportantSpell() || Player.HasBuff("katarinarsound"))
+            if (ObjectManager.Player.Buffs.Any(x => x.Name.ToLower().Contains("katarinar")) ||
+                Player.IsChannelingImportantSpell())
             {
                 Player.IssueOrder(GameObjectOrder.MoveTo, target.ServerPosition);
-                R.LastCastAttemptT = 0;
             }
         }
 
         private void ShouldCancel()
         {
-            if (!HeroManager.Enemies.Any(x => x.IsValidTarget(R.Range)))
+            if (HeroManager.Enemies.Any(x => !x.IsDead && !x.IsZombie && x.IsValidTarget(500)))
             {
-                var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
-
-                if (target == null)
-                    return;
-
-                R.LastCastAttemptT = 0;
-                Player.IssueOrder(GameObjectOrder.MoveTo, target);
+                return;
             }
+
+            var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
+
+            if (!target.IsValidTarget())
+                return;
+
+            Player.IssueOrder(GameObjectOrder.MoveTo, target);
         }
 
         private void AutoW()
@@ -558,16 +589,16 @@
             return Utils.TickCount - Q.LastCastAttemptT > 350 || !Menu.Item("waitQ", true).GetValue<bool>();
         }
 
+        protected override void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        {
+            if (!args.Unit.IsMe)
+                args.Process = !ObjectManager.Player.HasBuff("KatarinaR");
+        }
+
         protected override void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base unit, GameObjectProcessSpellCastEventArgs args)
         {
             if (!unit.IsMe)
                 return;
-
-            if (args.SData.Name == "KatarinaR")
-            {
-                Orbwalker.SetAttack(false);
-                Orbwalker.SetMovement(false);
-            }
 
             var castedSlot = ObjectManager.Player.GetSpellSlot(args.SData.Name);
 
@@ -575,18 +606,14 @@
             {
                 Q.LastCastAttemptT = Utils.TickCount;
             }
-
-            if (castedSlot == SpellSlot.R)
-            {
-                R.LastCastAttemptT = Utils.TickCount;
-            }
         }
 
         protected override void Game_OnGameUpdate(EventArgs args)
         {
             SmartKs();
 
-            if (Player.IsChannelingImportantSpell() || Player.HasBuff("KatarinaR"))
+            if (ObjectManager.Player.Buffs.Any(x => x.Name.ToLower().Contains("katarinar")) ||
+                Player.IsChannelingImportantSpell())
             {
                 Orbwalker.SetAttack(false);
                 Orbwalker.SetMovement(false);
@@ -619,15 +646,9 @@
                     if (Menu.Item("autoWz", true).GetValue<bool>())
                         AutoW();
                     break;
-                case Orbwalking.OrbwalkingMode.Freeze:
-                    break;
-                case Orbwalking.OrbwalkingMode.CustomMode:
-                    break;
                 case Orbwalking.OrbwalkingMode.Flee:
                     WardJumper.WardJump();
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 
