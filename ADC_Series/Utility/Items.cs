@@ -58,12 +58,12 @@
                 }
             }
 
-            if (!Menu.Item("BlueTrinket", true).GetValue<bool>() || !BlutTrinket.IsOwned())
+            if (!Menu.Item("BlueTrinket", true).GetValue<bool>())
             {
                 return;
             }
 
-            if (Me.Level >= 9 && Me.InShop())
+            if (Me.Level >= 9 && Me.InFountain() && !BlutTrinket.IsOwned())
             {
                 Me.BuyItem(ItemId.Farsight_Orb_Trinket);
             }
