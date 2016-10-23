@@ -361,6 +361,11 @@
         {
             if (sender.IsMe && Orbwalking.IsAutoAttack(Args.SData.Name))
             {
+                if (Args.Target is Obj_LampBulb)
+                {
+                    return;
+                }
+
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
                     var target = Args.Target as Obj_AI_Hero;

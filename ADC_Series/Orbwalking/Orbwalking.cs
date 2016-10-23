@@ -512,7 +512,7 @@
                 var priorizeMenu = _config.AddSubMenu(new Menu("Priorize", "Priorize"));
                 {
                     priorizeMenu.AddItem(new MenuItem("PriorizeFarm", "Priorize farm over harass").SetValue(true));
-                    priorizeMenu.AddItem(new MenuItem("AttackWards", "Auto attack wards").SetValue(false));
+                    priorizeMenu.AddItem(new MenuItem("AttackWards", "Auto attack wards").SetValue(true));
                     priorizeMenu.AddItem(new MenuItem("AttackPetsnTraps", "Auto attack pets & traps").SetValue(true));
                     priorizeMenu.AddItem(new MenuItem("AttackGPBarrel", "Auto attack gangplank barrel").SetValue(true));
                     priorizeMenu.AddItem(new MenuItem("Smallminionsprio", "Jungle clear small first").SetValue(false));

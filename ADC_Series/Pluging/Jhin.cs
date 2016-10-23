@@ -179,6 +179,11 @@
                 return;
             }
 
+            if (Args.Target is Obj_LampBulb)
+            {
+                return;
+            }
+
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
