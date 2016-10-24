@@ -14,6 +14,7 @@
     {
         private int lastWCast;
         private int lastECast;
+        private new readonly Menu Menu = Championmenu;
 
         public Kalista()
         {

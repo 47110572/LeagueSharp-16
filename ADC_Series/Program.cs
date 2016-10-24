@@ -69,6 +69,7 @@
                     EnabledMenu.AddItem(new MenuItem("Inject SkinChange", "Inject SkinChange").SetValue(true));
                     EnabledMenu.AddItem(new MenuItem("Inject Items", "Inject Items").SetValue(true));
                     EnabledMenu.AddItem(new MenuItem("Inject Cleanese", "Inject Cleanese").SetValue(true));
+                    EnabledMenu.AddItem(new MenuItem("Inject Humanizer", "Inject Humanizer").SetValue(true));
                 }
 
                 if (Menu.Item("Inject AutoLevels").GetValue<bool>())
@@ -99,6 +100,11 @@
                 if (Menu.Item("Inject Cleanese").GetValue<bool>())
                 {
                     Utility.Cleaness.Init();
+                }
+
+                if (Menu.Item("Inject Humanizer").GetValue<bool>())
+                {
+                    Utility.Humanizer.Init();
                 }
             }
 

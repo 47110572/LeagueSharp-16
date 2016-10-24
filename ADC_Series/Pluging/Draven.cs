@@ -13,9 +13,9 @@
 
     internal class Draven : Program
     {
-        private readonly Random random = new Random();
         private new readonly Menu Menu = Championmenu;
         private static readonly List<AllAxe> AxeList = new List<AllAxe>();
+        private static int CatchTime;
 
         public static int AxeCount => (Me.HasBuff("dravenspinning") ? 1 : 0)
                                       + (Me.HasBuff("dravenspinningleft") ? 1 : 0) + AxeList.Count;
@@ -97,6 +97,14 @@
                     qSettings.AddItem(new MenuItem("UnderTurret", "Dont Cast In Under Turret", true).SetValue(true));
                     qSettings.AddItem(new MenuItem("CheckSafe", "Check Axe Position is Safe", true).SetValue(true));
                     qSettings.AddItem(new MenuItem("MaxAxeCount", "Max Axe Count <= x", true).SetValue(new Slider(2, 1, 3)));
+                    qSettings.AddItem(new MenuItem("EnableControl", "Enable Cancel Catch Axe Key?", true).SetValue(false));
+                    qSettings.AddItem(
+                            new MenuItem("ControlKey", "Cancel Key", true).SetValue(new KeyBind('G', KeyBindType.Press)))
+                        .ValueChanged += CatchTimeValueChange;
+                    qSettings.AddItem(
+                        new MenuItem("ControlKey2", "Or Right Click?", true).SetValue(true));
+                    qSettings.AddItem(
+                        new MenuItem("ControlKey3", "Or Mouse Scroll?", true).SetValue(true));
                 }
 
                 var wSettings = MiscMenu.AddSubMenu(new Menu("W Settings", "W Settings"));
@@ -142,6 +150,7 @@
                 DrawMenu.AddItem(new MenuItem("DrawDamage", "Draw ComboDamage", true).SetValue(true));
             }
 
+            Game.OnWndProc += OnWndProc;
             Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
             AntiGapcloser.OnEnemyGapcloser += OnEnemyGapcloser;
             Interrupter2.OnInterruptableTarget += OnInterruptableTarget;
@@ -150,6 +159,39 @@
             GameObject.OnCreate += OnCreate;
             GameObject.OnDelete += OnDelete;
             Drawing.OnDraw += OnDraw;
+        }
+
+        private void OnWndProc(WndEventArgs Args)
+        {
+            if (Menu.Item("EnableControl", true).GetValue<bool>())
+            {
+                if (Menu.Item("ControlKey2", true).GetValue<bool>())
+                {
+                    if (Utils.TickCount - CatchTime > 1800)
+                    {
+                        CatchTime = Utils.TickCount;
+                    }
+                }
+
+                if (Menu.Item("ControlKey3", true).GetValue<bool>())
+                {
+                    if (Utils.TickCount - CatchTime > 1800)
+                    {
+                        CatchTime = Utils.TickCount;
+                    }
+                }
+            }
+        }
+
+        private void CatchTimeValueChange(object obj, OnValueChangeEventArgs Args)
+        {
+            if (Menu.Item("EnableControl", true).GetValue<bool>() && Args.GetNewValue<KeyBind>().Active)
+            {
+                if (Utils.TickCount - CatchTime > 1800)
+                {
+                    CatchTime = Utils.TickCount;
+                }
+            }
         }
 
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
@@ -270,6 +312,11 @@
                  Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo))
             {
                 return;
+            }
+
+            if (Utils.TickCount - CatchTime < 1800)
+            {
+                return;   
             }
 
             var catchRange = Menu.Item("CatchRange", true).GetValue<Slider>().Value;
