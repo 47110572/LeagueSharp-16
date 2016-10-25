@@ -34,21 +34,6 @@
             Game.OnUpdate += OnUpdate;
         }
 
-        //private static void Drawing_OnDraw(EventArgs args)
-        //{
-        //    Drawing.DrawText(Me.HPBarPosition.X + 100, Me.HPBarPosition.Y + 100, System.Drawing.Color.Red,
-        //        "Move: " + Move().ToString());
-
-        //    Drawing.DrawText(Me.HPBarPosition.X + 150, Me.HPBarPosition.Y + 150, System.Drawing.Color.Red,
-        //        "TickCount: " + Utils.TickCount.ToString());
-
-        //    Drawing.DrawText(Me.HPBarPosition.X + 200, Me.HPBarPosition.Y + 200, System.Drawing.Color.Red,
-        //        "allTime: " + allTime.ToString());
-
-        //    Drawing.DrawText(Me.HPBarPosition.X + 250, Me.HPBarPosition.Y + 250, System.Drawing.Color.Red,
-        //        "randomTime: " + randomTime.ToString());
-        //}
-
         private static void OnUpdate(EventArgs Args)
         {
             if (!Menu.Item("EnableHumanizer", true).GetValue<bool>())
@@ -56,8 +41,15 @@
                 return;
             }
 
-            if (Me.ChampionName == "Draven" || Me.ChampionName == "Jhin" || Me.ChampionName == "Kalista")
+            if (Me.ChampionName == "Jhin")
             {
+                Orbwalker.SetMovement(Me.Spellbook.GetSpell(SpellSlot.R).Name != "JhinRShot");
+                return;
+            }
+
+            if (Me.ChampionName == "Draven" || Me.ChampionName == "Kalista")
+            {
+                Orbwalker.SetMovement(true);
                 return;
             }
 

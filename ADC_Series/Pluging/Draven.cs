@@ -223,7 +223,7 @@
         {
             if (Menu.Item("Interrupt").GetValue<bool>() && E.IsReady())
             {
-                if (Args.DangerLevel >= Interrupter2.DangerLevel.High && sender.IsValidTarget(E.Range))
+                if (Args.DangerLevel >= Interrupter2.DangerLevel.Medium && sender.IsValidTarget(E.Range))
                 {
                     E.Cast(sender);
                 }
@@ -314,11 +314,6 @@
                 return;
             }
 
-            if (Utils.TickCount - CatchTime < 1800)
-            {
-                return;   
-            }
-
             var catchRange = Menu.Item("CatchRange", true).GetValue<Slider>().Value;
 
             var bestAxe =
@@ -357,13 +352,16 @@
 
                 if (bestAxe.Axe.Position.DistanceToPlayer() > 100)
                 {
-                    if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.None)
+                    if (Utils.TickCount - CatchTime > 1800)
                     {
-                        Orbwalker.SetOrbwalkingPoint(bestAxe.Axe.Position);
-                    }
-                    else
-                    {
-                        Me.IssueOrder(GameObjectOrder.MoveTo, bestAxe.Axe.Position);
+                        if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.None)
+                        {
+                            Orbwalker.SetOrbwalkingPoint(bestAxe.Axe.Position);
+                        }
+                        else
+                        {
+                            Me.IssueOrder(GameObjectOrder.MoveTo, bestAxe.Axe.Position);
+                        }
                     }
                 }
                 else
