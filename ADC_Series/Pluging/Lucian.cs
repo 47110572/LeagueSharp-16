@@ -195,7 +195,7 @@
             {
                 var target = TargetSelector.GetTarget(975f, TargetSelector.DamageType.Physical);
 
-                if (target.IsValidTarget(975f) && !Orbwalker.InAutoAttackRange(target))
+                if (target.IsValidTarget(975f) && target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me))
                 {
                     Cast_E(target, true);
                 }
@@ -462,42 +462,87 @@
 
         private void Cast_E(Obj_AI_Hero target, bool FirstE = false)
         {
-            var castpos = Me.ServerPosition.Extend(FirstE ? target.ServerPosition : Game.CursorPos, 220);
-            var maxepos = Me.ServerPosition.Extend(FirstE ? target.ServerPosition : Game.CursorPos, E.Range);
+            if (FirstE)
+            {
+                var castpos = Me.ServerPosition.Extend(target.ServerPosition, 220);
+                var maxepos = Me.ServerPosition.Extend(target.ServerPosition, E.Range);
 
-            if (castpos.UnderTurret(true) && Menu.Item("underE", true).GetValue<bool>())
-            {
-                return;
-            }
+                if ((castpos.UnderTurret(true) || maxepos.UnderTurret(true)) && Menu.Item("underE", true).GetValue<bool>())
+                {
+                    return;
+                }
 
-            if ((NavMesh.GetCollisionFlags(castpos).HasFlag(CollisionFlags.Wall) ||
-                NavMesh.GetCollisionFlags(castpos).HasFlag(CollisionFlags.Building)) &&
-                Menu.Item("ECheck", true).GetValue<bool>())
-            {
-                return;
-            }
+                if ((NavMesh.GetCollisionFlags(castpos).HasFlag(CollisionFlags.Wall) ||
+                     NavMesh.GetCollisionFlags(castpos).HasFlag(CollisionFlags.Building) &&
+                     (NavMesh.GetCollisionFlags(maxepos).HasFlag(CollisionFlags.Wall) ||
+                      NavMesh.GetCollisionFlags(maxepos).HasFlag(CollisionFlags.Building))) &&
+                    Menu.Item("ECheck", true).GetValue<bool>())
+                {
+                    return;
+                }
 
-            if (castpos.CountEnemiesInRange(500) >= 3 && castpos.CountAlliesInRange(400) < 3 &&
-                Menu.Item("SafeCheck", true).GetValue<bool>())
-            {
-                return;
-            }
+                if (castpos.CountEnemiesInRange(500) >= 3 && castpos.CountAlliesInRange(400) < 3 &&
+                    Menu.Item("SafeCheck", true).GetValue<bool>())
+                {
+                    return;
+                }
 
-            if (Orbwalking.InAutoAttackRange(target) &&
-                target.ServerPosition.Distance(castpos) <= Orbwalking.GetRealAutoAttackRange(Me))
-            {
-                E.Cast(Menu.Item("ShortELogic", true).GetValue<bool>() ? castpos : maxepos, true);
+                if (((castpos.CountEnemiesInRange(500) >= 3 && castpos.CountAlliesInRange(400) < 3) ||
+                     (maxepos.CountEnemiesInRange(500) >= 3 && maxepos.CountAlliesInRange(400) < 3)) &&
+                    Menu.Item("SafeCheck", true).GetValue<bool>())
+                {
+                    return;
+                }
+
+                if (!Orbwalking.InAutoAttackRange(target) &&
+                         target.ServerPosition.Distance(castpos) > Orbwalking.GetRealAutoAttackRange(Me) &&
+                         target.ServerPosition.Distance(maxepos) <= Orbwalking.GetRealAutoAttackRange(Me))
+                {
+                    E.Cast(maxepos, true);
+                }
             }
-            else if (!Orbwalking.InAutoAttackRange(target) && target.ServerPosition.Distance(castpos) <= 
-                Orbwalking.GetRealAutoAttackRange(Me))
+            else
             {
-                E.Cast(Menu.Item("ShortELogic", true).GetValue<bool>() ? castpos : maxepos, true);
-            }
-            else if (!Orbwalking.InAutoAttackRange(target) &&
-                     target.ServerPosition.Distance(castpos) > Orbwalking.GetRealAutoAttackRange(Me) &&
-                     target.ServerPosition.Distance(maxepos) <= Orbwalking.GetRealAutoAttackRange(Me))
-            {
-                E.Cast(maxepos, true);
+                var castpos = Me.ServerPosition.Extend(Game.CursorPos, 220);
+                var maxepos = Me.ServerPosition.Extend(Game.CursorPos, E.Range);
+
+                if ((castpos.UnderTurret(true) || maxepos.UnderTurret(true)) && Menu.Item("underE", true).GetValue<bool>())
+                {
+                    return;
+                }
+
+                if ((NavMesh.GetCollisionFlags(castpos).HasFlag(CollisionFlags.Wall) ||
+                     NavMesh.GetCollisionFlags(castpos).HasFlag(CollisionFlags.Building) &&
+                     (NavMesh.GetCollisionFlags(maxepos).HasFlag(CollisionFlags.Wall) ||
+                      NavMesh.GetCollisionFlags(maxepos).HasFlag(CollisionFlags.Building))) &&
+                    Menu.Item("ECheck", true).GetValue<bool>())
+                {
+                    return;
+                }
+
+                if (((castpos.CountEnemiesInRange(500) >= 3 && castpos.CountAlliesInRange(400) < 3) ||
+                     (maxepos.CountEnemiesInRange(500) >= 3 && maxepos.CountAlliesInRange(400) < 3)) &&
+                    Menu.Item("SafeCheck", true).GetValue<bool>())
+                {
+                    return;
+                }
+
+                if (Orbwalking.InAutoAttackRange(target) &&
+                    target.ServerPosition.Distance(castpos) <= Orbwalking.GetRealAutoAttackRange(Me))
+                {
+                    E.Cast(Menu.Item("ShortELogic", true).GetValue<bool>() ? castpos : maxepos, true);
+                }
+                else if (!Orbwalking.InAutoAttackRange(target) && target.ServerPosition.Distance(castpos) <=
+                    Orbwalking.GetRealAutoAttackRange(Me))
+                {
+                    E.Cast(Menu.Item("ShortELogic", true).GetValue<bool>() ? castpos : maxepos, true);
+                }
+                else if (!Orbwalking.InAutoAttackRange(target) &&
+                         target.ServerPosition.Distance(castpos) > Orbwalking.GetRealAutoAttackRange(Me) &&
+                         target.ServerPosition.Distance(maxepos) <= Orbwalking.GetRealAutoAttackRange(Me))
+                {
+                    E.Cast(maxepos, true);
+                }
             }
         }
     }

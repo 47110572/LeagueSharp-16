@@ -363,6 +363,13 @@
                             Me.IssueOrder(GameObjectOrder.MoveTo, bestAxe.Axe.Position);
                         }
                     }
+                    else
+                    {
+                        if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.None)
+                        {
+                            Orbwalker.SetOrbwalkingPoint(Game.CursorPos);
+                        }
+                    }
                 }
                 else
                 {

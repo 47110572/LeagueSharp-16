@@ -13,7 +13,6 @@
 
     internal class MissFortune : Program
     {
-        private static int lastRCast;
         private new readonly Menu Menu = Championmenu;
 
         public MissFortune()
@@ -86,21 +85,9 @@
                 DrawMenu.AddItem(new MenuItem("DrawDamage", "Draw ComboDamage", true).SetValue(true));
             }
 
-            Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
             Obj_AI_Base.OnDoCast += OnDoCast;
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += OnDraw;
-        }
-
-        private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
-        {
-            if (sender.IsMe)
-            {
-                if (Args.SData.Name.ToLower().Contains("missfortunebullettime"))
-                {
-                    lastRCast = Utils.TickCount;
-                }
-            }
         }
 
         private void OnDoCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
@@ -160,7 +147,7 @@
                 return;
             }
 
-            if (Me.HasBuff("missfortunebulletsound") || Me.IsCastingInterruptableSpell() || Utils.TickCount - lastRCast < 6000)
+            if (Me.HasBuff("missfortunebulletsound") || Me.IsCastingInterruptableSpell())
             {
                 Orbwalker.SetAttack(false);
                 Orbwalker.SetMovement(false);
