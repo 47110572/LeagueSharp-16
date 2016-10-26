@@ -18,7 +18,7 @@
         private static float lastCheckTime = Environment.TickCount;
         private static float lastRevealTime;
 
-        private static readonly List<ChampionObject> championObject = new List<ChampionObject>();
+        public static readonly List<ChampionObject> championObject = new List<ChampionObject>();
 
         private static readonly HashSet<SpellData> SpellList = new HashSet<SpellData>
         {
