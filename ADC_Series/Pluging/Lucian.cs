@@ -374,7 +374,7 @@
                     {
                         if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady())
                         {
-                            Cast_E(target);
+                            Cast_E(target, false);
                         }
                         else if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady())
                         {
@@ -460,35 +460,26 @@
             }
         }
 
-        private void Cast_E(Obj_AI_Hero target, bool FirstE = false)
+        private void Cast_E(Obj_AI_Hero target, bool FirstE)
         {
             if (FirstE)
             {
                 var castpos = Me.ServerPosition.Extend(target.ServerPosition, 220);
                 var maxepos = Me.ServerPosition.Extend(target.ServerPosition, E.Range);
 
-                if ((castpos.UnderTurret(true) || maxepos.UnderTurret(true)) && Menu.Item("underE", true).GetValue<bool>())
+                if (maxepos.UnderTurret(true) && Menu.Item("underE", true).GetValue<bool>())
                 {
                     return;
                 }
 
-                if ((NavMesh.GetCollisionFlags(castpos).HasFlag(CollisionFlags.Wall) ||
-                     NavMesh.GetCollisionFlags(castpos).HasFlag(CollisionFlags.Building) &&
-                     (NavMesh.GetCollisionFlags(maxepos).HasFlag(CollisionFlags.Wall) ||
-                      NavMesh.GetCollisionFlags(maxepos).HasFlag(CollisionFlags.Building))) &&
+                if (NavMesh.GetCollisionFlags(maxepos).HasFlag(CollisionFlags.Wall) ||
+                      NavMesh.GetCollisionFlags(maxepos).HasFlag(CollisionFlags.Building) &&
                     Menu.Item("ECheck", true).GetValue<bool>())
                 {
                     return;
                 }
 
-                if (castpos.CountEnemiesInRange(500) >= 3 && castpos.CountAlliesInRange(400) < 3 &&
-                    Menu.Item("SafeCheck", true).GetValue<bool>())
-                {
-                    return;
-                }
-
-                if (((castpos.CountEnemiesInRange(500) >= 3 && castpos.CountAlliesInRange(400) < 3) ||
-                     (maxepos.CountEnemiesInRange(500) >= 3 && maxepos.CountAlliesInRange(400) < 3)) &&
+                if (maxepos.CountEnemiesInRange(500) >= 3 && maxepos.CountAlliesInRange(400) < 3 &&
                     Menu.Item("SafeCheck", true).GetValue<bool>())
                 {
                     return;

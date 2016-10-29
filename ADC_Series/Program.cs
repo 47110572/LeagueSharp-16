@@ -189,8 +189,8 @@
             }
 
             Game.PrintChat("Flowers' ADC Series: " + Me.ChampionName + (SupportList.Contains(Me.ChampionName)
-                               ? " Load!"
-                               : " Not Support!") + " Credit: NightMoon");
+                               ? " Load! Credit: NightMoon"
+                               : " Not Support!"));
         }
     }
 }

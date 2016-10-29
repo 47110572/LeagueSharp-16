@@ -7,6 +7,9 @@
 
     public class Champion : SpellBase
     {
+        public static Menu Menu;
+        public static xSaliceResurrected_Rework.Orbwalking.Orbwalker Orbwalker;
+
         protected readonly Obj_AI_Hero Player = ObjectManager.Player;
 
         protected Champion()
@@ -39,11 +42,10 @@
         public Champion(bool load)
         {
             if (load)
+            {
                 GameOnLoad();
+            }
         }
-
-        public static xSaliceResurrected_Rework.Orbwalking.Orbwalker Orbwalker;
-        public static Menu Menu;
 
         private void GameOnLoad()
         {
@@ -58,16 +60,6 @@
             var itemMenu = new Menu("Activator", "Items");
             ItemManager.AddToMenu(itemMenu);
             Menu.AddSubMenu(itemMenu);
-
-            var predMenu = new Menu("Prediction", "Prediction");
-            predMenu.AddItem(new MenuItem("(Now Not Work)", "Now Not Work!!!!!"));
-            predMenu.AddItem(new MenuItem("SelectPred", "Select Prediction: ", true).SetValue(new StringList(new[] { "Common Prediction", "OKTW Prediction", "SDK Prediction", "SPrediction(Need F5 Reload)", "xcsoft AIO Prediction" }, 1)));
-            predMenu.AddItem(new MenuItem("AboutCommonPred", "Common Prediction -> LeagueSharp.Commmon Prediction"));
-            predMenu.AddItem(new MenuItem("AboutOKTWPred", "OKTW Prediction -> Sebby' Prediction"));
-            predMenu.AddItem(new MenuItem("AboutSDKPred", "SDK Prediction -> LeagueSharp.SDKEx Prediction"));
-            predMenu.AddItem(new MenuItem("AboutSPred", "SPrediction -> Shine' Prediction"));
-            predMenu.AddItem(new MenuItem("AboutxcsoftAIOPred", "xcsoft AIO Prediction -> xcsoft ALL In One Prediction"));
-            Menu.AddSubMenu(predMenu);
 
             Menu.AddToMainMenu();
 
