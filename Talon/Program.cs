@@ -79,6 +79,8 @@
                 HarassMenu.AddItem(new MenuItem("HarassQ", "Use Q", true).SetValue(true));
                 HarassMenu.AddItem(new MenuItem("HarassW", "Use W", true).SetValue(true));
                 HarassMenu.AddItem(new MenuItem("HarassE", "Use E", true).SetValue(false));
+                HarassMenu.AddItem(new MenuItem("HarassTiamat", "Use Tiamat", true).SetValue(true));
+                HarassMenu.AddItem(new MenuItem("HarassHydra", "Use Hydra", true).SetValue(true));
                 HarassMenu.AddItem(
                     new MenuItem("HarassMana", "When Player ManaPercent >= x%", true).SetValue(new Slider(60)));
             }
@@ -293,6 +295,10 @@
 
                 if (CheckTarget(target, W.Range))
                 {
+
+                    ItemsUse(false, Menu.Item("HarassTiamat", true).GetValue<bool>(),
+                             Menu.Item("HarassHydra", true).GetValue<bool>());
+
                     if (Menu.Item("HarassE", true).GetValue<bool>() && E.IsReady() && target.IsValidTarget(E.Range))
                     {
                         E.CastOnUnit(target);
@@ -451,8 +457,30 @@
                     }
                 }
             }
+            else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+            {
+                if (Me.ManaPercent >= Menu.Item("HarassMana", true).GetValue<Slider>().Value)
+                {
+                    var target = Args.Target as Obj_AI_Hero;
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
+                    if (target != null && !target.IsDead && !target.IsZombie)
+                    {
+                        ItemsUse(false,
+                                 Menu.Item("HarassTiamat", true).GetValue<bool>(),
+                                 Menu.Item("HarassHydra", true).GetValue<bool>());
+
+                        if (Menu.Item("HarassQ", true).GetValue<bool>() && Q.IsReady())
+                        {
+                            Q.Cast();
+                        }
+                        else if (Menu.Item("HarassW", true).GetValue<bool>() && W.IsReady())
+                        {
+                            W.Cast(target.ServerPosition);
+                        }
+                    }
+                }
+            }
+            else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
             {
                 if (Me.ManaPercent >= Menu.Item("JungleClearMana", true).GetValue<Slider>().Value)
                 {
