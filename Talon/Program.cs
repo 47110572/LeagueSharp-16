@@ -69,6 +69,8 @@
                     new MenuItem("ComboMode", "Mode: ", true).SetValue(
                         new StringList(new[] {"E -> Q -> W -> R", "R -> E -> Q -> W"})));
                 ComboMenu.AddItem(new MenuItem("ComboYoumuu", "Use Youmuu", true).SetValue(true));
+				ComboMenu.AddItem(new MenuItem("ComboTiamat", "Use Tiamat", true).SetValue(true));
+				ComboMenu.AddItem(new MenuItem("ComboHydra", "Use Hydra", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboIgnite", "Use Ignite", true).SetValue(true));
             }
 
@@ -228,6 +230,9 @@
                     Me.Spellbook.CastSpell(Ignite, target);
                 }
 
+				ItemsUse(false, Menu.Item("ComboTiamat", true).GetValue<bool>(), 
+				         Menu.Item("ComboHydra", true).GetValue<bool>());
+				
                 switch (Menu.Item("ComboMode", true).GetValue<StringList>().SelectedIndex)
                 {
                     case 0:
@@ -432,7 +437,9 @@
 
                 if (target != null && !target.IsDead && !target.IsZombie)
                 {
-                    ItemsUse(Menu.Item("ComboYoumuu", true).GetValue<bool>(), true, true);
+                    ItemsUse(Menu.Item("ComboYoumuu", true).GetValue<bool>(), 
+					         Menu.Item("ComboTiamat", true).GetValue<bool>(), 
+							 Menu.Item("ComboHydra", true).GetValue<bool>());
 
                     if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady())
                     {
