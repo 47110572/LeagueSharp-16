@@ -42,16 +42,10 @@
                     {
                         Program.W.Cast(target.Position);
                     }
-                    else if (Program.E.IsReady() && target.DistanceToPlayer() > 
-                        Orbwalking.GetRealAutoAttackRange(Program.Me) &&
-                             target.IsValidTarget(Program.E.Range))
-                    {
-                        Program.E.Cast(target.Position);
-                    }
                 }
             }
 
-            if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Brust)
+            if (Program.Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst)
             {
                 var target = Args.Target as Obj_AI_Hero;
 
@@ -66,12 +60,6 @@
                     else if (Program.W.IsReady() && target.IsValidTarget(Program.W.Range))
                     {
                         Program.W.Cast(target.Position);
-                    }
-                    else if (Program.E.IsReady() && target.DistanceToPlayer() > 
-                        Orbwalking.GetRealAutoAttackRange(Program.Me) &&
-                             target.IsValidTarget(Program.E.Range))
-                    {
-                        Program.E.Cast(target.Position);
                     }
                 }
             }
@@ -147,7 +135,8 @@
         {
             if (Args.Target is Obj_AI_Minion)
             {
-                var mobs = MinionManager.GetMinions(Program.E.Range + Program.Me.AttackRange, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+                var mobs = MinionManager.GetMinions(Program.E.Range + Program.Me.AttackRange, MinionTypes.All,
+                    MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
                 var mob = mobs.FirstOrDefault();
 
                 if (mob != null)
@@ -158,7 +147,8 @@
                     {
                         Program.CastQ(mob);
                     }
-                    else if (Program.Menu.Item("JungleClearW", true).GetValue<bool>() && Program.W.IsReady() && mob.IsValidTarget(Program.W.Range))
+                    else if (Program.Menu.Item("JungleClearW", true).GetValue<bool>() && Program.W.IsReady() &&
+                             mob.IsValidTarget(Program.W.Range))
                     {
                         Program.W.Cast(mob.Position);
                     }

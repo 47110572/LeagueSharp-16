@@ -28,7 +28,7 @@
                 if (Program.E.IsReady() && Program.Flash != SpellSlot.Unknown && Program.Flash.IsReady())
                 {
                     Render.Circle.DrawCircle(Program.Me.Position, 465 +
-                        Program.E.Range, Color.FromArgb(253, 3, 3));
+                                                                  Program.E.Range, Color.FromArgb(253, 3, 3));
                 }
             }
 
@@ -37,7 +37,7 @@
                 if (Program.E.IsReady() && Program.Flash != SpellSlot.Unknown && Program.Flash.IsReady())
                 {
                     Render.Circle.DrawCircle(Program.Me.Position, Program.E.Range +
-                        Program.Me.BoundingRadius, Color.FromArgb(243, 253, 3));
+                                                                  Program.Me.BoundingRadius, Color.FromArgb(243, 253, 3));
                 }
             }
 
@@ -52,19 +52,17 @@
 
             if (Program.Menu.Item("QuickHarassRange", true).GetValue<bool>())
             {
-                Render.Circle.DrawCircle(Program.Me.Position, Program.E.Range + 
-                    Program.Me.BoundingRadius, Color.FromArgb(237, 7, 246));
+                Render.Circle.DrawCircle(Program.Me.Position, Program.E.Range +
+                                                              Program.Me.BoundingRadius, Color.FromArgb(237, 7, 246));
             }
 
             if (Program.Menu.Item("ShowR1", true).GetValue<bool>())
             {
                 var text = "";
-                if (Program.Menu.Item("R1Combo", true).GetValue<KeyBind>().Active)
-                    text = "Enable";
-                if (!Program.Menu.Item("R1Combo", true).GetValue<KeyBind>().Active)
-                    text = "Off";
 
-                Drawing.DrawText(Program.Me.HPBarPosition.X + 30, 
+                text = Program.Menu.Item("R1Combo", true).GetValue<KeyBind>().Active ? "Enable" : "Off";
+
+                Drawing.DrawText(Program.Me.HPBarPosition.X + 30,
                     Program.Me.HPBarPosition.Y - 40, Color.Red, "Use R1: ");
                 Drawing.DrawText(Program.Me.HPBarPosition.X + 90,
                     Program.Me.HPBarPosition.Y - 40, Color.FromArgb(238, 242, 7), text);
@@ -85,14 +83,15 @@
                     {
                         text = "Lock Target Is Null!";
                     }
-
-                    if (hero != null)
+                    else
                     {
                         text = "Lock Target is : " + hero.ChampionName;
                         text2 = "Can Flash : " + Program.CanFlash;
                     }
 
-                    if (Program.Menu.Item("BurstFlash", true).GetValue<bool>() && Program.Flash != SpellSlot.Unknown && Program.Flash.IsReady() && e.Distance(Program.Me.ServerPosition) <= 800 && e.Distance(Program.Me.ServerPosition) >= Program.E.Range + Program.Me.AttackRange + 85)
+                    if (Program.Menu.Item("BurstFlash", true).GetValue<bool>() && Program.Flash != SpellSlot.Unknown &&
+                        Program.Flash.IsReady() && e.Distance(Program.Me.ServerPosition) <= 800 &&
+                        e.Distance(Program.Me.ServerPosition) >= Program.E.Range + Program.Me.AttackRange + 85)
                     {
                         Program.CanFlash = true;
                     }
@@ -113,19 +112,34 @@
             double passive = 0;
 
             if (Program.Me.Level == 18)
+            {
                 passive = 0.5;
+            }
             else if (Program.Me.Level >= 15)
+            {
                 passive = 0.45;
+            }
             else if (Program.Me.Level >= 12)
+            {
                 passive = 0.4;
+            }
             else if (Program.Me.Level >= 9)
+            {
                 passive = 0.35;
+            }
             else if (Program.Me.Level >= 6)
+            {
                 passive = 0.3;
+            }
             else if (Program.Me.Level >= 3)
+            {
                 passive = 0.25;
+            }
             else
+            {
                 passive = 0.2;
+            }
+
             double damage = 0;
 
             if (Program.Q.IsReady())
@@ -142,11 +156,13 @@
 
             if (Program.R.IsReady() && Program.Me.HasBuff("RivenFengShuiEngine"))
             {
-                damage += Program.Me.CalcDamage(e, Damage.DamageType.Physical, 
-                    (new double[] { 80, 120, 160 }[Program.R.Level - 1] + 
-                    0.6 * Program.Me.FlatPhysicalDamageMod) *
-                    (1 + (e.MaxHealth - e.Health) / 
-                    e.MaxHealth > 0.75 ? 0.75 : (e.MaxHealth - e.Health) / e.MaxHealth) * 8 / 3);
+                damage += Program.Me.CalcDamage(e, Damage.DamageType.Physical,
+                    (new double[] {80, 120, 160}[Program.R.Level - 1] +
+                     0.6*Program.Me.FlatPhysicalDamageMod)*
+                    (1 + (e.MaxHealth - e.Health)/
+                     e.MaxHealth > 0.75
+                        ? 0.75
+                        : (e.MaxHealth - e.Health)/e.MaxHealth)*8/3);
             }
 
             return damage;

@@ -22,6 +22,7 @@
         public static int QStack;
         public static Orbwalking.Orbwalker Orbwalker;
         public static AttackableUnit QTarget;
+        public static Obj_AI_Hero BurstTarget;
         public static int SkinID;
 
         private static void Main(string[] args)
@@ -32,13 +33,13 @@
         private static void OnLoad(EventArgs args)
         {
             if (ObjectManager.Player.ChampionName != "Riven")
+            {
                 return;
-
-            Game.PrintChat("<font color='#2848c9'>Flowers Riven</font> --> <font color='#b756c5'>Load! </font> <font size='30'><font color='#d949d4'>Good Luck!</font></font>");
+            }
 
             Me = ObjectManager.Player;
 
-            Q = new Spell(SpellSlot.Q);
+            Q = new Spell(SpellSlot.Q, 350f);
             W = new Spell(SpellSlot.W, 270f);
             E = new Spell(SpellSlot.E, 312f);
             R = new Spell(SpellSlot.R, 900f) { MinHitChance = HitChance.High };

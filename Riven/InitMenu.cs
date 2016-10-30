@@ -9,15 +9,20 @@
             Program.Menu = new Menu("Flowers' Riven", "Flowers' Riven", true);
 
             Program.Menu.AddSubMenu(new Menu("Orbwalking", "Orbwalker.Menu"));
-            Program.Orbwalker = new Orbwalking.Orbwalker(Program.Menu.SubMenu("Orbwalker.Menu"));
+            {
+                Program.Orbwalker = new Orbwalking.Orbwalker(Program.Menu.SubMenu("Orbwalker.Menu"));
+            }
 
             var ComboMenu = Program.Menu.AddSubMenu(new Menu("Combo", "Combo"));
             {
                 ComboMenu.AddItem(new MenuItem("ComboW", "Use W", true).SetValue(true));
-                ComboMenu.AddItem(new MenuItem("ComboE", "Use E Mode: ", true).SetValue(new StringList(new[] { "To Target", "To Mouse", "Off" })));
+                ComboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(true));
-                ComboMenu.AddItem(new MenuItem("R1Combo", "Use R1", true).SetValue(new KeyBind('L', KeyBindType.Toggle, true)));
-                ComboMenu.AddItem(new MenuItem("R2Mode", "Use R2 Mode: ", true).SetValue(new StringList(new[] { "Killable", "Max Damage", "First Cast", "Off" }, 1)));
+                ComboMenu.AddItem(
+                    new MenuItem("R1Combo", "Use R1", true).SetValue(new KeyBind('L', KeyBindType.Toggle, true)));
+                ComboMenu.AddItem(
+                    new MenuItem("R2Mode", "Use R2 Mode: ", true).SetValue(
+                        new StringList(new[] {"Killable", "Max Damage", "First Cast", "Off"}, 1)));
                 ComboMenu.AddItem(new MenuItem("Brust Setting", "Brust Setting"));
                 ComboMenu.AddItem(new MenuItem("BurstFlash", "Use Flash", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("BurstIgnite", "Use Ignite", true).SetValue(true));
@@ -55,7 +60,6 @@
                 MiscMenu.AddItem(new MenuItem("Q Setting", "Q Setting"));
                 MiscMenu.AddItem(new MenuItem("KeepQALive", "Keep Q alive", true).SetValue(true));
                 MiscMenu.AddItem(new MenuItem("Dance", "Dance Emote in QA", true).SetValue(false));
-                MiscMenu.AddItem(new MenuItem("DC", "Dance Delay", true).SetValue(new Slider(100, 0, 200)));
                 MiscMenu.AddItem(new MenuItem("W Setting", "W Setting"));
                 MiscMenu.AddItem(new MenuItem("AntiGapCloserW", "AntiGapCloser", true).SetValue(true));
                 MiscMenu.AddItem(new MenuItem("InterruptTargetW", "Interrupt Danger Spell", true).SetValue(true));
@@ -68,8 +72,15 @@
 
             var SkinMenu = Program.Menu.AddSubMenu(new Menu("SkinChance", "SkinChance"));
             {
-                SkinMenu.AddItem(new MenuItem("EnableSkin", "Enabled", true).SetValue(false)).ValueChanged += Program.EnbaleSkin;
-                SkinMenu.AddItem(new MenuItem("SelectSkin", "Select Skin: ", true).SetValue(new StringList(new[] { "Classic", "Redeemed Riven", "Crimson Elite Riven", "Battle Bunny Riven", "Championship Riven", "Dragonblade Riven", "Arcade Riven" })));
+                SkinMenu.AddItem(new MenuItem("EnableSkin", "Enabled", true).SetValue(false)).ValueChanged +=
+                    Program.EnbaleSkin;
+                SkinMenu.AddItem(
+                    new MenuItem("SelectSkin", "Select Skin: ", true).SetValue(
+                        new StringList(new[]
+                        {
+                            "Classic", "Redeemed Riven", "Crimson Elite Riven", "Battle Bunny Riven",
+                            "Championship Riven", "Dragonblade Riven", "Arcade Riven"
+                        })));
             }
 
             var DrawMenu = Program.Menu.AddSubMenu(new Menu("Draw", "Drawings"));

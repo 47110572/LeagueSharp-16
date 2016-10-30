@@ -1,8 +1,8 @@
 ﻿namespace Flowers_Riven
 {
+    using Common;
     using LeagueSharp;
     using LeagueSharp.Common;
-    using SharpDX;
     using System;
     using System.Linq;
 
@@ -24,7 +24,8 @@
 
             if (Program.Menu.Item("EnableSkin", true).GetValue<bool>())
             {
-                ObjectManager.Player.SetSkin(ObjectManager.Player.ChampionName, Program.Menu.Item("SelectSkin", true).GetValue<StringList>().SelectedIndex);
+                ObjectManager.Player.SetSkin(ObjectManager.Player.ChampionName,
+                    Program.Menu.Item("SelectSkin", true).GetValue<StringList>().SelectedIndex);
             }
 
             switch (Program.Orbwalker.ActiveMode)
@@ -32,7 +33,7 @@
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo();
                     break;
-                case Orbwalking.OrbwalkingMode.Brust:
+                case Orbwalking.OrbwalkingMode.Burst:
                     Brust();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
@@ -78,13 +79,14 @@
 
         private static void KillStealLogic()
         {
-            foreach (var e in HeroManager.Enemies.Where(e => !e.IsZombie && !e.HasBuff("KindredrNoDeathBuff") && 
-            !e.HasBuff("Undying Rage") &&
-            !e.HasBuff("JudicatorIntervention") && e.IsValidTarget()))
+            foreach (var e in HeroManager.Enemies.Where(e => !e.IsZombie && !e.HasBuff("KindredrNoDeathBuff") &&
+                                                             !e.HasBuff("Undying Rage") &&
+                                                             !e.HasBuff("JudicatorIntervention") && e.IsValidTarget()))
             {
                 if (Program.W.IsReady() && Program.Menu.Item("KillStealW", true).GetValue<bool>())
                 {
-                    if (e.IsValidTarget(Program.W.Range) && Program.Me.GetSpellDamage(e, SpellSlot.W) > e.Health + e.HPRegenRate)
+                    if (e.IsValidTarget(Program.W.Range) &&
+                        Program.Me.GetSpellDamage(e, SpellSlot.W) > e.Health + e.HPRegenRate)
                     {
                         Program.W.Cast();
                     }
@@ -96,9 +98,11 @@
                     {
                         if (Program.E.IsReady() && Program.Menu.Item("KillStealE", true).GetValue<bool>())
                         {
-                            if (Program.Me.ServerPosition.CountEnemiesInRange(Program.R.Range + Program.E.Range) < 3 && Program.Me.HealthPercent > 50)
+                            if (Program.Me.ServerPosition.CountEnemiesInRange(Program.R.Range + Program.E.Range) < 3 &&
+                                Program.Me.HealthPercent > 50)
                             {
-                                if (Program.Me.GetSpellDamage(e, SpellSlot.R) > e.Health + e.HPRegenRate && e.IsValidTarget(Program.R.Range + Program.E.Range - 100))
+                                if (Program.Me.GetSpellDamage(e, SpellSlot.R) > e.Health + e.HPRegenRate &&
+                                    e.IsValidTarget(Program.R.Range + Program.E.Range - 100))
                                 {
                                     if (Program.E.IsReady())
                                     {
@@ -113,7 +117,8 @@
                         }
                         else
                         {
-                            if (Program.Me.GetSpellDamage(e, SpellSlot.R) > e.Health + e.HPRegenRate && e.IsValidTarget(Program.R.Range - 50))
+                            if (Program.Me.GetSpellDamage(e, SpellSlot.R) > e.Health + e.HPRegenRate &&
+                                e.IsValidTarget(Program.R.Range - 50))
                             {
                                 Program.R.CastIfHitchanceEquals(e, HitChance.High, true);
                             }
@@ -125,25 +130,22 @@
 
         private static void Combo()
         {
-            var t = TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
+            var target = TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
 
-            if (t.IsValidTarget())
+            if (target.IsValidTarget())
             {
-                if (Program.Menu.Item("ComboW", true).GetValue<bool>() && Program.W.IsReady() && t.IsValidTarget(Program.W.Range))
+                if (Program.Menu.Item("ComboW", true).GetValue<bool>() && Program.W.IsReady() &&
+                    target.IsValidTarget(Program.W.Range))
                 {
                     Program.W.Cast();
                 }
 
-                if (Program.Menu.Item("ComboE", true).GetValue<StringList>().SelectedIndex != 2 && Program.E.IsReady())
+                if (Program.Menu.Item("ComboE", true).GetValue<bool>() && Program.E.IsReady())
                 {
-                    switch (Program.Menu.Item("ComboE", true).GetValue<StringList>().SelectedIndex)
+                    if (target.DistanceToPlayer() <= Program.W.Range + Program.E.Range &&
+                        target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Program.Me) + 100)
                     {
-                        case 0:
-                            Program.E.Cast(t.ServerPosition);
-                            break;
-                        case 1:
-                            Program.E.Cast(Game.CursorPos);
-                            break;
+                        Program.E.Cast(target.IsMelee ? Game.CursorPos : target.ServerPosition);
                     }
                 }
 
@@ -156,38 +158,17 @@
                             case "RivenFengShuiEngine":
                                 if (Program.Menu.Item("R1Combo", true).GetValue<KeyBind>().Active)
                                 {
-                                    if (t.Distance(Program.Me.ServerPosition) < Program.E.Range + Program.Me.AttackRange && Program.Me.CountEnemiesInRange(500) >= 1 &&
-                                        !t.IsDead)
+                                    if (target.Distance(Program.Me.ServerPosition) <
+                                        Program.E.Range + Program.Me.AttackRange &&
+                                        Program.Me.CountEnemiesInRange(500) >= 1 &&
+                                        !target.IsDead)
                                     {
                                         Program.R.Cast();
                                     }
                                 }
                                 break;
                             case "RivenIzunaBlade":
-                                if (t.IsValidTarget(850) && !t.IsDead)
-                                {
-                                    switch (Program.Menu.Item("R2Mode", true).GetValue<StringList>().SelectedIndex)
-                                    {
-                                        case 0:
-                                            if (Program.R.GetDamage(t) > t.Health && t.IsValidTarget(Program.R.Range) && t.Distance(Program.Me.ServerPosition) < 600)
-                                            {
-                                                Program.R.Cast(t);
-                                            }
-                                            break;
-                                        case 1:
-                                            if (t.HealthPercent < 25 && t.Health > Program.R.GetDamage(t) + Program.Me.GetAutoAttackDamage(t) * 2)
-                                            {
-                                                Program.R.Cast(t);
-                                            }
-                                            break;
-                                        case 2:
-                                            if (t.IsValidTarget(Program.R.Range) && t.Distance(Program.Me.ServerPosition) < 600)
-                                            {
-                                                Program.R.Cast(t);
-                                            }
-                                            break;
-                                    }
-                                }
+                                R2Logic(target);
                                 break;
                         }
                     }
@@ -195,24 +176,64 @@
             }
         }
 
+        public static void R2Logic(Obj_AI_Hero target)
+        {
+            if (Program.R.Instance.Name != "RivenIzunaBlade")
+            {
+                return;
+            }
+
+            if (target.IsValidTarget(850) && !target.IsDead)
+            {
+                switch (Program.Menu.Item("R2Mode", true).GetValue<StringList>().SelectedIndex)
+                {
+                    case 0:
+                        if (Program.R.GetDamage(target) > target.Health && target.IsValidTarget(Program.R.Range) &&
+                            target.Distance(Program.Me.ServerPosition) < 600)
+                        {
+                            Program.R.Cast(target);
+                        }
+                        break;
+                    case 1:
+                        if (target.HealthPercent < 25 &&
+                            target.Health > Program.R.GetDamage(target) + Program.Me.GetAutoAttackDamage(target) * 2)
+                        {
+                            Program.R.Cast(target);
+                        }
+                        break;
+                    case 2:
+                        if (target.IsValidTarget(Program.R.Range) &&
+                            target.Distance(Program.Me.ServerPosition) < 600)
+                        {
+                            Program.R.Cast(target);
+                        }
+                        break;
+                }
+            }
+        }
+
         private static void Brust()
         {
-            var e = TargetSelector.GetSelectedTarget();
+            var target = TargetSelector.GetSelectedTarget();
 
-            if (e != null && !e.IsDead && e.IsValidTarget() && !e.IsZombie)
+            if (target != null && !target.IsDead && target.IsValidTarget() && !target.IsZombie)
             {
+                Program.BurstTarget = target;
+
                 if (Program.R.IsReady())
                 {
-                    if (Program.Me.HasBuff("RivenFengShuiEngine") & Program.Q.IsReady() && Program.E.IsReady() && Program.W.IsReady() &&
-                        e.Distance(Program.Me.ServerPosition) < Program.E.Range + Program.Me.AttackRange + 100)
+                    if (Program.Me.HasBuff("RivenFengShuiEngine") & Program.Q.IsReady() && Program.E.IsReady() &&
+                        Program.W.IsReady() &&
+                        target.Distance(Program.Me.ServerPosition) < Program.E.Range + Program.Me.AttackRange + 100)
                     {
-                        Program.E.Cast(e.Position);
+                        Program.E.Cast(target.Position);
                     }
 
-                    if (Program.E.IsReady() && e.Distance(Program.Me.ServerPosition) < Program.Me.AttackRange + Program.E.Range + 100)
+                    if (Program.E.IsReady() &&
+                        target.Distance(Program.Me.ServerPosition) < Program.Me.AttackRange + Program.E.Range + 100)
                     {
                         Program.R.Cast();
-                        Program.E.Cast(e.Position);
+                        Program.E.Cast(target.Position);
                     }
                 }
 
@@ -221,36 +242,42 @@
                     Program.W.Cast();
                 }
 
-                if (Program.QStack == 1 || Program.QStack == 2 || e.HealthPercent < 50)
+                if (Program.QStack == 1 || Program.QStack == 2 || target.HealthPercent < 50)
                 {
                     if (Program.Me.HasBuff("RivenWindScarReady"))
                     {
-                        Program.R.Cast(e);
+                        Program.R.Cast(target);
                     }
                 }
 
                 if (Program.Menu.Item("BurstIgnite", true).GetValue<bool>() && Program.Ignite != SpellSlot.Unknown)
                 {
-                    if (e.HealthPercent < 50)
+                    if (target.HealthPercent < 50)
                     {
                         if (Program.Ignite.IsReady())
                         {
-                            Program.Me.Spellbook.CastSpell(Program.Ignite, e);
+                            Program.Me.Spellbook.CastSpell(Program.Ignite, target);
                         }
                     }
                 }
 
                 if (Program.Menu.Item("BurstFlash", true).GetValue<bool>() && Program.Flash != SpellSlot.Unknown)
                 {
-                    if (Program.Flash.IsReady() && Program.R.IsReady() && Program.R.Instance.Name == "RivenFengShuiEngine" && Program.E.IsReady() &&
-                        Program.W.IsReady() && e.Distance(Program.Me.ServerPosition) <= 780 &&
-                        e.Distance(Program.Me.ServerPosition) >= Program.E.Range + Program.Me.AttackRange + 85)
+                    if (Program.Flash.IsReady() && Program.R.IsReady() &&
+                        Program.R.Instance.Name == "RivenFengShuiEngine" && Program.E.IsReady() &&
+                        Program.W.IsReady() && target.Distance(Program.Me.ServerPosition) <= 780 &&
+                        target.Distance(Program.Me.ServerPosition) >= Program.E.Range + Program.Me.AttackRange + 85)
                     {
                         Program.R.Cast();
-                        Program.E.Cast(e.Position);
-                        Utility.DelayAction.Add(150, () => { Program.Me.Spellbook.CastSpell(Program.Flash, e.Position); });
+                        Program.E.Cast(target.Position);
+                        Utility.DelayAction.Add(150,
+                            () => { Program.Me.Spellbook.CastSpell(Program.Flash, target.Position); });
                     }
                 }
+            }
+            else
+            {
+                Program.BurstTarget = null;
             }
         }
 
@@ -258,9 +285,8 @@
         {
             if (Program.Menu.Item("HarassW", true).GetValue<bool>() && Program.W.IsReady())
             {
-                var t = HeroManager.Enemies.Find(x => x.IsValidTarget(Program.W.Range) && !x.HasBuffOfType(BuffType.SpellShield));
-
-                if (t != null)
+                if (HeroManager.Enemies.Find(
+                        x => x.IsValidTarget(Program.W.Range) && !x.HasBuffOfType(BuffType.SpellShield)) != null)
                 {
                     Program.W.Cast();
                 }
@@ -277,12 +303,14 @@
                 {
                     if (Program.E.IsReady())
                     {
-                        Program.E.Cast(Program.Me.ServerPosition + (Program.Me.ServerPosition - t.ServerPosition).Normalized() * Program.E.Range);
+                        Program.E.Cast(Program.Me.ServerPosition +
+                                       (Program.Me.ServerPosition - t.ServerPosition).Normalized()*Program.E.Range);
                     }
 
                     if (!Program.E.IsReady())
                     {
-                        Program.Q.Cast(Program.Me.ServerPosition + (Program.Me.ServerPosition - t.ServerPosition).Normalized() * Program.E.Range);
+                        Program.Q.Cast(Program.Me.ServerPosition +
+                                       (Program.Me.ServerPosition - t.ServerPosition).Normalized()*Program.E.Range);
                     }
                 }
 
@@ -322,9 +350,11 @@
 
         private static void FleeLogic()
         {
-            var e = HeroManager.Enemies.Where(enemy => enemy.IsValidTarget(Program.W.Range) && !enemy.HasBuffOfType(BuffType.SpellShield));
+            var target =
+                HeroManager.Enemies.FirstOrDefault(
+                    enemy => enemy.IsValidTarget(Program.W.Range) && !enemy.HasBuffOfType(BuffType.SpellShield));
 
-            if (Program.W.IsReady() && e.FirstOrDefault().IsValidTarget(Program.W.Range))
+            if (Program.W.IsReady() && target!= null && target.IsValidTarget(Program.W.Range))
             {
                 Program.W.Cast();
             }
@@ -341,90 +371,30 @@
 
         private static void WallJump()
         {
+            var DashPos = Program.Me.ServerPosition.Extend(Game.CursorPos, Program.Q.Range);
+            var wallPoint = VectorHelper.GetFirstWallPoint(DashPos);
+
             if (Program.Q.IsReady() && Program.QStack != 2)
             {
                 Program.Q.Cast(Game.CursorPos);
             }
 
-            //Thanks Asuvril
-
-            var wallCheck = VectorHelper.GetFirstWallPoint(Program.Me.Position, Game.CursorPos);
-            if (wallCheck != null)
+            if (!VectorHelper.IsWallDash(DashPos))
             {
-                wallCheck = VectorHelper.GetFirstWallPoint((Vector3)wallCheck, Game.CursorPos, 5);
+                return;
             }
 
-            var movePosition = wallCheck != null ? (Vector3)wallCheck : Game.CursorPos;
-            var tempGrid = NavMesh.WorldToGrid(movePosition.X, movePosition.Y);
-            Program.FleePosition = NavMesh.GridToWorld((short)tempGrid.X, (short)tempGrid.Y);
-
-            if (wallCheck != null)
+            if (Program.QStack == 2)
             {
-                var wallPosition = movePosition;
-                var direction = (Game.CursorPos.To2D() - wallPosition.To2D()).Normalized();
-                const float maxAngle = 80f;
-                const float step = maxAngle / 20;
-                var currentAngle = 0f;
-                var currentStep = 0f;
-
-                while (true)
+                if (wallPoint.DistanceToPlayer() <= 70)
                 {
-                    if (currentStep > maxAngle && currentAngle < 0)
+                    Program.Q.Cast(wallPoint);
+                }
+                else if (Program.E.IsReady() && wallPoint.DistanceToPlayer() <= Program.E.Range)
+                {
+                    if (Program.E.Cast(wallPoint))
                     {
-                        break;
-                    }
-                    if ((currentAngle == 0 || currentAngle < 0) && currentStep != 0)
-                    {
-                        currentAngle = (currentStep) * (float)Math.PI / 180;
-                        currentStep += step;
-                    }
-                    else if (currentAngle > 0)
-                    {
-                        currentAngle = -currentAngle;
-                    }
-
-                    Vector3 checkPoint;
-
-                    if (currentStep == 0)
-                    {
-                        currentStep = step;
-                        checkPoint = wallPosition + 300 * direction.To3D();
-                    }
-                    else
-                    {
-                        checkPoint = wallPosition + 300 * direction.Rotated(currentAngle).To3D();
-                    }
-                    if (!checkPoint.ToNavMeshCell().CollFlags.HasFlag(CollisionFlags.Wall) &&
-                        !checkPoint.ToNavMeshCell().CollFlags.HasFlag(CollisionFlags.Building))
-                    {
-                        wallCheck = VectorHelper.GetFirstWallPoint(checkPoint, wallPosition);
-                        if (wallCheck != null)
-                        {
-                            var firstWallPoint = VectorHelper.GetFirstWallPoint((Vector3)wallCheck, wallPosition);
-
-                            if (firstWallPoint != null)
-                            {
-                                var wallPositionOpposite = (Vector3)firstWallPoint;
-
-                                if (Math.Sqrt(Program.Me.GetPath(wallPositionOpposite).Sum(o => o.To2D().LengthSquared())) - Program.Me.Distance(wallPositionOpposite) > 200)
-                                {
-                                    if (Program.Me.Distance(wallPositionOpposite, true) < Math.Pow(300 - Program.Me.BoundingRadius / 2, 5) && Program.QStack == 2)
-                                    {
-                                        Program.TargetPosition = wallPositionOpposite;
-
-                                        if (Program.E.IsReady())
-                                        {
-                                            Program.E.Cast(Game.CursorPos);
-                                        }
-                                        else if (!Program.E.IsReady())
-                                        {
-                                            Program.Q.Cast(Game.CursorPos);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        Utility.DelayAction.Add(150 + Game.Ping, () => Program.Q.Cast(wallPoint));
                     }
                 }
             }
