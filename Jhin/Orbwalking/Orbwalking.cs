@@ -1042,6 +1042,12 @@
                         return;
                     }
 
+                    if (ObjectManager.Player.IsChannelingImportantSpell() ||
+                        ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R).Name == "JhinRShot")
+                    {
+                        return;
+                    }
+
                     Move = Menu.Item("EnableOrbwalker").GetValue<bool>();
 
                     var target = GetTarget();
