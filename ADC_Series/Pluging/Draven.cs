@@ -104,7 +104,7 @@
                     qSettings.AddItem(
                         new MenuItem("ControlKey2", "Or Right Click?", true).SetValue(true));
                     qSettings.AddItem(
-                        new MenuItem("ControlKey3", "Or Mouse Scroll?", true).SetValue(true));
+                        new MenuItem("ControlKey3", "Or Mouse Scroll?", true).SetValue(false));
                 }
 
                 var wSettings = MiscMenu.AddSubMenu(new Menu("W Settings", "W Settings"));
@@ -165,7 +165,7 @@
         {
             if (Menu.Item("EnableControl", true).GetValue<bool>())
             {
-                if (Menu.Item("ControlKey2", true).GetValue<bool>())
+                if (Menu.Item("ControlKey2", true).GetValue<bool>() && (Args.Msg == 516 || Args.Msg == 517))
                 {
                     if (Utils.TickCount - CatchTime > 1800)
                     {
@@ -173,7 +173,7 @@
                     }
                 }
 
-                if (Menu.Item("ControlKey3", true).GetValue<bool>())
+                if (Menu.Item("ControlKey3", true).GetValue<bool>() && Args.Msg == 0x20a)
                 {
                     if (Utils.TickCount - CatchTime > 1800)
                     {

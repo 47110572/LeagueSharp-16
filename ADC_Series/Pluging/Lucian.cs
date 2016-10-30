@@ -197,7 +197,10 @@
 
                 if (target.IsValidTarget(975f) && target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me))
                 {
-                    Cast_E(target, true);
+                    if (Utils.TickCount - CastSpellTime > 400)
+                    {
+                        Cast_E(target, true);
+                    }
                 }
             }
 
@@ -343,7 +346,8 @@
                 return;
             }
 
-            if (Me.GetSpellSlot(Args.SData.Name) == SpellSlot.Q || Me.GetSpellSlot(Args.SData.Name) == SpellSlot.W)
+            if (Me.GetSpellSlot(Args.SData.Name) == SpellSlot.Q || Me.GetSpellSlot(Args.SData.Name) == SpellSlot.W ||
+                Me.GetSpellSlot(Args.SData.Name) == SpellSlot.E)
             {
                 CastSpellTime = Utils.TickCount;
             }
