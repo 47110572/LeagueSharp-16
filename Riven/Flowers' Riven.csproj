@@ -61,8 +61,6 @@
   <ItemGroup>
     <Compile Include="Common\Common.cs" />
     <Compile Include="Common\HpBarDraw.cs" />
-    <Compile Include="Logic\DoCast.cs" />
-    <Compile Include="Logic\Drawings.cs" />
     <Compile Include="Evade\Collision.cs" />
     <Compile Include="Evade\Config.cs" />
     <Compile Include="Evade\EarlyEvade.cs" />
@@ -77,13 +75,10 @@
     <Compile Include="Evade\SpellData.cs" />
     <Compile Include="Evade\SpellDatabase.cs" />
     <Compile Include="Evade\Utils.cs" />
-    <Compile Include="InitMenu.cs" />
-    <Compile Include="Logic\LoopEvent.cs" />
     <Compile Include="Orbwalking\Orbwalking.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\VectorHelper.cs" />
-    <Compile Include="Logic\SpellCast.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
