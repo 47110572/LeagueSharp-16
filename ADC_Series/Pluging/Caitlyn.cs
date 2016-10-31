@@ -105,7 +105,9 @@
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
         {
             if (!sender.IsMe)
+            {
                 return;
+            }
 
             if (Args.Slot == SpellSlot.Q)
             {
@@ -213,20 +215,35 @@
 
             if (CheckTarget(target, R.Range))
             {
-                if (E.CanCast(target) && Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady() &&
-                    Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady())
+                if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady() && target.IsValidTarget(700))
                 {
-                    E.Cast(target);
-                    Q.Cast(target);
+                    var ePred = E.GetPrediction(target);
+
+                    if (ePred.CollisionObjects.Count == 0 || ePred.Hitchance >= HitChance.VeryHigh)
+                    {
+                        if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady())
+                        {
+                            E.Cast(target);
+                            Q.Cast(target);
+                        }
+                        else
+                        {
+                            E.Cast(target);
+                        }
+                    }
+                    else
+                    {
+                        if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && target.IsValidTarget(Q.Range) &&
+                            target.DistanceToPlayer() >= Menu.Item("ComboQRange", true).GetValue<Slider>().Value)
+                        {
+                            Q.CastTo(target);
+                            Q.CastIfWillHit(target, Menu.Item("ComboQCount", true).GetValue<Slider>().Value, true);
+                        }
+                    }
                 }
 
-                if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady() && target.IsValidTarget(700) &&
-                    E.GetPrediction(target).CollisionObjects.Count == 0 && E.CanCast(target))
-                {
-                    E.Cast(target);
-                }
-
-                if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && target.IsValidTarget(Q.Range) &&
+                if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() && !E.IsReady() &&
+                    target.IsValidTarget(Q.Range) &&
                     target.DistanceToPlayer() >= Menu.Item("ComboQRange", true).GetValue<Slider>().Value)
                 {
                     Q.CastTo(target);
@@ -240,7 +257,7 @@
                     {
                         if (target.IsFacing(Me))
                         {
-                            if (target.IsMelee && target.DistanceToPlayer() < 250)
+                            if (target.IsMelee && target.DistanceToPlayer() < target.AttackRange + 100)
                             {
                                 W.Cast(Me.Position);
                             }
