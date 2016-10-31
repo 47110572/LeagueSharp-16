@@ -25,7 +25,11 @@
         private static void Load(EventArgs args)
         {
             if (ObjectManager.Player.ChampionName != "Brand")
+            {
                 return;
+            }
+
+            Me = ObjectManager.Player;
 
             Q = new Spell(SpellSlot.Q, 1050);
             W = new Spell(SpellSlot.W, 900);
@@ -38,11 +42,9 @@
 
             Ignite = Me.GetSpellSlot("SummonerDot");
 
-            Me = ObjectManager.Player;
-
             SkinID = Me.BaseSkinId;
 
-            Menu = new Menu("Flowers - Brand", "NightMoon", true);
+            Menu = new Menu("Flowers' Brand", "NightMoon", true);
 
             var OrbMenu = Menu.AddSubMenu(new Menu("Orbwalking", "orbwalking"));
             {
@@ -189,18 +191,6 @@
                     LaneClear();
                     JungleClear();
                     break;
-                case Orbwalking.OrbwalkingMode.Freeze:
-                    break;
-                case Orbwalking.OrbwalkingMode.CustomMode:
-                    break;
-                case Orbwalking.OrbwalkingMode.LastHit:
-                    break;
-                case Orbwalking.OrbwalkingMode.Flee:
-                    break;
-                case Orbwalking.OrbwalkingMode.None:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 
