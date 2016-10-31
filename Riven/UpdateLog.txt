@@ -1,5 +1,5 @@
 ﻿
-Update log:
+Change log:
     First Push (2016-02-17 03.38)
     Fix LaneClear & JungleClear WE Use Question (2016-02-17 04.37)
     Add Keep Q alive Logic (2016-02-17 07.03)
@@ -26,4 +26,4 @@ Update log:
     Fix R2 Cast Logic (2016-03-04 23.14)
     Fix Emote, maybe i dont forgot somethings (2016年9月20日 01:51)
 	just rewrite (2016.09.22)
-
+    Big Update, Add More Logic In Combo and Burst Mode (2016.10.31)
