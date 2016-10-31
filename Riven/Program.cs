@@ -970,33 +970,7 @@
 
         private static void WallJump()
         {
-            var DashPos = Me.ServerPosition.Extend(Game.CursorPos, Q.Range);
-            var wallPoint = VectorHelper.GetFirstWallPoint(DashPos);
 
-            if (Q.IsReady() && QStack != 2)
-            {
-                Q.Cast(Game.CursorPos);
-            }
-
-            if (!VectorHelper.IsWallDash(DashPos))
-            {
-                return;
-            }
-
-            if (QStack == 2)
-            {
-                if (wallPoint.DistanceToPlayer() <= 70)
-                {
-                    Q.Cast(wallPoint);
-                }
-                else if (E.IsReady() && wallPoint.DistanceToPlayer() <= E.Range)
-                {
-                    if (E.Cast(wallPoint))
-                    {
-                        Utility.DelayAction.Add(150 + Game.Ping, () => Q.Cast(wallPoint));
-                    }
-                }
-            }
         }
 
         private static void OnDraw(EventArgs Args)
