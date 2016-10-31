@@ -69,6 +69,13 @@
                     new MenuItem("JungleClearMana", "When Player ManaPercent >= x%", true).SetValue(new Slider(30)));
             }
 
+            var LastHitMenu = Menu.AddSubMenu(new Menu("LastHit", "LastHit"));
+            {
+                LastHitMenu.AddItem(new MenuItem("LastHitQ", "Use Q", true).SetValue(true));
+                LastHitMenu.AddItem(
+                    new MenuItem("LastHitMana", "When Player ManaPercent >= x%", true).SetValue(new Slider(60)));
+            }
+
             var KillStealMenu = Menu.AddSubMenu(new Menu("KillSteal", "KillSteal"));
             {
                 KillStealMenu.AddItem(new MenuItem("KillStealQ", "Use Q", true).SetValue(true));
@@ -284,8 +291,6 @@
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo();
                     break;
-                case Orbwalking.OrbwalkingMode.LastHit:
-                    break;
                 case Orbwalking.OrbwalkingMode.Mixed:
                     Harass();
                     break;
@@ -293,6 +298,57 @@
                     LaneClear();
                     JungleClear();
                     break;
+                case Orbwalking.OrbwalkingMode.LastHit:
+                    LastHit();
+                    break;
+            }
+        }
+
+        private void LastHit()
+        {
+            if (Me.ManaPercent >= Menu.Item("LastHitMana", true).GetValue<Slider>().Value)
+            {
+                if (Menu.Item("LastHitQ", true).GetValue<bool>() && Q.IsReady())
+                {
+                    if (Me.CountEnemiesInRange(Q.Range + 300) > 0)
+                    {
+                        var target = TargetSelector.GetTarget(Q.Range + 300, TargetSelector.DamageType.Physical);
+
+                        if (CheckTarget(target, Q.Range + 300))
+                        {
+                            if (Me.HasBuff("JhinPassiveReload") ||
+                                (!Me.HasBuff("JhinPassiveReload") &&
+                                 Me.CountEnemiesInRange(Orbwalking.GetRealAutoAttackRange(Me)) == 0))
+                            {
+                                var qPred = Prediction.GetPrediction(target, 0.25f);
+                                var bestQMinion =
+                                    MinionManager.GetMinions(qPred.CastPosition, 300)
+                                        .Where(x => x.IsValidTarget(Q.Range))
+                                        .OrderBy(x => x.Distance(target))
+                                        .ThenBy(x => x.Health)
+                                        .FirstOrDefault();
+
+                                if (bestQMinion != null)
+                                {
+                                    Q.CastOnUnit(bestQMinion, true);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var minion =
+                            MinionManager.GetMinions(Me.Position, Q.Range)
+                                .Where(x => x.IsValidTarget(Q.Range) && HealthPrediction.GetHealthPrediction(x, 250) > 0)
+                                .OrderBy(x => x.Health)
+                                .FirstOrDefault(x => x.Health < Q.GetDamage(x));
+
+                        if (minion != null)
+                        {
+                            Q.CastOnUnit(minion, true);
+                        }
+                    }
+                }
             }
         }
 
@@ -513,12 +569,35 @@
                 }
             }
 
-            var qTarget = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
-
-            if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady() &&
-                CheckTarget(qTarget, Q.Range) && !Orbwalking.CanAttack())
+            if (Menu.Item("ComboQ", true).GetValue<bool>() && Q.IsReady())
             {
-                Q.CastOnUnit(qTarget, true);
+                var target = TargetSelector.GetTarget(Q.Range + 300, TargetSelector.DamageType.Physical);
+                var qTarget = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+
+                if (CheckTarget(qTarget, Q.Range) && !Orbwalking.CanAttack())
+                {
+                    Q.CastOnUnit(qTarget, true);
+                }
+                else if (CheckTarget(target, Q.Range + 300))
+                {
+                    if (Me.HasBuff("JhinPassiveReload") ||
+                        (!Me.HasBuff("JhinPassiveReload") &&
+                         Me.CountEnemiesInRange(Orbwalking.GetRealAutoAttackRange(Me)) == 0))
+                    {
+                        var qPred = Prediction.GetPrediction(target, 0.25f);
+                        var bestQMinion =
+                            MinionManager.GetMinions(qPred.CastPosition, 300)
+                                .Where(x => x.IsValidTarget(Q.Range))
+                                .OrderBy(x => x.Distance(target))
+                                .ThenBy(x => x.Health)
+                                .FirstOrDefault();
+
+                        if (bestQMinion != null)
+                        {
+                            Q.CastOnUnit(bestQMinion, true);
+                        }
+                    }
+                }
             }
 
             var eTarget = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
@@ -550,16 +629,30 @@
 
             if (Me.ManaPercent >= Menu.Item("HarassMana", true).GetValue<Slider>().Value)
             {
-                var wTarget = TargetSelector.GetTarget(1500f, TargetSelector.DamageType.Physical);
-
-                if (Menu.Item("HarassW", true).GetValue<bool>() && W.IsReady() && CheckTarget(wTarget, W.Range))
+                if (Menu.Item("HarassQ", true).GetValue<bool>() && Q.IsReady())
                 {
-                    if (Menu.Item("HarassWOnly", true).GetValue<bool>() && !HasPassive(wTarget))
-                    {
-                        return;
-                    }
+                    var target = TargetSelector.GetTarget(Q.Range + 300, TargetSelector.DamageType.Physical);
 
-                    W.CastTo(wTarget);
+                    if (CheckTarget(target, Q.Range + 300))
+                    {
+                        if (Me.HasBuff("JhinPassiveReload") ||
+                            (!Me.HasBuff("JhinPassiveReload") &&
+                             Me.CountEnemiesInRange(Orbwalking.GetRealAutoAttackRange(Me)) == 0))
+                        {
+                            var qPred = Prediction.GetPrediction(target, 0.25f);
+                            var bestQMinion =
+                                MinionManager.GetMinions(qPred.CastPosition, 300)
+                                    .Where(x => x.IsValidTarget(Q.Range))
+                                    .OrderBy(x => x.Distance(target))
+                                    .ThenBy(x => x.Health)
+                                    .FirstOrDefault();
+
+                            if (bestQMinion != null)
+                            {
+                                Q.CastOnUnit(bestQMinion, true);
+                            }
+                        }
+                    }
                 }
 
                 var eTarget = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
@@ -568,6 +661,21 @@
                     && CheckTarget(eTarget, E.Range) && Utils.TickCount - LastECast > 2500 && !IsAttack)
                 {
                     E.CastTo(eTarget, true);
+                }
+
+                if (Menu.Item("HarassW", true).GetValue<bool>() && W.IsReady())
+                {
+                    var target = TargetSelector.GetTarget(1500f, TargetSelector.DamageType.Physical);
+
+                    if (CheckTarget(target, W.Range))
+                    {
+                        if (Menu.Item("HarassWOnly", true).GetValue<bool>() && !HasPassive(target))
+                        {
+                            return;
+                        }
+
+                        W.CastTo(target);
+                    }
                 }
             }
         }
@@ -585,10 +693,37 @@
 
                 var minion = minions.MinOrDefault(x => x.Health);
 
-                if (Menu.Item("LaneClearQ", true).GetValue<bool>() && Q.IsReady() && minion != null &&
-                    minion.IsValidTarget(Q.Range) && minions.Count > 2)
+                if (Menu.Item("LaneClearQ", true).GetValue<bool>() && Q.IsReady())
                 {
-                    Q.Cast(minion, true);
+                    if (Me.CountEnemiesInRange(Q.Range + 300) > 0)
+                    {
+                        var target = TargetSelector.GetTarget(Q.Range + 300, TargetSelector.DamageType.Physical);
+
+                        if (CheckTarget(target, Q.Range + 300))
+                        {
+                            if (Me.HasBuff("JhinPassiveReload") ||
+                                (!Me.HasBuff("JhinPassiveReload") &&
+                                 Me.CountEnemiesInRange(Orbwalking.GetRealAutoAttackRange(Me)) == 0))
+                            {
+                                var qPred = Prediction.GetPrediction(target, 0.25f);
+                                var bestQMinion =
+                                    MinionManager.GetMinions(qPred.CastPosition, 300)
+                                        .Where(x => x.IsValidTarget(Q.Range))
+                                        .OrderBy(x => x.Distance(target))
+                                        .ThenBy(x => x.Health)
+                                        .FirstOrDefault();
+
+                                if (bestQMinion != null)
+                                {
+                                    Q.CastOnUnit(bestQMinion, true);
+                                }
+                            }
+                        }
+                    }
+                    else if (minion != null && minion.IsValidTarget(Q.Range) && minions.Count > 2)
+                    {
+                        Q.Cast(minion, true);
+                    }
                 }
 
                 if (Menu.Item("LaneClearW", true).GetValue<bool>() && W.IsReady() && minion != null)
