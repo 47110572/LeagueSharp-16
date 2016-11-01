@@ -604,7 +604,9 @@
         private static void OnUpdate(EventArgs args)
         {
             if (Me.IsDead)
+            {
                 return;
+            }
 
             Autobool();
             KeelQLogic();
@@ -734,7 +736,8 @@
                 }
 
                 if (Menu.Item("ComboW", true).GetValue<bool>() && W.IsReady() &&
-                    target.IsValidTarget(W.Range))
+                    target.IsValidTarget(W.Range) && !target.HasBuffOfType(BuffType.SpellShield) && 
+                    (target.IsMelee || target.IsFacing(Me) || !Q.IsReady() || Me.HasBuff("RivenFeint") || QStack != 0))
                 {
                     W.Cast();
                 }
@@ -819,9 +822,9 @@
             {
                 BurstTarget = target;
 
-                if (R.IsReady())
+                if (R.IsReady() && R.Instance.Name == "RivenFengShuiEngine")
                 {
-                    if (Me.HasBuff("RivenFengShuiEngine") & Q.IsReady() && E.IsReady() &&
+                    if (Q.IsReady() && E.IsReady() &&
                         W.IsReady() &&
                         target.Distance(Me.ServerPosition) < E.Range + Me.AttackRange + 100)
                     {
@@ -836,27 +839,21 @@
                     }
                 }
 
-                if (W.IsReady() && HeroManager.Enemies.Any(x => x.IsValidTarget(W.Range)))
+                if (W.IsReady() && target.IsValidTarget(W.Range))
                 {
                     W.Cast();
                 }
 
-                if (QStack == 1 || QStack == 2 || target.HealthPercent < 50)
+                if ((QStack == 1 || QStack == 2 || target.HealthPercent < 50) && R.Instance.Name == "RivenIzunaBlade")
                 {
-                    if (Me.HasBuff("RivenWindScarReady"))
-                    {
-                        R.Cast(target);
-                    }
+                    R.Cast(target.ServerPosition);
                 }
 
-                if (Menu.Item("BurstIgnite", true).GetValue<bool>() && Ignite != SpellSlot.Unknown)
+                if (Menu.Item("BurstIgnite", true).GetValue<bool>() && Ignite != SpellSlot.Unknown && Ignite.IsReady())
                 {
                     if (target.HealthPercent < 50)
                     {
-                        if (Ignite.IsReady())
-                        {
-                            Me.Spellbook.CastSpell(Ignite, target);
-                        }
+                        Me.Spellbook.CastSpell(Ignite, target);
                     }
                 }
 
