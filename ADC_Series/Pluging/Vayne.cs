@@ -283,8 +283,12 @@
 
                     if (minion != null)
                     {
-                        Q.Cast(Me.CountEnemiesInRange(1000) > 0 ? Game.CursorPos : minion.Position);
-                        Orbwalker.ForceTarget(minions.FirstOrDefault());
+                        if (minion.Distance(Me.Position.Extend(Game.CursorPos, Q.Range)) <=
+                            Orbwalking.GetRealAutoAttackRange(Me))
+                        {
+                            Q.Cast(Me.Position.Extend(Game.CursorPos, Q.Range));
+                            Orbwalker.ForceTarget(minions.FirstOrDefault());
+                        }
                     }
                 }
             }

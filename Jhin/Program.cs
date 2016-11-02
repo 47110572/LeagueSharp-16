@@ -479,13 +479,8 @@
 
                 if (R.Instance.Name == "JhinRShot")
                 {
-                    if (rShotTarget != null && rShotTarget.IsValidTarget(R.Range))
+                    if (rShotTarget != null && rShotTarget.IsValidTarget(R.Range) && InRCone(rShotTarget))
                     {
-                        if (!InRCone(rShotTarget))
-                        {
-                            return;
-                        }
-
                         if (Menu.Item("RMenuSemi", true).GetValue<KeyBind>().Active)
                         {
                             AutoUse(rShotTarget);
@@ -517,11 +512,6 @@
                             HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range) && InRCone(x))
                                 .OrderBy(x => x.Health))
                         {
-                            if (!InRCone(t))
-                            {
-                                return;
-                            }
-
                             if (Menu.Item("RMenuSemi", true).GetValue<KeyBind>().Active)
                             {
                                 AutoUse(t);
