@@ -167,7 +167,8 @@
             if (target.IsValidTarget(E.Range) &&
                 (gapcloser.End.DistanceToPlayer() <= 300 || target.DistanceToPlayer() <= 300))
             {
-                if (Menu.Item("GapE", true).GetValue<bool>() && E.IsReady() && Utils.TickCount - LastECast > 2500 && !IsAttack)
+                if (Menu.Item("GapE", true).GetValue<bool>() && E.IsReady() && Utils.TickCount - LastECast > 2500 &&
+                    !IsAttack)
                 {
                     E.CastTo(target);
                 }
@@ -211,7 +212,8 @@
                                 Q.CastOnUnit(target, true);
                             }
 
-                            if (Menu.Item("ComboW", true).GetValue<bool>() && Menu.Item("ComboWAA", true).GetValue<bool>() &&
+                            if (Menu.Item("ComboW", true).GetValue<bool>() &&
+                                Menu.Item("ComboWAA", true).GetValue<bool>() &&
                                 W.IsReady() && target.IsValidTarget(W.Range) && target.HasBuff("jhinespotteddebuff"))
                             {
                                 W.CastTo(target);
@@ -255,8 +257,9 @@
             }
 
             foreach (var enemy in HeroManager.Enemies.Where(h => R.IsReady() && h.IsValidTarget(R.Range) &&
-            Me.GetSpellDamage(h, SpellSlot.R) * Menu.Item("RMenuKill", true).GetValue<Slider>().Value >
-            h.Health + h.HPRegenRate * 3))
+                                                                 Me.GetSpellDamage(h, SpellSlot.R)*
+                                                                 Menu.Item("RMenuKill", true).GetValue<Slider>().Value >
+                                                                 h.Health + h.HPRegenRate*3))
             {
                 if (Menu.Item("PingKill", true).GetValue<bool>())
                 {
@@ -265,7 +268,9 @@
 
                 if (Menu.Item("NotificationKill", true).GetValue<bool>() && Utils.TickCount - LastShowNoit > 10000)
                 {
-                    Notifications.AddNotification(new Notification("R Kill: " + enemy.ChampionName + "!", 3000, true).SetTextColor(Color.FromArgb(255, 0, 0)));
+                    Notifications.AddNotification(
+                        new Notification("R Kill: " + enemy.ChampionName + "!", 3000, true).SetTextColor(
+                            Color.FromArgb(255, 0, 0)));
                     LastShowNoit = Utils.TickCount;
                 }
             }
@@ -400,7 +405,8 @@
                         return;
                     }
 
-                    if (target.Health > Me.GetSpellDamage(target, SpellSlot.R) * Menu.Item("RMenuKill", true).GetValue<Slider>().Value)
+                    if (target.Health >
+                        Me.GetSpellDamage(target, SpellSlot.R)*Menu.Item("RMenuKill", true).GetValue<Slider>().Value)
                     {
                         return;
                     }

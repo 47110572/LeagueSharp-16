@@ -269,9 +269,11 @@
         {
             if (Menu.Item("JungleStealE", true).GetValue<bool>() && E.IsReady())
             {
-                var mobs = MinionManager.GetMinions(E.Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+                var mobs = MinionManager.GetMinions(E.Range, MinionTypes.All, MinionTeam.Neutral,
+                    MinionOrderTypes.MaxHealth);
 
-                foreach (var mob in mobs.Where(x => !x.Name.ToLower().Contains("mini") && x.DistanceToPlayer() <= E.Range))
+                foreach (
+                    var mob in mobs.Where(x => !x.Name.ToLower().Contains("mini") && x.DistanceToPlayer() <= E.Range))
                 {
                     if (E.IsKillable(mob))
                     {
