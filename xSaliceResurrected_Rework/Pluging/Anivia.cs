@@ -240,26 +240,6 @@
             }
         }
 
-        private void CastR(Obj_AI_Hero target)
-        {
-            var Rpred = Prediction.GetPrediction(new PredictionInput
-            {
-                Unit = target,
-                Delay = R.Delay,
-                Radius = R.Width,
-                Speed = R.Speed,
-                Range = R.Range,
-                Collision = false,
-                Type = SkillshotType.SkillshotCircle,
-                Aoe = true,
-            });
-
-            if (Rpred.Hitchance >= HitChance.VeryHigh)
-            {
-                R.Cast(Rpred.CastPosition, true);
-            }
-        }
-
         private void SmartKs()
         {
             if (!Menu.Item("smartKS", true).GetValue<bool>())
