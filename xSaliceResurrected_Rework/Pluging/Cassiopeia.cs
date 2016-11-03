@@ -17,48 +17,100 @@
         private float _lastFlash;
         private Vector3 _flashVec;
         private int _lastE;
+        private int _lastNotification;
+        private readonly List<Obj_AI_Hero> _poisonTargets = new List<Obj_AI_Hero>();
 
         public Cassiopeia()
         {
-            Game.PrintChat("Cassiopeia Need to Rewrite, please use others assembly!");
+            SpellManager.Q = new Spell(SpellSlot.Q, 850f);
+            SpellManager.W = new Spell(SpellSlot.W, 900f);
+            SpellManager.E = new Spell(SpellSlot.E, 700f);
+            SpellManager.R = new Spell(SpellSlot.R, 875f);
+            SpellManager.R2 = new Spell(SpellSlot.R, 1300f);
 
-            SpellManager.Q = new Spell(SpellSlot.Q, 850);
-            SpellManager.W = new Spell(SpellSlot.W, 850);
-            SpellManager.E = new Spell(SpellSlot.E, 700);
-            SpellManager.R = new Spell(SpellSlot.R, 750);
-            SpellManager.R2 = new Spell(SpellSlot.R, 1200);
+            SpellManager.Q.SetSkillshot(0.7f, 80f, float.MaxValue, false, SkillshotType.SkillshotCircle);
+            SpellManager.W.SetSkillshot(0.75f, 90f, 2500, false, SkillshotType.SkillshotCircle);
+            SpellManager.E.SetTargetted(0.125f, float.MaxValue);
+            SpellManager.R.SetSkillshot(0.5f, (float)(80 * Math.PI / 180), 3200f, false, SkillshotType.SkillshotCone);
+            SpellManager.R2.SetSkillshot(0.5f, (float)(80 * Math.PI / 180), 3200f, false, SkillshotType.SkillshotCone);
 
-            SpellManager.Q.SetSkillshot(0.6f, 80f, float.MaxValue, false, SkillshotType.SkillshotCircle);
-            SpellManager.W.SetSkillshot(0.5f, 90f, 2500, false, SkillshotType.SkillshotCircle);
-            SpellManager.E.SetTargetted(0.2f, float.MaxValue);
-            SpellManager.R.SetSkillshot(0.3f, (float)(80 * Math.PI / 180), float.MaxValue, false, SkillshotType.SkillshotCone);
-            SpellManager.R2.SetSkillshot(0.3f, (float)(80 * Math.PI / 180), float.MaxValue, false, SkillshotType.SkillshotCone);
+            var combo = new Menu("Combo", "Combo");
+            {
+                combo.AddItem(new MenuItem("UseQCombo", "Use Q", true).SetValue(true));
+                combo.AddItem(new MenuItem("UseWCombo", "Use W", true).SetValue(true));
+                combo.AddItem(new MenuItem("UseECombo", "Use E", true).SetValue(true));
+                combo.AddItem(new MenuItem("UseRCombo", "Use R", true).SetValue(true));
+                Menu.AddSubMenu(combo);
+            }
 
-            var spellMenu = new Menu("SpellMenu", "SpellMenu");
+            var harass = new Menu("Harass", "Harass");
+            {
+                harass.AddItem(new MenuItem("UseQHarass", "Use Q", true).SetValue(true));
+                harass.AddItem(new MenuItem("UseWHarass", "Use W", true).SetValue(false));
+                harass.AddItem(new MenuItem("UseEHarass", "Use E", true).SetValue(true));
+                harass.AddItem(
+                    new MenuItem("FarmT", "Harass (toggle)!", true).SetValue(new KeyBind("N".ToCharArray()[0],
+                        KeyBindType.Toggle)));
+                ManaManager.AddManaManagertoMenu(harass, "Harass", 50);
+                Menu.AddSubMenu(harass);
+            }
+
+            var farm = new Menu("LaneClear", "LaneClear");
+            {
+                farm.AddItem(new MenuItem("UseQFarm", "Use Q", true).SetValue(true));
+                farm.AddItem(new MenuItem("UseWFarm", "Use W", true).SetValue(true));
+                farm.AddItem(new MenuItem("UseEFarm", "Use E", true).SetValue(false));
+                farm.AddItem(
+                    new MenuItem("EMode", "E Mode", true).SetValue(
+                        new StringList(new[] {"Poisoned", "LastHit", "PoisonLastHit"})));
+                farm.AddItem(new MenuItem("QMinHit", "Min Minion to Q", true).SetValue(new Slider(3, 1, 6)));
+                farm.AddItem(new MenuItem("WMinHit", "Min Minion to W", true).SetValue(new Slider(3, 1, 6)));
+                ManaManager.AddManaManagertoMenu(farm, "LaneClear", 50);
+                Menu.AddSubMenu(farm);
+            }
+
+            var jungle = new Menu("Jungle", "Jungle");
+            {
+                jungle.AddItem(new MenuItem("UseQJungle", "Use Q", true).SetValue(true));
+                jungle.AddItem(new MenuItem("UseWJungle", "Use W", true).SetValue(true));
+                jungle.AddItem(new MenuItem("UseEJungle", "Use E", true).SetValue(true));
+                ManaManager.AddManaManagertoMenu(jungle, "JungleClear", 30);
+                Menu.AddSubMenu(jungle);
+            }
+
+            var miscMenu = new Menu("Misc", "Misc");
             {
                 var qMenu = new Menu("QMenu", "QMenu");
                 {
                     qMenu.AddItem(new MenuItem("Auto_Q_Immobile", "Auto Q Immobile", true).SetValue(true));
                     qMenu.AddItem(new MenuItem("Auto_Q_Dashing", "Auto Q Dashing", true).SetValue(true));
-                    spellMenu.AddSubMenu(qMenu);
+                    miscMenu.AddSubMenu(qMenu);
                 }
 
                 var wMenu = new Menu("WMenu", "WMenu");
                 {
-                    wMenu.AddItem(new MenuItem("OnlyWIfnotPoison", "Only W if Q is offcd and enemy not poison", true).SetValue(false));
-                    spellMenu.AddSubMenu(wMenu);
+                    wMenu.AddItem(
+                        new MenuItem("OnlyWIfnotPoison", "Only W if Q is offcd and enemy not poison", true).SetValue(
+                            false));
+                    miscMenu.AddSubMenu(wMenu);
                 }
 
                 var eMenu = new Menu("EMenu", "EMenu");
-                {
+                { 
                     eMenu.AddItem(new MenuItem("E_Poison", "Auto E Poison Target", true).SetValue(true));
-                    eMenu.AddItem(new MenuItem("E_Delay", "Delay between 0-1500(Milliseconds or tick)", true).SetValue(new Slider(0, 0, 1500)));
-                    eMenu.AddItem(new MenuItem("LastHitE", "Last Hit With E", true).SetValue(new KeyBind("A".ToCharArray()[0], KeyBindType.Press)));
-                    spellMenu.AddSubMenu(eMenu);
+                    eMenu.AddItem(
+                        new MenuItem("E_Delay", "Delay between 0-1500(Milliseconds or tick)", true).SetValue(
+                            new Slider(0, 0, 1500)));
+                    eMenu.AddItem(
+                        new MenuItem("LastHitE", "Last Hit With E", true).SetValue(new KeyBind("A".ToCharArray()[0],
+                            KeyBindType.Press)));
+                    miscMenu.AddSubMenu(eMenu);
                 }
 
                 var rMenu = new Menu("RMenu", "RMenu");
                 {
+                    eMenu.AddItem(new MenuItem("UseGap", "Use R for GapCloser", true).SetValue(false));
+                    rMenu.AddItem(new MenuItem("UseInt", "Use R to Interrupt", true).SetValue(true));
                     rMenu.AddItem(new MenuItem("forceUlt", "Ult Helper", true).SetValue(new KeyBind("H".ToCharArray()[0], KeyBindType.Press)));
                     rMenu.AddItem(new MenuItem("flashUlt", "Ult Flash", true).SetValue(new KeyBind("T".ToCharArray()[0], KeyBindType.Press)));
                     rMenu.AddItem(new MenuItem("aoeUltOnly", "AOE Ult Only", true).SetValue(new KeyBind("Y".ToCharArray()[0], KeyBindType.Toggle)));
@@ -75,55 +127,9 @@
                             .AddItem(new MenuItem("Dont_R" + enemy.CharData.BaseSkinName, enemy.CharData.BaseSkinName, true).SetValue(false));
                     }
 
-                    spellMenu.AddSubMenu(rMenu);
+                    miscMenu.AddSubMenu(rMenu);
                 }
-                Menu.AddSubMenu(spellMenu);
-            }
 
-            var combo = new Menu("Combo", "Combo");
-            {
-                combo.AddItem(new MenuItem("UseQCombo", "Use Q", true).SetValue(true));
-                combo.AddItem(new MenuItem("UseWCombo", "Use W", true).SetValue(true));
-                combo.AddItem(new MenuItem("UseECombo", "Use E", true).SetValue(true));
-                combo.AddItem(new MenuItem("UseRCombo", "Use R", true).SetValue(true));
-                Menu.AddSubMenu(combo);
-            }
-
-            var harass = new Menu("Harass", "Harass");
-            {
-                harass.AddItem(new MenuItem("UseQHarass", "Use Q", true).SetValue(true));
-                harass.AddItem(new MenuItem("UseWHarass", "Use W", true).SetValue(false));
-                harass.AddItem(new MenuItem("UseEHarass", "Use E", true).SetValue(true));
-                harass.AddItem(new MenuItem("FarmT", "Harass (toggle)!", true).SetValue(new KeyBind("N".ToCharArray()[0], KeyBindType.Toggle)));
-                ManaManager.AddManaManagertoMenu(harass, "Harass", 50);
-                Menu.AddSubMenu(harass);
-            }
-
-            var farm = new Menu("LaneClear", "LaneClear");
-            {
-                farm.AddItem(new MenuItem("UseQFarm", "Use Q", true).SetValue(true));
-                farm.AddItem(new MenuItem("UseWFarm", "Use W", true).SetValue(true));
-                farm.AddItem(new MenuItem("UseEFarm", "Use E", true).SetValue(false));
-                farm.AddItem(new MenuItem("EMode", "E Mode", true).SetValue(new StringList(new[] { "Poisoned", "LastHit", "PoisonLastHit" })));
-                farm.AddItem(new MenuItem("QMinHit", "Min Minion to Q", true).SetValue(new Slider(3, 1, 6)));
-                farm.AddItem(new MenuItem("WMinHit", "Min Minion to W", true).SetValue(new Slider(3, 1, 6)));
-                ManaManager.AddManaManagertoMenu(farm, "LaneClear", 50);
-                Menu.AddSubMenu(farm);
-            }
-
-            var jungle = new Menu("Jungle", "Jungle");
-            {
-                jungle.AddItem(new MenuItem("UseQJungle", "Use Q", true).SetValue(true));
-                jungle.AddItem(new MenuItem("UseWJungle", "Use W", true).SetValue(true));
-                jungle.AddItem(new MenuItem("UseEJungle", "Use E", true).SetValue(true));
-                Menu.AddSubMenu(jungle);
-            }
-
-            var miscMenu = new Menu("Misc", "Misc");
-            {
-                miscMenu.AddSubMenu(AoeSpellManager.AddHitChanceMenuCombo(true, true, false, true));
-                miscMenu.AddItem(new MenuItem("UseGap", "Use E for GapCloser", true).SetValue(false));
-                miscMenu.AddItem(new MenuItem("UseInt", "Use R to Interrupt", true).SetValue(true));
                 miscMenu.AddItem(new MenuItem("smartKS", "Smart KS", true).SetValue(true));
                 miscMenu.AddItem(new MenuItem("disableAA", "Disable AA on Combo if spells are Ready", true).SetValue(true));
                 Menu.AddSubMenu(miscMenu);
@@ -164,7 +170,9 @@
             var customMenu = new Menu("Custom Perma Show", "Custom Perma Show");
             {
                 var myCust = new CustomPermaMenu();
-                customMenu.AddItem(new MenuItem("custMenu", "Move Menu", true).SetValue(new KeyBind("L".ToCharArray()[0], KeyBindType.Press)));
+                customMenu.AddItem(
+                    new MenuItem("custMenu", "Move Menu", true).SetValue(new KeyBind("L".ToCharArray()[0],
+                        KeyBindType.Press)));
                 customMenu.AddItem(new MenuItem("enableCustMenu", "Enabled", true).SetValue(true));
                 customMenu.AddItem(myCust.AddToMenu("Combo Active: ", "Orbwalk"));
                 customMenu.AddItem(myCust.AddToMenu("Harass Active: ", "Farm"));
@@ -202,38 +210,51 @@
 
         private void Combo()
         {
-            var magicTarget = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
-            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
             if (target.IsValidTarget(Q.Range))
             {
                 var dmg = GetComboDamage(target);
 
                 ItemManager.Target = target;
-                
+
                 if (dmg > target.Health - 50)
+                {
                     ItemManager.KillableTarget = true;
+                }
 
                 ItemManager.UseTargetted = true;
             }
 
             if (Menu.Item("UseRCombo", true).GetValue<bool>() && R.IsReady())
-                Cast_R();
-
-            if (Menu.Item("UseECombo", true).GetValue<bool>() && E.IsReady())
-                Cast_E();
-
-            if (Menu.Item("UseQCombo", true).GetValue<bool>() && Q.IsReady() && !magicTarget.HasBuffOfType(BuffType.Poison))
             {
-                Q.CastIfHitchanceEquals(magicTarget, HitChance.High);
-                return;
+                Cast_R();
             }
 
-            if (Menu.Item("UseWCombo", true).GetValue<bool>() && W.IsReady() && !magicTarget.HasBuffOfType(BuffType.Poison))
+            if (Menu.Item("UseECombo", true).GetValue<bool>() && E.IsReady())
             {
-                if (!Q.IsReady())
+                Cast_E();
+            }
+
+            if (Menu.Item("UseWCombo", true).GetValue<bool>() && W.IsReady() && target.IsValidTarget(W.Range) &&
+                !target.HasBuffOfType(BuffType.Poison))
+            {
+                var wPred = W.GetPrediction(target, true);
+
+                if (wPred.Hitchance >= HitChance.VeryHigh)
                 {
-                    W.CastIfHitchanceEquals(magicTarget, HitChance.VeryHigh);
+                    W.Cast(wPred.CastPosition);
+                }
+            }
+
+            if (Menu.Item("UseQCombo", true).GetValue<bool>() && Q.IsReady() && target.IsValidTarget(Q.Range) &&
+                !target.HasBuffOfType(BuffType.Poison))
+            {
+                var qPred = Q.GetPrediction(target);
+
+                if (qPred.Hitchance >= HitChance.VeryHigh)
+                {
+                    Q.Cast(qPred.CastPosition);
                 }
             }
         }
@@ -241,24 +262,36 @@
         private void Harass()
         {
             if (!ManaManager.HasMana("Harass"))
-                return;
-
-            var magicTarget = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
-
-            if (Menu.Item("UseEHarass", true).GetValue<bool>() && E.IsReady())
-                Cast_E();
-
-            if (Menu.Item("UseQHarass", true).GetValue<bool>() && Q.IsReady() && !magicTarget.HasBuffOfType(BuffType.Poison))
             {
-                Q.CastIfHitchanceEquals(magicTarget, HitChance.High);
                 return;
             }
 
-            if (Menu.Item("UseWHarass", true).GetValue<bool>() && W.IsReady() && !magicTarget.HasBuffOfType(BuffType.Poison))
+            var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+
+            if (Menu.Item("UseEHarass", true).GetValue<bool>() && E.IsReady())
             {
-                if (!Q.IsReady())
+                Cast_E();
+            }
+
+            if (Menu.Item("UseWHarass", true).GetValue<bool>() && W.IsReady() && target.IsValidTarget(W.Range) &&
+                !target.HasBuffOfType(BuffType.Poison))
+            {
+                var wPred = W.GetPrediction(target, true);
+
+                if (wPred.Hitchance >= HitChance.VeryHigh)
                 {
-                    W.CastIfHitchanceEquals(magicTarget, HitChance.VeryHigh);
+                    W.Cast(wPred.CastPosition);
+                }
+            }
+
+            if (Menu.Item("UseQHarass", true).GetValue<bool>() && Q.IsReady() && target.IsValidTarget(Q.Range) && 
+                !target.HasBuffOfType(BuffType.Poison))
+            {
+                var qPred = Q.GetPrediction(target);
+
+                if (qPred.Hitchance >= HitChance.VeryHigh)
+                {
+                    Q.Cast(qPred.CastPosition);
                 }
             }
         }
@@ -267,17 +300,27 @@
         protected override void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
             if (!Menu.Item("disableAA", true).GetValue<bool>() || !(args.Target is Obj_AI_Hero))
+            {
                 return;
+            }
 
-            if (Q.IsReady() || W.IsReady() || (E.IsReady() && _poisonTargets.Any(x => x.NetworkId == args.Target.NetworkId)))
+            if (Q.IsReady() || W.IsReady() ||
+                (E.IsReady() && _poisonTargets.Any(x => x.NetworkId == args.Target.NetworkId)))
+            {
                 args.Process = false;
+            }
             else
+            {
                 args.Process = true;
+            }
         }
 
         private float PoisonDuration(Obj_AI_Base target)
         {
-            return target.Buffs.Where(x => x.Type == BuffType.Poison).Select(buff => buff.EndTime - Game.Time).FirstOrDefault();
+            return
+                target.Buffs.Where(x => x.Type == BuffType.Poison)
+                    .Select(buff => buff.EndTime - Game.Time)
+                    .FirstOrDefault();
         }
 
         private void Cast_E()
@@ -286,7 +329,6 @@
 
             if (target.IsValidTarget(E.Range))
             {
-
                 if (Player.GetSpellDamage(target, SpellSlot.E) - 20 > target.Health)
                 {
                     E.Cast(target);
@@ -306,14 +348,17 @@
         private void FlashUlt()
         {
             if (!SummonerManager.Flash_Ready() || Utils.TickCount - _lastFlash < 500)
+            {
                 return;
+            }
 
             var vec = Player.ServerPosition.Extend(Game.CursorPos, R.Range + 400);
-
             var count = HeroManager.Enemies.Count(x => x.IsValidTarget() && R2.WillHit(x, vec));
 
             if (count == 0)
+            {
                 return;
+            }
 
             Player.Spellbook.CastSpell(SpellSlot.R, vec);
             _flashVec = vec;
@@ -323,17 +368,24 @@
         private bool QSuccessfullyCasted(Obj_AI_Base target)
         {
             if (!Menu.Item("OnlyWIfnotPoison", true).GetValue<bool>())
+            {
                 return true;
+            }
 
             if (target.HasBuffOfType(BuffType.Poison))
+            {
                 return false;
+            }
 
             return Utils.TickCount - Q.LastCastAttemptT > 800 + Game.Ping;
         }
 
         protected override void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base unit, GameObjectProcessSpellCastEventArgs args)
         {
-            if (!unit.IsMe) return;
+            if (!unit.IsMe)
+            {
+                return;
+            }
 
             var castedSlot = ObjectManager.Player.GetSpellSlot(args.SData.Name);
 
@@ -349,31 +401,41 @@
 
             if (castedSlot == SpellSlot.R)
             {
-                if(Utils.TickCount - _lastFlash < 500 && _lastFlash > 0)
+                if (Utils.TickCount - _lastFlash < 500 && _lastFlash > 0)
+                {
                     SummonerManager.UseFlash(_flashVec);
+                }
             }
         }
 
         private void AutoEPoisonTargets()
         {
             if (!E.IsReady())
+            {
                 return;
+            }
 
             if (_poisonTargets.Count > 0)
             {
-                var target = _poisonTargets.Where(x => x.IsValidTarget(E.Range)).Where(x => PoisonDuration(x) > E.Delay).OrderByDescending(GetComboDamage).FirstOrDefault();
+                var target =
+                    _poisonTargets.Where(x => x.IsValidTarget(E.Range))
+                        .Where(x => PoisonDuration(x) > E.Delay)
+                        .OrderByDescending(GetComboDamage)
+                        .FirstOrDefault();
 
-                if(target != null)
+                if (target != null)
+                {
                     E.Cast(target);
+                }
             }
         }
-
-        private readonly List<Obj_AI_Hero> _poisonTargets = new List<Obj_AI_Hero>();
 
         protected override void ObjAiBaseOnOnBuffAdd(Obj_AI_Base sender, Obj_AI_BaseBuffAddEventArgs args)
         {
             if (sender.IsMe || !(sender is Obj_AI_Hero) || !sender.IsEnemy)
+            {
                 return;
+            }
 
             if (args.Buff.Type == BuffType.Poison)
             {
@@ -384,11 +446,14 @@
         protected override void ObjAiBaseOnOnBuffRemove(Obj_AI_Base sender, Obj_AI_BaseBuffRemoveEventArgs args)
         {
             if (sender.IsMe || !(sender is Obj_AI_Hero) || !sender.IsEnemy)
+            {
                 return;
+            }
 
             if (args.Buff.Type == BuffType.Poison)
             {
-                _poisonTargets.RemoveAll(x => x.NetworkId == sender.NetworkId && x.Buffs.Count(y => y.Type == BuffType.Poison) == 1);
+                _poisonTargets.RemoveAll(
+                    x => x.NetworkId == sender.NetworkId && x.Buffs.Count(y => y.Type == BuffType.Poison) == 1);
             }
         }
 
@@ -397,7 +462,9 @@
             var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
 
             if (target == null || !Q.IsReady())
+            {
                 return;
+            }
 
             if (Q.GetPrediction(target).Hitchance == HitChance.Immobile &&
                 Menu.Item("Auto_Q_Immobile", true).GetValue<bool>())
@@ -416,41 +483,45 @@
         private void Farm()
         {
             if (!ManaManager.HasMana("LaneClear"))
+            {
                 return;
+            }
 
-            var useQ = Menu.Item("UseQFarm", true).GetValue<bool>();
-            var useW = Menu.Item("UseWFarm", true).GetValue<bool>();
-            var useE = Menu.Item("UseEFarm", true).GetValue<bool>();
-
-            if (useQ)
+            if (Menu.Item("UseQFarm", true).GetValue<bool>() && Q.IsReady())
             {
                 var min = Menu.Item("QMinHit", true).GetValue<Slider>().Value;
-                var minionQ = MinionManager.GetMinions(Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.NotAlly);
+                var minionQ = MinionManager.GetMinions(Player.ServerPosition, Q.Range);
 
                 var pred = Q.GetCircularFarmLocation(minionQ, 120);
 
                 if (pred.MinionsHit >= min)
+                {
                     Q.Cast(pred.Position);
+                }
             }
 
-            if (useW)
+            if (Menu.Item("UseWFarm", true).GetValue<bool>() && W.IsReady())
             {
                 var min = Menu.Item("WMinHit", true).GetValue<Slider>().Value;
-                var minionW = MinionManager.GetMinions(Player.ServerPosition, W.Range, MinionTypes.All, MinionTeam.NotAlly);
+                var minionW = MinionManager.GetMinions(Player.ServerPosition, W.Range);
 
                 var pred = W.GetCircularFarmLocation(minionW, 200);
 
                 if (pred.MinionsHit >= min)
+                {
                     W.Cast(pred.Position);
+                }
             }
 
-            if (useE)
+            if (Menu.Item("UseEFarm", true).GetValue<bool>() && E.IsReady())
             {
                 var mode = Menu.Item("EMode", true).GetValue<StringList>().SelectedIndex;
-                var minions = MinionManager.GetMinions(Player.ServerPosition, E.Range, MinionTypes.All, MinionTeam.NotAlly);
+                var minions = MinionManager.GetMinions(Player.ServerPosition, E.Range);
 
                 if (minions.Count == 0)
+                {
                     return;
+                }
 
                 switch (mode)
                 {
@@ -458,24 +529,32 @@
                         var minion = minions.FirstOrDefault(x => PoisonDuration(x) > E.Delay);
 
                         if (minion != null)
+                        {
                             E.Cast(minion);
+                        }
                         break;
                     case 1:
                         foreach (var x in minions)
                         {
-                            var healthPred = HealthPrediction.GetHealthPrediction(x, (int)Player.Distance(x), Game.Ping +  200);
+                            var healthPred = HealthPrediction.GetHealthPrediction(x, (int) Player.Distance(x),
+                                Game.Ping + 200);
 
                             if (healthPred <= Player.GetSpellDamage(x, SpellSlot.E))
+                            {
                                 E.Cast(x);
+                            }
                         }
                         break;
                     case 2:
                         foreach (var x in minions.Where(x => PoisonDuration(x) > E.Delay))
                         {
-                            var healthPred = HealthPrediction.GetHealthPrediction(x, (int)Player.Distance(x), Game.Ping + 200);
+                            var healthPred = HealthPrediction.GetHealthPrediction(x, (int) Player.Distance(x),
+                                Game.Ping + 200);
 
                             if (healthPred <= Player.GetSpellDamage(x, SpellSlot.E))
+                            {
                                 E.Cast(x);
+                            }
                         }
                         break;
                 }
@@ -484,64 +563,73 @@
 
         private void Jungle()
         {
-            var useQ = Menu.Item("UseQJungle", true).GetValue<bool>();
-            var useW = Menu.Item("UseWJungle", true).GetValue<bool>();
-            var useE = Menu.Item("UseEJungle", true).GetValue<bool>();
+            if (!ManaManager.HasMana("JungleClear"))
+            {
+                return;
+            }
 
             var minionQ = MinionManager.GetMinions(Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.Neutral);
             var minionW = MinionManager.GetMinions(Player.ServerPosition, W.Range, MinionTypes.All, MinionTeam.Neutral);
             var minions = MinionManager.GetMinions(Player.ServerPosition, E.Range, MinionTypes.All, MinionTeam.Neutral);
 
-            if (useQ && minionQ.Count > 0)
+            if (Menu.Item("UseQJungle", true).GetValue<bool>() && minionQ.Count > 0)
             {
                 var pred = Q.GetCircularFarmLocation(minionQ, 120);
 
                 Q.Cast(pred.Position);
             }
 
-            if (useW && minionW.Count > 0)
+            if (Menu.Item("UseWJungle", true).GetValue<bool>() && minionW.Count > 0)
             {
                 var pred = W.GetCircularFarmLocation(minionW, 200);
 
                 W.Cast(pred.Position);
             }
 
-            if (useE && minions.Count > 0)
+            if (Menu.Item("UseEJungle", true).GetValue<bool>() && minions.Count > 0)
             {
                 if (minions.Count == 0)
+                {
                     return;
+                }
 
                 var minion = minions.FirstOrDefault(x => PoisonDuration(x) > E.Delay);
 
                 if (minion != null)
+                {
                     E.Cast(minion);
+                }
             }
         }
 
         private void LastHit()
         {
-            if (!E.IsReady())
+            if (!E.IsReady() || Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            {
                 return;
+            }
 
             var minions = MinionManager.GetMinions(Player.ServerPosition, E.Range, MinionTypes.All, MinionTeam.NotAlly);
 
-            if (minions.Count == 0)
-                return;
-
-            foreach (var x in from x
-                              in minions
-                              let healthPred = HealthPrediction.GetHealthPrediction(x, (int)Player.Distance(x), Game.Ping + 200)
-                              where healthPred <= Player.GetSpellDamage(x, SpellSlot.E)
-                              select x)
+            if (minions.Any())
             {
-                E.Cast(x);
+                foreach (var x in from x
+                    in minions
+                    let healthPred = HealthPrediction.GetHealthPrediction(x, (int) Player.Distance(x), Game.Ping + 200)
+                    where healthPred <= Player.GetSpellDamage(x, SpellSlot.E)
+                    select x)
+                {
+                    E.Cast(x);
+                }
             }
         }
 
         private void Cast_R()
         {
             if (Menu.Item("aoeUltOnly", true).GetValue<KeyBind>().Active)
+            {
                 return;
+            }
 
             foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range))
                 .OrderByDescending(GetComboDamage))
@@ -559,7 +647,8 @@
 
                         if (Menu.Item("KillableCombo", true).GetValue<bool>())
                         {
-                            if (GetComboDamage(target) > target.Health && R.GetPrediction(target).Hitchance >= HitChance.VeryHigh)
+                            if (GetComboDamage(target) > target.Health &&
+                                R.GetPrediction(target).Hitchance >= HitChance.VeryHigh)
                             {
                                 if (ShouldR(target))
                                 {
@@ -580,9 +669,7 @@
             foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range)))
             {
                 var pred = R.GetPrediction(target, true);
-
                 var enemyHit = pred.AoeTargetsHit.Where(x => x.IsValidTarget(R.Range));
-
                 var count = enemyHit.Count(x => x.IsFacing(Player));
 
                 if (count >= minHit)
@@ -592,6 +679,7 @@
                 }
             }
         }
+
         private bool ShouldR(Obj_AI_Hero target)
         {
             return !Menu.Item("faceCheck", true).GetValue<bool>() || target.IsFacing(Player);
@@ -599,10 +687,12 @@
 
         private void CheckKs()
         {
-            foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(Q.Range)).OrderByDescending(GetComboDamage))
+            foreach (var target in 
+                HeroManager.Enemies.Where(x => x.IsValidTarget(Q.Range)).OrderByDescending(GetComboDamage))
             {
-                if (Player.ServerPosition.Distance(target.ServerPosition) <= E.Range && 
-                    Player.GetSpellDamage(target, SpellSlot.Q) + Player.GetSpellDamage(target, SpellSlot.E) > target.Health && 
+                if (Player.ServerPosition.Distance(target.ServerPosition) <= E.Range &&
+                    Player.GetSpellDamage(target, SpellSlot.Q) + Player.GetSpellDamage(target, SpellSlot.E) >
+                    target.Health &&
                     Q.IsReady() && E.IsReady())
                 {
                     Q.Cast(target);
@@ -610,8 +700,9 @@
                     return;
                 }
 
-                if (Player.ServerPosition.Distance(target.ServerPosition) <= Q.Range && 
-                    Player.GetSpellDamage(target, SpellSlot.Q) + Player.GetSpellDamage(target, SpellSlot.W) > target.Health &&
+                if (Player.ServerPosition.Distance(target.ServerPosition) <= Q.Range &&
+                    Player.GetSpellDamage(target, SpellSlot.Q) + Player.GetSpellDamage(target, SpellSlot.W) >
+                    target.Health &&
                     Q.IsReady() && W.IsReady())
                 {
                     Q.Cast(target);
@@ -620,7 +711,8 @@
                 }
 
                 if (Player.ServerPosition.Distance(target.ServerPosition) <= E.Range &&
-                    Player.GetSpellDamage(target, SpellSlot.W) + Player.GetSpellDamage(target, SpellSlot.E) > target.Health &&
+                    Player.GetSpellDamage(target, SpellSlot.W) + Player.GetSpellDamage(target, SpellSlot.E) >
+                    target.Health &&
                     W.IsReady() && E.IsReady() && QSuccessfullyCasted(target))
                 {
                     W.Cast(target);
@@ -653,7 +745,7 @@
 
         protected override void SpellbookOnOnCastSpell(Spellbook sender, SpellbookCastSpellEventArgs args)
         {
-            if (args.Slot == SpellSlot.E && Menu.Item("Orbwalk", true).GetValue<KeyBind>().Active)
+            if (args.Slot == SpellSlot.E && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
                 if (Utils.TickCount - _lastE < Menu.Item("E_Delay", true).GetValue<Slider>().Value)
                 {
@@ -661,44 +753,76 @@
                 }
             }
 
-            if (args.Slot != SpellSlot.R || !Menu.Item("blockR", true).GetValue<bool>() || Menu.Item("flashUlt", true).GetValue<KeyBind>().Active)
+            if (args.Slot != SpellSlot.R || !Menu.Item("blockR", true).GetValue<bool>() ||
+                Menu.Item("flashUlt", true).GetValue<KeyBind>().Active)
+            {
                 return;
+            }
 
-            var count = HeroManager.Enemies.Count(x => x.IsValidTarget() && R.WillHit(x, R.GetPrediction(x, true).CastPosition));
+            var count =
+                HeroManager.Enemies.Count(x => x.IsValidTarget() && R.WillHit(x, R.GetPrediction(x, true).CastPosition));
 
-            if (!Menu.Item("forceUlt", true).GetValue<KeyBind>().Active && !Menu.Item("Orbwalk", true).GetValue<KeyBind>().Active)
+            if (!Menu.Item("forceUlt", true).GetValue<KeyBind>().Active &&
+                Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
+            {
                 count = HeroManager.Enemies.Count(x => x.IsValidTarget() && R.WillHit(x, Game.CursorPos));
+            }
 
             if (count == 0)
+            {
                 args.Process = false;
+            }
         }
 
         private void ForceUlt()
         {
             if (R.IsReady())
+            {
                 return;
+            }
 
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Magical);
 
             if (!target.IsValidTarget(R.Range))
+            {
                 return;
+            }
 
             if (target.IsFacing(Player) || !Menu.Item("faceCheckHelper", true).GetValue<bool>())
+            {
                 R.Cast(target);
+            }
         }
 
         protected override void Game_OnGameUpdate(EventArgs args)
         {
-            if (Player.IsDead) return;
+            if (Player.IsDead)
+            {
+                return;
+            }
 
             if (Menu.Item("smartKS", true).GetValue<bool>())
+            {
                 CheckKs();
+            }
 
             AoeStun();
             ImmobileCast();
 
             if (Menu.Item("FarmT", true).GetValue<KeyBind>().Active)
+            {
                 Harass();
+            }
+
+            if (Menu.Item("LastHitE", true).GetValue<KeyBind>().Active)
+            {
+                LastHit();
+            }
+
+            if (Menu.Item("E_Poison", true).GetValue<bool>())
+            {
+                AutoEPoisonTargets();
+            }
 
             switch (Orbwalker.ActiveMode)
             {
@@ -714,13 +838,7 @@
                     Farm();
                     Jungle();
                     break;
-                case Orbwalking.OrbwalkingMode.Freeze:
-                    break;
-                case Orbwalking.OrbwalkingMode.CustomMode:
-                    break;
                 case Orbwalking.OrbwalkingMode.None:
-                    if (Menu.Item("LastHitE", true).GetValue<KeyBind>().Active)
-                        LastHit();
                     if (Menu.Item("forceUlt", true).GetValue<KeyBind>().Active)
                     {
                         Orbwalking.MoveTo(Game.CursorPos);
@@ -731,19 +849,16 @@
                         Orbwalking.MoveTo(Game.CursorPos);
                         FlashUlt();
                     }
-                    if (Menu.Item("E_Poison", true).GetValue<bool>())
-                        AutoEPoisonTargets();
                     break;
-                case Orbwalking.OrbwalkingMode.Flee:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 
         protected override void Interrupter_OnPosibleToInterrupt(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs spell)
         {
-            if (!Menu.Item("UseInt", true).GetValue<bool>()) return;
+            if (!Menu.Item("UseInt", true).GetValue<bool>())
+            {
+                return;
+            }
             
             if (sender.IsValidTarget())
             {
@@ -761,13 +876,15 @@
         protected override void AntiGapcloser_OnEnemyGapcloser(ActiveGapcloser gapcloser)
         {
             if (Player.IsRecalling() || !Menu.Item("UseGap", true).GetValue<bool>())
+            {
                 return;
+            }
 
             if (R.IsReady() && gapcloser.Sender.IsValidTarget(R.Range) && Player.IsFacing(gapcloser.Sender))
+            {
                 R.Cast(gapcloser.Sender);
+            }
         }
-
-        private int _lastNotification;
 
         protected override void Drawing_OnDraw(EventArgs args)
         {
