@@ -245,6 +245,7 @@
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     LaneClear();
+                    JungleClear();
                     break;
                 case Orbwalking.OrbwalkingMode.None:
                     AutoR();
@@ -337,7 +338,9 @@
 
                     if (minions.Any())
                     {
-                        var QFarm = Q.GetCircularFarmLocation(minions, Q.Width);
+                        var QFarm =
+                            MinionManager.GetBestCircularFarmLocation(minions.Select(x => x.Position.To2D()).ToList(),
+                                Q.Width, Q.Range);
 
                         if (QFarm.MinionsHit >= Menu.Item("LaneClearQCount", true).GetValue<Slider>().Value)
                         {
@@ -347,6 +350,44 @@
                 }
             }
         }
+
+
+        private void JungleClear()
+        {
+            if (Me.ManaPercent >= Menu.Item("JungleClearMana", true).GetValue<Slider>().Value)
+            {
+                var mobs = MinionManager.GetMinions(Me.Position, Q.Range, MinionTypes.All, MinionTeam.Neutral,
+                    MinionOrderTypes.MaxHealth);
+
+                if (mobs.Any())
+                {
+                    if (Menu.Item("JungleClearQ", true).GetValue<bool>() && Q.IsReady())
+                    {
+                        var QFarm =
+                            MinionManager.GetBestCircularFarmLocation(mobs.Select(x => x.Position.To2D()).ToList(),
+                                Q.Width, Q.Range);
+
+                        if (QFarm.MinionsHit >= 1)
+                        {
+                            Q.Cast(QFarm.Position);
+                        }
+
+                    }
+
+                    if (Menu.Item("JungleClearE", true).GetValue<bool>() && E.IsReady())
+                    {
+                        var mob =
+                            mobs.FirstOrDefault(x => !x.Name.ToLower().Contains("mini") && x.Health >= E.GetDamage(x));
+
+                        if (mob != null)
+                        {
+                            E.CastOnUnit(mob);
+                        }
+                    }
+                }
+            }
+        }
+
 
         private void AutoR()
         {

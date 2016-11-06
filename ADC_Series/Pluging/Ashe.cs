@@ -385,7 +385,8 @@
                 return;
             }
 
-            var WFarm = W.GetLineFarmLocation(Minions);
+            var WFarm = MinionManager.GetBestCircularFarmLocation(Minions.Select(x => x.Position.To2D()).ToList(),
+                W.Width, W.Range);
 
             if (WFarm.MinionsHit >= Menu.Item("LaneClearWCount", true).GetValue<Slider>().Value)
             {

@@ -269,7 +269,9 @@
                 {
                     if (Menu.Item("LaneClearE", true).GetValue<bool>() && E.IsReady())
                     {
-                        var eFarm = E.GetCircularFarmLocation(minions, E.Width);
+                        var eFarm =
+                            MinionManager.GetBestCircularFarmLocation(minions.Select(x => x.Position.To2D()).ToList(),
+                                E.Width, E.Range);
 
                         if (eFarm.MinionsHit >= Menu.Item("LaneClearECount", true).GetValue<Slider>().Value)
                         {

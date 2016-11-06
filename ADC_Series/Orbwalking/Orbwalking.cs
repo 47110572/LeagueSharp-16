@@ -678,7 +678,7 @@
                     return;
                 }
 
-                MinionListAA = SebbyLib.Cache.GetMinions(Player.Position, 0);
+                MinionListAA = Common.SebbyLibCache.GetMinions(Player.Position, 0);
 
                 var target = GetTarget();
 
@@ -1205,7 +1205,7 @@
                 if (_config.Item("LastHitHelper").GetValue<bool>())
                 {
                     foreach (var minion in
-                        SebbyLib.Cache.MinionsListEnemy
+                        Common.SebbyLibCache.MinionsListEnemy
                             .Where(
                                 x => x.Name.ToLower().Contains("minion") && x.IsHPBarRendered && x.IsValidTarget(1000)))
                     {

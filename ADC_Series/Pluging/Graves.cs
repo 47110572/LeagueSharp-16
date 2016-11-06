@@ -218,7 +218,9 @@
 
                     if (Minions.Any())
                     {
-                        var QFarm = Q.GetLineFarmLocation(Minions);
+                        var QFarm =
+                            MinionManager.GetBestLineFarmLocation(Minions.Select(x => x.Position.To2D()).ToList(),
+                                Q.Width, Q.Range);
 
                         if (QFarm.MinionsHit >= Menu.Item("LaneClearQCount", true).GetValue<Slider>().Value)
                         {
@@ -241,9 +243,14 @@
 
                     if (mobs.Any())
                     {
-                        var mob = mobs.FirstOrDefault();
+                        var QFarm =
+                            MinionManager.GetBestLineFarmLocation(mobs.Select(x => x.Position.To2D()).ToList(),
+                                Q.Width, Q.Range);
 
-                        Q.Cast(mob, true);
+                        if (QFarm.MinionsHit >= 1)
+                        {
+                            Q.Cast(QFarm.Position);
+                        }
                     }
                 }
             }

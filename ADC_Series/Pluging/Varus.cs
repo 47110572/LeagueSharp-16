@@ -272,7 +272,9 @@
 
                     if (qMinions.Any())
                     {
-                        var qFarm = Q.GetLineFarmLocation(qMinions, Q.Width);
+                        var qFarm =
+                            MinionManager.GetBestLineFarmLocation(qMinions.Select(x => x.Position.To2D()).ToList(),
+                                Q.Width, Q.Range);
 
                         if (qFarm.MinionsHit >= Menu.Item("LaneClearQCount", true).GetValue<Slider>().Value)
                         {
@@ -287,7 +289,9 @@
 
                     if (eMinions.Any())
                     {
-                        var eFarm = E.GetCircularFarmLocation(eMinions, E.Width);
+                        var eFarm = 
+                            MinionManager.GetBestCircularFarmLocation(eMinions.Select(x => x.Position.To2D()).ToList(),
+                                E.Width, E.Range);
 
                         if (eFarm.MinionsHit >= Menu.Item("LaneClearECount", true).GetValue<Slider>().Value)
                         {

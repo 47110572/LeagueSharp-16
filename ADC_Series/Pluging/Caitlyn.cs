@@ -363,7 +363,9 @@
 
                     if (minions.Any())
                     {
-                        var QFarm = Q.GetLineFarmLocation(minions, Q.Width);
+                        var QFarm =
+                            MinionManager.GetBestLineFarmLocation(minions.Select(x => x.Position.To2D()).ToList(),
+                                Q.Width, Q.Range);
 
                         if (QFarm.MinionsHit >= Menu.Item("LaneClearQCount", true).GetValue<Slider>().Value)
                         {

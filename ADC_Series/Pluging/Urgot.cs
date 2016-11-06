@@ -384,7 +384,9 @@
                     if (Menu.Item("LaneClearE", true).GetValue<bool>() && E.IsReady())
                     {
                         var eMinions = MinionManager.GetMinions(Me.Position, E.Range);
-                        var eFarm = E.GetLineFarmLocation(eMinions, E.Width);
+                        var eFarm =
+                            MinionManager.GetBestLineFarmLocation(eMinions.Select(x => x.Position.To2D()).ToList(),
+                                E.Width, E.Range);
 
                         if (eFarm.MinionsHit >= Menu.Item("LaneClearECount", true).GetValue<Slider>().Value)
                         {
@@ -435,9 +437,12 @@
                         {
                             var eMobs = MinionManager.GetMinions(Me.Position, E.Range, MinionTypes.All, MinionTeam.Neutral,
                                 MinionOrderTypes.MaxHealth);
-                            var eFarm = E.GetLineFarmLocation(eMobs, E.Width);
 
-                            if (eFarm.MinionsHit >= 2)
+                            var eFarm =
+                                MinionManager.GetBestLineFarmLocation(eMobs.Select(x => x.Position.To2D()).ToList(),
+                                    E.Width, E.Range);
+
+                            if (eFarm.MinionsHit >= 1)
                             {
                                 E.Cast(eFarm.Position);
                             }

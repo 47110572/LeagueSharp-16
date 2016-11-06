@@ -411,7 +411,7 @@
                         return;
                     }
 
-                    if (SebbyLib.OktwCommon.IsSpellHeroCollision(target, R))
+                    if (SebbyLibIsSpellHeroCollision(target, R))
                     {
                         return;
                     }
