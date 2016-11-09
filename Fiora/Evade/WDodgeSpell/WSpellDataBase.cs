@@ -33,8 +33,7 @@
                 new WSpellData
                 {
                     ChampionName = "Blitzcrank",
-                    SpellSlot = SpellSlot.E,
-                    SpellName = "PowerFistAttack"
+                    SpellSlot = SpellSlot.E
                 });
 
             #endregion Blitzcrank
@@ -67,8 +66,7 @@
                 new WSpellData
                 {
                     ChampionName = "Elise",
-                    SpellSlot = SpellSlot.Q,
-                    SpellName = "EliseHumanQ"
+                    SpellSlot = SpellSlot.Q
                 });
 
             #endregion Elise
@@ -90,8 +88,7 @@
                 new WSpellData
                 {
                     ChampionName = "Gangplank",
-                    SpellSlot = SpellSlot.Q,
-                    SpellName = "Parley"
+                    SpellSlot = SpellSlot.Q
                 });
 
             #endregion Gangplank
@@ -113,8 +110,7 @@
                 new WSpellData
                 {
                     ChampionName = "Hecarim",
-                    SpellSlot = SpellSlot.E,
-                    SpellName = "HecarimRampAttack"
+                    SpellSlot = SpellSlot.E
                 });
 
             #endregion Hecarim
@@ -202,8 +198,7 @@
                 new WSpellData
                 {
                     ChampionName = "Mordekaiser",
-                    SpellSlot = SpellSlot.Q,
-                    SpellName = "MordekaiserQAttack2"
+                    SpellSlot = SpellSlot.Q
                 });
 
             Spells.Add(
@@ -367,8 +362,7 @@
                 new WSpellData
                 {
                     ChampionName = "Syndra",
-                    SpellSlot = SpellSlot.R,
-                    SpellName = "SyndraR"
+                    SpellSlot = SpellSlot.R
                 });
 
             #endregion Syndra
@@ -390,8 +384,7 @@
                 new WSpellData
                 {
                     ChampionName = "Tristana",
-                    SpellSlot = SpellSlot.R,
-                    SpellName = "TristanaR"
+                    SpellSlot = SpellSlot.R
                 });
 
             #endregion Tristana
@@ -413,8 +406,7 @@
                 new WSpellData
                 {
                     ChampionName = "TwistedFate",
-                    SpellSlot = SpellSlot.W,
-                    SpellNames = new [] { "BlueCardAttack", "GoldCardAttack", "RedCardAttack" }
+                    SpellSlot = SpellSlot.W
                 });
 
             #endregion TwistedFate
@@ -425,8 +417,7 @@
                 new WSpellData
                 {
                     ChampionName = "Veigar",
-                    SpellSlot = SpellSlot.R,
-                    SpellName = "VeigarPrimordialBurst"
+                    SpellSlot = SpellSlot.R
                 });
 
             #endregion Veigar
@@ -459,8 +450,7 @@
                 new WSpellData
                 {
                     ChampionName = "Volibear",
-                    SpellSlot = SpellSlot.Q,
-                    SpellName = "VolibearQAttack"
+                    SpellSlot = SpellSlot.Q
                 });
 
             Spells.Add(
@@ -489,8 +479,7 @@
                 new WSpellData
                 {
                     ChampionName = "XinZhao",
-                    SpellSlot = SpellSlot.Q,
-                    SpellName = "XenZhaoThrust3"
+                    SpellSlot = SpellSlot.Q
                 });
 
             #endregion XinZhao

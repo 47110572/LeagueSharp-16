@@ -15,12 +15,12 @@
 
             var comboMenu = Menu.AddSubMenu(new Menu("Combo", "Combo"));
             {
-                comboMenu.AddItem(new MenuItem("ComboQ", "Use Q", true).SetValue(true));// done
-                comboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));// done
-                comboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(true));// done
-                comboMenu.AddItem(new MenuItem("ComboRSolo", "Use R| Solo R", true).SetValue(true));// done
-                comboMenu.AddItem(new MenuItem("ComboRTeam", "Use R| Team Fight", true).SetValue(true));// done
-                comboMenu.AddItem(new MenuItem("ComboPassive", "Forcus Attack Passive", true).SetValue(true));// done
+                comboMenu.AddItem(new MenuItem("ComboQ", "Use Q", true).SetValue(true));
+                comboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));
+                comboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(true));
+                comboMenu.AddItem(new MenuItem("ComboRSolo", "Use R| Solo R", true).SetValue(true));
+                comboMenu.AddItem(new MenuItem("ComboRTeam", "Use R| Team Fight", true).SetValue(true));
+                comboMenu.AddItem(new MenuItem("ComboPassive", "Forcus Attack Passive", true).SetValue(true));
                 comboMenu.AddItem(new MenuItem("ComboYoumuu", "Use Youmuu", true).SetValue(true));
                 comboMenu.AddItem(new MenuItem("ComboTiamat", "Use Tiamat", true).SetValue(true));
                 comboMenu.AddItem(new MenuItem("ComboHydra", "Use Hydra", true).SetValue(true));
@@ -29,9 +29,9 @@
 
             var harassMenu = Menu.AddSubMenu(new Menu("Harass", "Harass"));
             {
-                harassMenu.AddItem(new MenuItem("HarassQ", "Use Q", true).SetValue(true));// done
-                harassMenu.AddItem(new MenuItem("HarassE", "Use E", true).SetValue(true));// done
-                harassMenu.AddItem(new MenuItem("HarassPassive", "Forcus Attack Passive", true).SetValue(true));// done
+                harassMenu.AddItem(new MenuItem("HarassQ", "Use Q", true).SetValue(true));
+                harassMenu.AddItem(new MenuItem("HarassE", "Use E", true).SetValue(true));
+                harassMenu.AddItem(new MenuItem("HarassPassive", "Forcus Attack Passive", true).SetValue(true));
                 harassMenu.AddItem(new MenuItem("HarassTiamat", "Use Tiamat", true).SetValue(true));
                 harassMenu.AddItem(new MenuItem("HarassHydra", "Use Hydra", true).SetValue(true));
                 harassMenu.AddItem(
@@ -78,10 +78,10 @@
 
             var drawingMenu = Menu.AddSubMenu(new Menu("Drawings", "Drawings"));
             {
-                drawingMenu.AddItem(new MenuItem("DrawingQ", "Draw Q Range", true).SetValue(false));// done
-                drawingMenu.AddItem(new MenuItem("DrawingW", "Draw W Range", true).SetValue(false));// done
-                drawingMenu.AddItem(new MenuItem("DrawingR", "Draw R Range", true).SetValue(false));// done
-                drawingMenu.AddItem(new MenuItem("DrawingDamage", "Draw Combo Damage", true).SetValue(false));// done
+                drawingMenu.AddItem(new MenuItem("DrawingQ", "Draw Q Range", true).SetValue(false));
+                drawingMenu.AddItem(new MenuItem("DrawingW", "Draw W Range", true).SetValue(false));
+                drawingMenu.AddItem(new MenuItem("DrawingR", "Draw R Range", true).SetValue(false));
+                drawingMenu.AddItem(new MenuItem("DrawingDamage", "Draw Combo Damage", true).SetValue(true));
             }
 
             Menu.AddToMainMenu();

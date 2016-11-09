@@ -6,7 +6,5 @@
     {
         public SpellSlot SpellSlot;
         public string ChampionName;
-        public string SpellName;
-        public string[] SpellNames = {};
     }
 }
