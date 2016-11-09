@@ -292,23 +292,13 @@
                 case Orbwalking.OrbwalkingMode.Mixed:
                     HarassLogic();
                     break;
-                case Orbwalking.OrbwalkingMode.LastHit:
-                    break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     LaneClearLogic();
                     JungleClearLogic();
                     break;
-                case Orbwalking.OrbwalkingMode.Freeze:
-                    break;
-                case Orbwalking.OrbwalkingMode.CustomMode:
-                    break;
-                case Orbwalking.OrbwalkingMode.None:
-                    break;
                 case Orbwalking.OrbwalkingMode.Flee:
                     FleeLogic();
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -413,9 +403,10 @@
                 {
                     var target = TargetSelector.GetTarget(900, TargetSelector.DamageType.Magical);
 
-                    if (target.IsValidTarget() && !target.IsDead && !target.IsZombie && target.IsValidTarget(900) && (target.DistanceToPlayer() > 180 || target.Health + target.MagicalShield < GetW1Damage(target)))
+                    if (target.IsValidTarget() && !target.IsDead && !target.IsZombie && target.IsValidTarget(900) &&
+                        (target.DistanceToPlayer() > 180 || target.Health + target.MagicalShield < GetW1Damage(target)))
                     {
-                        if (HavePassive(target) && target.IsValidTarget(W2.Range + 30))
+                        if (HavePassive(target) && target.IsValidTarget(W2.Range + 50))
                         {
                             W2.Cast(target.Position, true);
                         }
