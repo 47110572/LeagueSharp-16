@@ -109,10 +109,7 @@
                 }
             }
 
-            foreach (
-                var target in
-                HeroManager.Enemies.Where(
-                    x => !x.IsDead && x.IsValid && (x.ChampionName == "Riven" || x.ChampionName == "Jax")))
+            foreach (var target in HeroManager.Enemies.Where(x => !x.IsDead && x.IsValidTarget()))
             {
                 switch (target.ChampionName)
                 {
@@ -457,7 +454,7 @@
                                         buff.Name == "BlueCardAttack" || buff.Name == "GoldCardAttack" ||
                                         buff.Name == "RedCardAttack"))
                             {
-                                CastW("Tristana", x.SpellSlot);
+                                CastW("TwistedFate", x.SpellSlot);
                             }
                             break;
                         case "Veigar":
