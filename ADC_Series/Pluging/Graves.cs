@@ -151,7 +151,7 @@
                         x => x.IsValidTarget(R.Range) && CheckTargetSureCanKill(x) && 
                         Menu.Item("KillStealR" + x.ChampionName.ToLower(), true).GetValue<bool>()
                         && x.Health < R.GetDamage(x) &&
-                        x.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) + 100))
+                        x.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) + E.Range - 100))
                 {
                     R.CastTo(target);
                 }
