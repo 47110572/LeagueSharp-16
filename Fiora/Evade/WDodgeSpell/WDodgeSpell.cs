@@ -218,7 +218,7 @@
                             {
                                 if (Args.Target.IsMe)
                                 {
-                                    CastW("Gangplank", x.SpellSlot);
+                                    CastW("Elise", x.SpellSlot);
                                 }
                             }
                             break;
