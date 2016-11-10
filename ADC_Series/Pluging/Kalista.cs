@@ -127,7 +127,7 @@
             var minion = (Obj_AI_Minion)sender;
 
             if (minion != null && minion.IsValidTarget(E.Range) && minion.Health < GetRealEDamage(minion) &&
-                Me.CountEnemiesInRange(600) == 0)
+                Me.CountEnemiesInRange(600) == 0 && Me.ManaPercent >= 60)
             {
                 E.Cast();
             }

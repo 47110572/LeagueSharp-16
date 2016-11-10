@@ -71,7 +71,6 @@
     <Compile Include="Common\SebbyLibCache.cs" />
     <Compile Include="Common\Common.cs" />
     <Compile Include="Common\HpBarDraw.cs" />
-    <Compile Include="Common\MultiLanguage.cs" />
     <Compile Include="Prediction\OktwPrediction.cs" />
     <Compile Include="Utility\Humanizer.cs" />
     <Compile Include="Pluging\Draven.cs" />
