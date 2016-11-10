@@ -286,6 +286,15 @@
                                 }
                             }
                             break;
+                        case "Kayle":
+                            if (x.SpellSlot == SpellSlot.Q)
+                            {
+                                if (Args.Target.IsMe)
+                                {
+                                    CastW("Kayle", x.SpellSlot);
+                                }
+                            }
+                            break;
                         case "Leesin":
                             if (x.SpellSlot == SpellSlot.R)
                             {
