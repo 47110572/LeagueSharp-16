@@ -14,16 +14,14 @@
     {
         public Katarina()
         {
-            SpellManager.Q = new Spell(SpellSlot.Q, 675);
-            SpellManager.W = new Spell(SpellSlot.W, 375);
-            SpellManager.E = new Spell(SpellSlot.E, 700);
+            SpellManager.Q = new Spell(SpellSlot.Q, 625);
+            SpellManager.E = new Spell(SpellSlot.E, 720);
             SpellManager.R = new Spell(SpellSlot.R, 550);
 
             SpellManager.Q.SetTargetted(400, 1400);
             SpellManager.R.SetCharged("KatarinaR", "KatarinaR", 550, 550, 1.0f);
 
             SpellManager.SpellList.Add(Q);
-            SpellManager.SpellList.Add(W);
             SpellManager.SpellList.Add(E);
             SpellManager.SpellList.Add(R);
 
@@ -35,7 +33,7 @@
                 combo.AddItem(new MenuItem("eDis", "E only if >", true).SetValue(new Slider(0, 0, 700)));
                 combo.AddItem(new MenuItem("smartE", "Smart E with R CD ", true).SetValue(false));
                 combo.AddItem(new MenuItem("UseRCombo", "Use R", true).SetValue(true));
-                combo.AddItem(new MenuItem("comboMode", "Mode", true).SetValue(new StringList(new[] { "QEW", "EQW" })));
+                combo.AddItem(new MenuItem("comboMode", "Mode", true).SetValue(new StringList(new[] {"QE", "EQ"})));
                 Menu.AddSubMenu(combo);
             }
 
@@ -44,8 +42,11 @@
                 harass.AddItem(new MenuItem("UseQHarass", "Use Q", true).SetValue(true));
                 harass.AddItem(new MenuItem("UseWHarass", "Use W", true).SetValue(true));
                 harass.AddItem(new MenuItem("UseEHarass", "Use E", true).SetValue(false));
-                harass.AddItem(new MenuItem("harassMode", "Mode", true).SetValue(new StringList(new[] { "QEW", "EQW", "QW" }, 2)));
-                harass.AddItem(new MenuItem("FarmT", "Harass (toggle)!", true).SetValue(new KeyBind("N".ToCharArray()[0], KeyBindType.Toggle)));
+                harass.AddItem(
+                    new MenuItem("harassMode", "Mode", true).SetValue(new StringList(new[] {"QE", "EQ", "Q"}, 2)));
+                harass.AddItem(
+                    new MenuItem("FarmT", "Harass (toggle)!", true).SetValue(new KeyBind("N".ToCharArray()[0],
+                        KeyBindType.Toggle)));
                 Menu.AddSubMenu(harass);
             }
 
@@ -55,7 +56,6 @@
                 farm.AddItem(new MenuItem("UseWFarm", "Use W Farm", true).SetValue(true));
                 farm.AddItem(new MenuItem("UseEFarm", "Use E Farm", true).SetValue(false));
                 farm.AddItem(new MenuItem("UseQHit", "Use Q Last Hit", true).SetValue(true));
-                farm.AddItem(new MenuItem("UseWHit", "Use W Last Hit", true).SetValue(false));
                 Menu.AddSubMenu(farm);
             }
 
@@ -71,8 +71,6 @@
 
             var misc = new Menu("Misc", "Misc");
             {
-                misc.AddItem(new MenuItem("waitQ", "Wait For Q Mark to W", true).SetValue(true));
-                misc.AddItem(new MenuItem("autoWz", "Auto W Enemy", true).SetValue(true));
                 misc.AddItem(new MenuItem("E_Delay_Slider", "Delay Between E(ms)", true).SetValue(new Slider(0, 0, 1000)));
                 Menu.AddSubMenu(misc);
             }
@@ -80,7 +78,6 @@
             var drawing = new Menu("Drawings", "Drawings");
             {
                 drawing.AddItem(new MenuItem("QRange", "Q range", true).SetValue(new Circle(false, Color.FromArgb(100, 255, 0, 255))));
-                drawing.AddItem(new MenuItem("WRange", "W range", true).SetValue(new Circle(true, Color.FromArgb(100, 255, 0, 255))));
                 drawing.AddItem(new MenuItem("ERange", "E range", true).SetValue(new Circle(false, Color.FromArgb(100, 255, 0, 255))));
                 drawing.AddItem(new MenuItem("RRange", "R range", true).SetValue(new Circle(false, Color.FromArgb(100, 255, 0, 255))));
                 drawing.AddItem(new MenuItem("Draw_Mode", "Draw E Mode", true).SetValue(new Circle(false, Color.FromArgb(100, 255, 0, 255))));
@@ -118,7 +115,7 @@
                 customMenu.AddItem(myCust.AddToMenu("Harass(T) Active: ", "FarmT"));
                 customMenu.AddItem(myCust.AddToMenu("Laneclear Active: ", "LaneClear"));
                 customMenu.AddItem(myCust.AddToMenu("LastHit Active: ", "LastHit"));
-                customMenu.AddItem(myCust.AddToMenu("WardJump Active: ", "Flee"));
+                customMenu.AddItem(myCust.AddToMenu("Jump Active: ", "Flee"));
                 Menu.AddSubMenu(customMenu);
             }
         }
@@ -128,22 +125,58 @@
             var damage = 0d;
 
             if (Q.IsReady())
-                damage += Player.GetSpellDamage(enemy, SpellSlot.Q);
-
-            damage += MarkDmg(enemy);
-
-            if (W.IsReady())
-                damage += Player.GetSpellDamage(enemy, SpellSlot.W);
+                damage += GetQDamage(enemy);
 
             if (E.IsReady())
-                damage += Player.GetSpellDamage(enemy, SpellSlot.E);
+                damage += GetEDamage(enemy);
 
             if (R.IsReady() || (RSpell.State == SpellState.Surpressed && R.Level > 0))
-                damage += Player.GetSpellDamage(enemy, SpellSlot.R) * 8;
+                damage += GetRDamage(enemy) * 10;
 
             damage = ItemManager.CalcDamage(enemy, damage);
 
             return (float)damage;
+        }
+
+        public double GetQDamage(Obj_AI_Base target)
+        {
+            if (ObjectManager.Player.GetSpell(SpellSlot.Q).Level == 0)
+            {
+                return 0d;
+            }
+
+            return ObjectManager.Player.CalcDamage
+            (target, Damage.DamageType.Magical,
+                (float) new double[] {75, 105, 135, 165, 195}[ObjectManager.Player.GetSpell(SpellSlot.Q).Level - 1] +
+                0.3f*ObjectManager.Player.TotalMagicalDamage);
+        }
+
+        public double GetEDamage(Obj_AI_Base target)
+        {
+            if (ObjectManager.Player.GetSpell(SpellSlot.E).Level == 0)
+            {
+                return 0d;
+            }
+
+            return ObjectManager.Player.CalcDamage
+            (target, Damage.DamageType.Magical,
+                (float) new double[] {30, 45, 60, 75, 90}[ObjectManager.Player.GetSpell(SpellSlot.E).Level - 1] +
+                0.65f*ObjectManager.Player.TotalAttackDamage +
+                0.25f*ObjectManager.Player.TotalMagicalDamage);
+        }
+
+        public double GetRDamage(Obj_AI_Base target)
+        {
+            if (ObjectManager.Player.GetSpell(SpellSlot.R).Level == 0)
+            {
+                return 0d;
+            }
+
+            return ObjectManager.Player.CalcDamage
+            (target, Damage.DamageType.Magical,
+                (float) new[] {25, 37.5, 50}[ObjectManager.Player.GetSpell(SpellSlot.R).Level - 1] +
+                0.65f*ObjectManager.Player.TotalAttackDamage +
+                0.25f*ObjectManager.Player.TotalMagicalDamage);
         }
 
         private void Combo()
@@ -155,7 +188,9 @@
             }
 
             var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
-
+            var Dagger =
+                ObjectManager.Get<Obj_AI_Minion>()
+                    .FirstOrDefault(x => x.CharData.BaseSkinName == "testcuberender" && x.Health > 1 && x.IsValid);
             var mode = Menu.Item("comboMode", true).GetValue<StringList>().SelectedIndex;
 
             var eDis = Menu.Item("eDis", true).GetValue<Slider>().Value;
@@ -200,10 +235,20 @@
 
                         var delay = Menu.Item("E_Delay_Slider", true).GetValue<Slider>().Value;
 
-                        Orbwalker.SetAttack(false);
-                        Orbwalker.SetMovement(false);
-                        E.Cast(target, true);
-                        E.LastCastAttemptT = Utils.TickCount + delay;
+                        if (Dagger != null && Dagger.CountEnemiesInRange(400) > 1)
+                        {
+                            Orbwalker.SetAttack(false);
+                            Orbwalker.SetMovement(false);
+                            E.Cast(Dagger, true);
+                            E.LastCastAttemptT = Utils.TickCount + delay;
+                        }
+                        else
+                        {
+                            Orbwalker.SetAttack(false);
+                            Orbwalker.SetMovement(false);
+                            E.Cast(target, true);
+                            E.LastCastAttemptT = Utils.TickCount + delay;
+                        }
                     }
                 }
                 else if (mode == 1)
@@ -234,10 +279,20 @@
 
                         var delay = Menu.Item("E_Delay_Slider", true).GetValue<Slider>().Value;
 
-                        Orbwalker.SetAttack(false);
-                        Orbwalker.SetMovement(false);
-                        E.Cast(target, true);
-                        E.LastCastAttemptT = Utils.TickCount + delay;
+                        if (Dagger != null && Dagger.CountEnemiesInRange(400) > 1)
+                        {
+                            Orbwalker.SetAttack(false);
+                            Orbwalker.SetMovement(false);
+                            E.Cast(Dagger, true);
+                            E.LastCastAttemptT = Utils.TickCount + delay;
+                        }
+                        else
+                        {
+                            Orbwalker.SetAttack(false);
+                            Orbwalker.SetMovement(false);
+                            E.Cast(target, true);
+                            E.LastCastAttemptT = Utils.TickCount + delay;
+                        }
                     }
 
                     if (Menu.Item("UseQCombo", true).GetValue<bool>() && Q.IsReady() &&
@@ -247,16 +302,17 @@
                     }
                 }
 
-                if (Menu.Item("UseWCombo", true).GetValue<bool>() && W.IsReady() &&
-                    target.IsValidTarget(W.Range) && QSuccessfullyCasted())
+                if (Menu.Item("UseWCombo", true).GetValue<bool>() && Player.GetSpell(SpellSlot.W).IsReady() &&
+                    (target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)) || 
+                    (!E.IsReady() && target.IsValidTarget(E.Range))))
                 {
-                    W.Cast();
+                    Player.Spellbook.CastSpell(SpellSlot.W);
                 }
 
                 if (Menu.Item("UseRCombo", true).GetValue<bool>() && R.IsReady() &&
                     Player.CountEnemiesInRange(R.Range) > 0)
                 {
-                    if (!Q.IsReady() && !E.IsReady() && !W.IsReady())
+                    if (!Q.IsReady() && !E.IsReady())
                     {
                         Orbwalker.SetAttack(false);
                         Orbwalker.SetMovement(false);
@@ -274,6 +330,10 @@
                 return;
             }
 
+            var Dagger =
+                ObjectManager.Get<Obj_AI_Minion>()
+                    .FirstOrDefault(x => x.CharData.BaseSkinName == "testcuberender" && x.Health > 1 && x.IsValid);
+
             var qTarget = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
             var wTarget = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Magical);
             var eTarget = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
@@ -290,7 +350,14 @@
                 if (Menu.Item("UseEHarass", true).GetValue<bool>() && eTarget != null && E.IsReady() &&
                     !Q.IsReady() && eTarget.IsValidTarget(E.Range))
                 {
-                    E.Cast(eTarget, true);
+                    if (Dagger != null && eTarget.Distance(Dagger) <= 400)
+                    {
+                        E.Cast(Dagger, true);
+                    }
+                    else
+                    {
+                        E.Cast(eTarget, true);
+                    }
                 }
             }
             else if (mode == 1)
@@ -298,7 +365,14 @@
                 if (Menu.Item("UseEHarass", true).GetValue<bool>() && eTarget != null &&
                     E.IsReady() && eTarget.IsValidTarget(E.Range))
                 {
-                    E.Cast(eTarget, true);
+                    if (Dagger != null && eTarget.Distance(Dagger) <= 400)
+                    {
+                        E.Cast(Dagger, true);
+                    }
+                    else
+                    {
+                        E.Cast(eTarget, true);
+                    }
                 }
 
                 if (Menu.Item("UseQHarass", true).GetValue<bool>() && Q.IsReady() && qTarget != null &&
@@ -316,10 +390,11 @@
                 }
             }
 
-            if (Menu.Item("UseWHarass", true).GetValue<bool>() && wTarget != null && W.IsReady() &&
-                wTarget.IsValidTarget(W.Range) && QSuccessfullyCasted())
+            if (Menu.Item("UseWHarass", true).GetValue<bool>() && wTarget != null 
+                && Player.GetSpell(SpellSlot.W).IsReady() &&
+                wTarget.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)))
             {
-                W.Cast();
+                Player.Spellbook.CastSpell(SpellSlot.W);
             }
         }
 
@@ -334,7 +409,6 @@
                 MinionTeam.NotAlly);
 
             var useQ = Menu.Item("UseQHit", true).GetValue<bool>();
-            var useW = Menu.Item("UseWHit", true).GetValue<bool>();
 
             if (Q.IsReady() && useQ)
             {
@@ -343,28 +417,13 @@
                     if (minion.IsValidTarget(Q.Range) &&
                         HealthPrediction.GetHealthPrediction(
                             minion, (int)(Player.Distance(minion.Position) * 1000 / 1400), 200) <
-                        Player.GetSpellDamage(minion, SpellSlot.Q))
+                        GetQDamage(minion))
                     {
                         Q.Cast(minion);
                         return;
                     }
                 }
             }
-
-            if (W.IsReady() && useW)
-            {
-                if (allMinions.Where(minion => minion.IsValidTarget(W.Range) && 
-                minion.Health < Player.GetSpellDamage(minion, SpellSlot.W) + MarkDmg(minion) - 35)
-                .Any(minion => Player.Distance(minion.ServerPosition) < W.Range))
-                {
-                    W.Cast();
-                }
-            }
-        }
-
-        private double MarkDmg(Obj_AI_Base target)
-        {
-            return target.HasBuff("katarinaqmark") ? Player.GetSpellDamage(target, SpellSlot.Q, 1) : 0;
         }
 
         private void Farm()
@@ -374,11 +433,12 @@
             {
                 return;
             }
+
             var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range,
                 MinionTypes.All, MinionTeam.NotAlly);
             var allMinionsE = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, E.Range,
                 MinionTypes.All, MinionTeam.NotAlly);
-            var allMinionsW = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range,
+            var allMinionsW = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 400,
                 MinionTypes.All, MinionTeam.NotAlly);
 
             var useQ = Menu.Item("UseQFarm", true).GetValue<bool>();
@@ -395,19 +455,19 @@
                 E.Cast(allMinionsE[0]);
             }
 
-            if (useW && W.IsReady())
+            if (useW && Player.GetSpell(SpellSlot.W).IsReady())
             {
-                if (allMinionsW.Count > 0 && QSuccessfullyCasted())
+                if (allMinionsW.Count > 2)
                 {
                     foreach (var minion in allMinionsW)
                     {
-                        if (!Q.IsReady() || minion.HasBuff("katarinaqmark"))
-                            W.Cast();
+                        if (!Q.IsReady())
+                            Player.Spellbook.CastSpell(SpellSlot.W);
                     }
                 }
-                    
             }
         }
+
         private void JungleFarm()
         {
             if (ObjectManager.Player.Buffs.Any(x => x.Name.ToLower().Contains("katarinar")) ||
@@ -417,7 +477,7 @@
             }
             var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range,
                 MinionTypes.All, MinionTeam.Neutral);
-            var allMinionsW = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, W.Range,
+            var allMinionsW = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 400,
                 MinionTypes.All, MinionTeam.Neutral);
 
             var useQ = Menu.Item("UseQFarm", true).GetValue<bool>();
@@ -428,10 +488,10 @@
                 Q.Cast(allMinionsQ[0]);
             }
 
-            if (useW && W.IsReady())
+            if (useW && Player.GetSpell(SpellSlot.W).IsReady())
             {
                 if (allMinionsW.Count > 0)
-                    W.Cast();
+                    Player.Spellbook.CastSpell(SpellSlot.W);
             }
         }
 
@@ -456,51 +516,19 @@
                     var shouldE = !Menu.Item("KS_With_E", true).GetValue<KeyBind>().Active && Utils.TickCount - E.LastCastAttemptT > 0;
 
                     if (Player.Distance(target.ServerPosition) <= E.Range && shouldE &&
-                        Player.GetSpellDamage(target, SpellSlot.E) + Player.GetSpellDamage(target, SpellSlot.Q) + MarkDmg(target) +
-                        Player.GetSpellDamage(target, SpellSlot.W) > target.Health + 20)
-                    {
-                        if (E.IsReady() && Q.IsReady() && W.IsReady())
-                        {
-                            CancelUlt(target);
-                            Q.Cast(target);
-                            E.Cast(target);
-                            E.LastCastAttemptT = Utils.TickCount + delay;
-                            if (Player.Distance(target.ServerPosition) < W.Range)
-                                W.Cast();
-                            return;
-                        }
-                    }
-
-                    if (Player.Distance(target.ServerPosition) <= E.Range && shouldE &&
-                        Player.GetSpellDamage(target, SpellSlot.E) + Player.GetSpellDamage(target, SpellSlot.W) >
-                        target.Health + 20)
-                    {
-                        if (E.IsReady() && W.IsReady())
-                        {
-                            CancelUlt(target);
-                            E.Cast(target);
-                            E.LastCastAttemptT = Utils.TickCount + delay;
-                            if (Player.Distance(target.ServerPosition) < W.Range)
-                                W.Cast();
-                            return;
-                        }
-                    }
-
-                    if (Player.Distance(target.ServerPosition) <= E.Range && shouldE &&
-                        Player.GetSpellDamage(target, SpellSlot.E) + Player.GetSpellDamage(target, SpellSlot.Q) >
-                        target.Health + 20)
+                        GetEDamage(target) + GetQDamage(target) > target.Health + 20)
                     {
                         if (E.IsReady() && Q.IsReady())
                         {
                             CancelUlt(target);
+                            Q.Cast(target);
                             E.Cast(target);
                             E.LastCastAttemptT = Utils.TickCount + delay;
-                            Q.Cast(target);
                             return;
                         }
                     }
 
-                    if (Player.GetSpellDamage(target, SpellSlot.Q) > target.Health + 20)
+                    if (GetQDamage(target) > target.Health + 20)
                     {
                         if (Q.IsReady() && Player.Distance(target.ServerPosition) <= Q.Range)
                         {
@@ -519,7 +547,7 @@
                     }
 
                     if (Player.Distance(target.ServerPosition) <= E.Range && shouldE &&
-                        Player.GetSpellDamage(target, SpellSlot.E) > target.Health + 20)
+                        GetEDamage(target) > target.Health + 20)
                     {
                         if (E.IsReady())
                         {
@@ -531,7 +559,7 @@
                     }
 
                     if (Player.Distance(target.ServerPosition) <= E.Range &&
-                        Player.GetSpellDamage(target, SpellSlot.R) * 5 > target.Health + 20 &&
+                        GetRDamage(target) * 5 > target.Health + 20 &&
                         Menu.Item("rKS", true).GetValue<bool>())
                     {
                         if (R.IsReady())
@@ -570,23 +598,9 @@
             Player.IssueOrder(GameObjectOrder.MoveTo, target);
         }
 
-        private void AutoW()
-        {
-            if (!W.IsReady())
-                return;
-
-            foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(W.Range)))
-            {
-                if (target != null && !target.IsDead)
-                {
-                    W.Cast();
-                }
-            }
-        }
-
         private bool QSuccessfullyCasted()
         {
-            return Utils.TickCount - Q.LastCastAttemptT > 350 || !Menu.Item("waitQ", true).GetValue<bool>();
+            return Utils.TickCount - Q.LastCastAttemptT > 350;
         }
 
         protected override void BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
@@ -642,9 +656,6 @@
                 case Orbwalking.OrbwalkingMode.None:
                     if (Menu.Item("FarmT", true).GetValue<KeyBind>().Active)
                         Harass();
-
-                    if (Menu.Item("autoWz", true).GetValue<bool>())
-                        AutoW();
                     break;
                 case Orbwalking.OrbwalkingMode.Flee:
                     WardJumper.WardJump();
@@ -667,21 +678,6 @@
 
                 Drawing.DrawText(wts[0], wts[1], Color.White,
                     Menu.Item("KS_With_E", true).GetValue<KeyBind>().Active ? "Ks E Active" : "Ks E Off");
-            }
-        }
-
-        protected override void GameObject_OnCreate(GameObject sender, EventArgs args)
-        {
-            if (!(sender is Obj_AI_Minion))
-                return;
-
-            if (Utils.TickCount < WardJumper.LastPlaced + 300)
-            {
-                var ward = (Obj_AI_Minion)sender;
-                if (ward.Name.ToLower().Contains("ward") && ward.Distance(WardJumper.LastWardPos) < 500 && E.IsReady())
-                {
-                    E.Cast(ward);
-                }
             }
         }
     }
