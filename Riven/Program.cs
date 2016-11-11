@@ -407,20 +407,20 @@
                 return;
             }
 
-            switch (Args.Animation)
+            if (Args.Animation.Contains("c29"))
             {
-                case "Spell1a":
-                    QStack = 1;
-                    ResetQA(Menu.Item("Q1Delay", true).GetValue<Slider>().Value);
-                    break;
-                case "Spell1b":
-                    QStack = 2;
-                    ResetQA(Menu.Item("Q2Delay", true).GetValue<Slider>().Value);
-                    break;
-                case "Spell1c":
-                    QStack = 0;
-                    ResetQA(Menu.Item("Q3Delay", true).GetValue<Slider>().Value);
-                    break;
+                QStack = 1;
+                ResetQA(Menu.Item("Q1Delay", true).GetValue<Slider>().Value);
+            }
+            else if (Args.Animation.Contains("c39"))
+            {
+                QStack = 2;
+                ResetQA(Menu.Item("Q2Delay", true).GetValue<Slider>().Value);
+            }
+            else if (Args.Animation.Contains("c49"))
+            {
+                QStack = 0;
+                ResetQA(Menu.Item("Q3Delay", true).GetValue<Slider>().Value);
             }
         }
 
@@ -428,11 +428,11 @@
         {
             if (Menu.Item("Dance", true).GetValue<bool>())
             {
-                Game.SendEmote(Emote.Dance);
+                Game.Say("/d");
             }
             Utility.DelayAction.Add(time, () =>
             {
-                Game.SendEmote(Emote.Dance);
+                Game.Say("/d");
                 Orbwalking.ResetAutoAttackTimer();
                 Me.IssueOrder(GameObjectOrder.MoveTo, Me.Position.Extend(Game.CursorPos, +10));
             });
