@@ -235,7 +235,7 @@
 
                         var delay = Menu.Item("E_Delay_Slider", true).GetValue<Slider>().Value;
 
-                        if (Dagger != null && Dagger.CountEnemiesInRange(400) > 1)
+                        if (Dagger != null && Dagger.Position.CountEnemiesInRange(400) > 0)
                         {
                             Orbwalker.SetAttack(false);
                             Orbwalker.SetMovement(false);
@@ -279,7 +279,7 @@
 
                         var delay = Menu.Item("E_Delay_Slider", true).GetValue<Slider>().Value;
 
-                        if (Dagger != null && Dagger.CountEnemiesInRange(400) > 1)
+                        if (Dagger != null && Dagger.Position.CountEnemiesInRange(400) > 0)
                         {
                             Orbwalker.SetAttack(false);
                             Orbwalker.SetMovement(false);
@@ -335,7 +335,8 @@
                     .FirstOrDefault(x => x.CharData.BaseSkinName == "testcuberender" && x.Health > 1 && x.IsValid);
 
             var qTarget = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Magical);
-            var wTarget = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Magical);
+            var wTarget = TargetSelector.GetTarget(Orbwalking.GetRealAutoAttackRange(Player),
+                TargetSelector.DamageType.Magical);
             var eTarget = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Magical);
             var mode = Menu.Item("harassMode", true).GetValue<StringList>().SelectedIndex;
 
