@@ -58,6 +58,7 @@
     <Compile Include="Pluging\Karthus.cs" />
     <Compile Include="Pluging\Orianna.cs" />
     <Compile Include="Pluging\Syndra.cs" />
+    <Compile Include="Pluging\Veigar.cs" />
     <Compile Include="Pluging\Viktor.cs" />
     <Compile Include="Managers\AOESpellManager.cs" />
     <Compile Include="Managers\ItemManager.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Base\Champion.cs" />
     <Compile Include="Pluging\Chogath.cs" />
     <Compile Include="Pluging\Katarina.cs" />
+    <Compile Include="Pluging\Zed.cs" />
     <Compile Include="Utilities\CommonPredEx.cs" />
     <Compile Include="Utilities\Initiator.cs" />
     <Compile Include="Pluging\Zyra.cs" />
