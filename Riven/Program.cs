@@ -428,11 +428,11 @@
         {
             if (Menu.Item("Dance", true).GetValue<bool>())
             {
-                Game.Say("/d");
+                Game.SendEmote(Emote.Dance);
             }
             Utility.DelayAction.Add(time, () =>
             {
-                Game.Say("/d");
+                Game.SendEmote(Emote.Dance);
                 Orbwalking.ResetAutoAttackTimer();
                 Me.IssueOrder(GameObjectOrder.MoveTo, Me.Position.Extend(Game.CursorPos, +10));
             });
