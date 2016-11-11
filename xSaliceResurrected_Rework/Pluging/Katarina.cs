@@ -30,6 +30,7 @@
                 combo.AddItem(new MenuItem("UseQCombo", "Use Q", true).SetValue(true));
                 combo.AddItem(new MenuItem("UseWCombo", "Use W", true).SetValue(true));
                 combo.AddItem(new MenuItem("UseECombo", "Use E", true).SetValue(true));
+                combo.AddItem(new MenuItem("UseEDaggerCombo", "Use E to Dagger", true).SetValue(true));
                 combo.AddItem(new MenuItem("eDis", "E only if >", true).SetValue(new Slider(0, 0, 700)));
                 combo.AddItem(new MenuItem("smartE", "Smart E with R CD ", true).SetValue(false));
                 combo.AddItem(new MenuItem("UseRCombo", "Use R", true).SetValue(true));
@@ -42,6 +43,7 @@
                 harass.AddItem(new MenuItem("UseQHarass", "Use Q", true).SetValue(true));
                 harass.AddItem(new MenuItem("UseWHarass", "Use W", true).SetValue(true));
                 harass.AddItem(new MenuItem("UseEHarass", "Use E", true).SetValue(false));
+                harass.AddItem(new MenuItem("UseEDaggerHarass", "Use E to Dagger", true).SetValue(true));
                 harass.AddItem(
                     new MenuItem("harassMode", "Mode", true).SetValue(new StringList(new[] {"QE", "EQ", "Q"}, 2)));
                 harass.AddItem(
@@ -55,6 +57,7 @@
                 farm.AddItem(new MenuItem("UseQFarm", "Use Q Farm", true).SetValue(true));
                 farm.AddItem(new MenuItem("UseWFarm", "Use W Farm", true).SetValue(true));
                 farm.AddItem(new MenuItem("UseEFarm", "Use E Farm", true).SetValue(false));
+                farm.AddItem(new MenuItem("UseEDaggerFarm", "Use E Farm(Jump to Dagger)", true).SetValue(false));
                 farm.AddItem(new MenuItem("UseQHit", "Use Q Last Hit", true).SetValue(true));
                 Menu.AddSubMenu(farm);
             }
@@ -235,7 +238,8 @@
 
                         var delay = Menu.Item("E_Delay_Slider", true).GetValue<Slider>().Value;
 
-                        if (Dagger != null && Dagger.Position.CountEnemiesInRange(400) > 0)
+                        if (Menu.Item("UseEDaggerCombo", true).GetValue<bool>() && Dagger != null 
+                            && Dagger.Position.CountEnemiesInRange(400) > 0)
                         {
                             Orbwalker.SetAttack(false);
                             Orbwalker.SetMovement(false);
@@ -279,7 +283,8 @@
 
                         var delay = Menu.Item("E_Delay_Slider", true).GetValue<Slider>().Value;
 
-                        if (Dagger != null && Dagger.Position.CountEnemiesInRange(400) > 0)
+                        if (Menu.Item("UseEDaggerCombo", true).GetValue<bool>() && Dagger != null
+                            && Dagger.Position.CountEnemiesInRange(400) > 0)
                         {
                             Orbwalker.SetAttack(false);
                             Orbwalker.SetMovement(false);
@@ -351,7 +356,8 @@
                 if (Menu.Item("UseEHarass", true).GetValue<bool>() && eTarget != null && E.IsReady() &&
                     !Q.IsReady() && eTarget.IsValidTarget(E.Range))
                 {
-                    if (Dagger != null && eTarget.Distance(Dagger) <= 400)
+                    if (Menu.Item("UseEDaggerHarass", true).GetValue<bool>() && Dagger != null 
+                        && eTarget.Distance(Dagger) <= 400)
                     {
                         E.Cast(Dagger, true);
                     }
@@ -366,7 +372,8 @@
                 if (Menu.Item("UseEHarass", true).GetValue<bool>() && eTarget != null &&
                     E.IsReady() && eTarget.IsValidTarget(E.Range))
                 {
-                    if (Dagger != null && eTarget.Distance(Dagger) <= 400)
+                    if (Menu.Item("UseEDaggerHarass", true).GetValue<bool>() && Dagger != null
+                        && eTarget.Distance(Dagger) <= 400)
                     {
                         E.Cast(Dagger, true);
                     }
@@ -435,16 +442,18 @@
                 return;
             }
 
-            var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range,
-                MinionTypes.All, MinionTeam.NotAlly);
-            var allMinionsE = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, E.Range,
-                MinionTypes.All, MinionTeam.NotAlly);
-            var allMinionsW = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 400,
-                MinionTypes.All, MinionTeam.NotAlly);
+            var allMinionsQ = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
+            var allMinionsE = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, E.Range);
+            var allMinionsW = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 400);
 
             var useQ = Menu.Item("UseQFarm", true).GetValue<bool>();
             var useW = Menu.Item("UseWFarm", true).GetValue<bool>();
             var useE = Menu.Item("UseEFarm", true).GetValue<bool>();
+            var useEDagger = Menu.Item("UseEDaggerFarm", true).GetValue<bool>();
+
+            var Dagger =
+                ObjectManager.Get<Obj_AI_Minion>()
+                    .FirstOrDefault(x => x.CharData.BaseSkinName == "testcuberender" && x.Health > 1 && x.IsValid);
 
             if (useQ && allMinionsQ.Count > 0 && Q.IsReady() && allMinionsQ[0].IsValidTarget(Q.Range))
             {
@@ -454,6 +463,16 @@
             if (useE && allMinionsQ.Count > 0 && E.IsReady() && allMinionsQ[0].IsValidTarget(E.Range))
             {
                 E.Cast(allMinionsE[0]);
+            }
+
+            if (useEDagger && Dagger != null && E.IsReady())
+            {
+                var daggerMinions = MinionManager.GetMinions(Dagger.Position, 400);
+
+                if (daggerMinions.Count > 2)
+                {
+                    E.CastOnUnit(Dagger);
+                }
             }
 
             if (useW && Player.GetSpell(SpellSlot.W).IsReady())
@@ -480,13 +499,35 @@
                 MinionTypes.All, MinionTeam.Neutral);
             var allMinionsW = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, 400,
                 MinionTypes.All, MinionTeam.Neutral);
+            var allMinionsE = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, E.Range);
 
             var useQ = Menu.Item("UseQFarm", true).GetValue<bool>();
             var useW = Menu.Item("UseWFarm", true).GetValue<bool>();
+            var useE = Menu.Item("UseEFarm", true).GetValue<bool>();
+            var useEDagger = Menu.Item("UseEDaggerFarm", true).GetValue<bool>();
+
+            var Dagger =
+                ObjectManager.Get<Obj_AI_Minion>()
+                    .FirstOrDefault(x => x.CharData.BaseSkinName == "testcuberender" && x.Health > 1 && x.IsValid);
 
             if (useQ && allMinionsQ.Count > 0 && Q.IsReady() && allMinionsQ[0].IsValidTarget(Q.Range))
             {
                 Q.Cast(allMinionsQ[0]);
+            }
+
+            if (useE && allMinionsQ.Count > 0 && E.IsReady() && allMinionsQ[0].IsValidTarget(E.Range))
+            {
+                E.Cast(allMinionsE[0]);
+            }
+
+            if (useEDagger && Dagger != null && E.IsReady())
+            {
+                var daggerMinions = MinionManager.GetMinions(Dagger.Position, 400);
+
+                if (daggerMinions.Count >= 1)
+                {
+                    E.CastOnUnit(Dagger);
+                }
             }
 
             if (useW && Player.GetSpell(SpellSlot.W).IsReady())
