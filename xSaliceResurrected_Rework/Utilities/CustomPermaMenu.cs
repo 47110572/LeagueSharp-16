@@ -10,8 +10,8 @@
 
     public class CustomPermaMenu
     {
-        private static int _menuX = (int)(Drawing.Width * 0.75f);
-        private static int _menuY = (int)(Drawing.Height * 0.75f);
+        private static int _menuX = (int)(Drawing.Width * 0.90f);
+        private static int _menuY = (int)(Drawing.Height * 0.58f);
 
         private static readonly HashSet<PermaMenu> MyPermaMenus = new HashSet<PermaMenu>();
 
