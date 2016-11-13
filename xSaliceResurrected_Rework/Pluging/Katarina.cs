@@ -249,7 +249,7 @@
                                     }
                                 }
 
-                                if (Utils.TickCount - LastCastW > 800)
+                                if (Utils.TickCount - LastCastW > 1000)
                                 {
                                     if (Menu.Item("UseEDaggerCombo", true).GetValue<bool>()
                                         && targetDagger.Distance(Player) <= E.Range)
@@ -284,7 +284,7 @@
                                     }
                                 }
 
-                                if (Utils.TickCount - LastCastW > 800)
+                                if (Utils.TickCount - LastCastW > 1000)
                                 {
                                     if (Menu.Item("UseECombo", true).GetValue<bool>() && E.IsReady() &&
                                         target.IsValidTarget(E.Range) &&
@@ -512,7 +512,7 @@
                                 }
                             }
 
-                            if (Utils.TickCount - LastCastW > 800)
+                            if (Utils.TickCount - LastCastW > 1000)
                             {
                                 if (Menu.Item("UseEDaggerHarass", true).GetValue<bool>()
                                     && targetDagger.Distance(Player) <= E.Range)
@@ -538,7 +538,7 @@
                                 }
                             }
 
-                            if (Utils.TickCount - LastCastW > 800)
+                            if (Utils.TickCount - LastCastW > 1000)
                             {
                                 if (Menu.Item("UseEHarass", true).GetValue<bool>() && E.IsReady() &&
                                     target.IsValidTarget(E.Range) &&
@@ -700,7 +700,7 @@
                         }
                     }
 
-                    if (useE && Utils.TickCount - LastCastW > 800 && E.IsReady() && Dagger.Distance(Player) <= E.Range)
+                    if (useE && Utils.TickCount - LastCastW > 1000 && E.IsReady() && Dagger.Distance(Player) <= E.Range)
                     {
                         E.CastOnUnit(Dagger);
                     }
@@ -766,7 +766,7 @@
                         }
                     }
 
-                    if (useEDagger && E.IsReady() && Utils.TickCount - LastCastW > 800)
+                    if (useEDagger && E.IsReady() && Utils.TickCount - LastCastW > 1000)
                     {
                         if (daggerMinions.Count >= 1)
                         {
