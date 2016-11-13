@@ -1,0 +1,5 @@
+﻿Much Better Combo Logic (Q? W? E? EQ? R?) just need to test more
+Update W/E Dodge Spell DataBase
+EQFlash Logic
+EQ KillSteal?
+Add Draw Auto Status?
