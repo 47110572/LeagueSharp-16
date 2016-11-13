@@ -374,72 +374,16 @@
 
             if (R.IsReady() && CheckTarget(target, R.Range))
             {
-                if (R.Instance.Name == "JhinR")
+                switch (R.Instance.Name)
                 {
-                    if (Menu.Item("RMenuSemi", true).GetValue<KeyBind>().Active)
-                    {
-                        if (R.Cast(R.GetPrediction(target).UnitPosition))
-                        {
-                            rShotTarget = target;
-                            return;
-                        }
-                    }
-
-                    if (!Menu.Item("RMenuAuto", true).GetValue<bool>())
-                    {
-                        return;
-                    }
-
-                    if (Menu.Item("RMenuCheck", true).GetValue<bool>() && Me.CountEnemiesInRange(800f) > 0)
-                    {
-                        return;
-                    }
-
-                    if (target.DistanceToPlayer() <= Menu.Item("RMenuMin", true).GetValue<Slider>().Value)
-                    {
-                        return;
-                    }
-
-                    if (target.DistanceToPlayer() > Menu.Item("RMenuMax", true).GetValue<Slider>().Value)
-                    {
-                        return;
-                    }
-
-                    if (target.Health >
-                        Me.GetSpellDamage(target, SpellSlot.R)*Menu.Item("RMenuKill", true).GetValue<Slider>().Value)
-                    {
-                        return;
-                    }
-
-                    if (SebbyLibIsSpellHeroCollision(target, R))
-                    {
-                        return;
-                    }
-
-                    if (R.Cast(R.GetPrediction(target).UnitPosition))
-                    {
-                        rShotTarget = target;
-                        return;
-                    }
-                }
-
-                if (R.Instance.Name == "JhinRShot")
-                {
-                    if (rShotTarget != null && rShotTarget.IsValidTarget(R.Range) && InRCone(rShotTarget))
-                    {
+                    case "JhinR":
                         if (Menu.Item("RMenuSemi", true).GetValue<KeyBind>().Active)
                         {
-                            AutoUse(rShotTarget);
-                            R.CastTo(rShotTarget);
-                            return;
-                        }
-
-                        if (Menu.Item("ComboR", true).GetValue<bool>() &&
-                            Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
-                        {
-                            AutoUse(rShotTarget);
-                            R.CastTo(rShotTarget);
-                            return;
+                            if (R.Cast(R.GetPrediction(target).UnitPosition))
+                            {
+                                rShotTarget = target;
+                                return;
+                            }
                         }
 
                         if (!Menu.Item("RMenuAuto", true).GetValue<bool>())
@@ -447,12 +391,67 @@
                             return;
                         }
 
-                        AutoUse(rShotTarget);
-                        R.CastTo(rShotTarget);
+                        if (Menu.Item("RMenuCheck", true).GetValue<bool>() && Me.CountEnemiesInRange(800f) > 0)
+                        {
+                            return;
+                        }
 
-                    }
-                    else
-                    {
+                        if (target.DistanceToPlayer() <= Menu.Item("RMenuMin", true).GetValue<Slider>().Value)
+                        {
+                            return;
+                        }
+
+                        if (target.DistanceToPlayer() > Menu.Item("RMenuMax", true).GetValue<Slider>().Value)
+                        {
+                            return;
+                        }
+
+                        if (target.Health >
+                            Me.GetSpellDamage(target, SpellSlot.R) * Menu.Item("RMenuKill", true).GetValue<Slider>().Value)
+                        {
+                            return;
+                        }
+
+                        if (SebbyLibIsSpellHeroCollision(target, R))
+                        {
+                            return;
+                        }
+
+                        if (R.Cast(R.GetPrediction(target).UnitPosition))
+                        {
+                            rShotTarget = target;
+                        }
+                        break;
+                    case "JhinRShot":
+                        var selectTarget = TargetSelector.GetSelectedTarget();
+
+                        if (selectTarget != null && selectTarget.IsValidTarget(R.Range) && InRCone(selectTarget))
+                        {
+                            if (Menu.Item("RMenuSemi", true).GetValue<KeyBind>().Active)
+                            {
+                                AutoUse(rShotTarget);
+                                R.CastTo(rShotTarget);
+                                return;
+                            }
+
+                            if (Menu.Item("ComboR", true).GetValue<bool>() &&
+                                Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+                            {
+                                AutoUse(rShotTarget);
+                                R.CastTo(rShotTarget);
+                                return;
+                            }
+
+                            if (!Menu.Item("RMenuAuto", true).GetValue<bool>())
+                            {
+                                return;
+                            }
+
+                            AutoUse(rShotTarget);
+                            R.CastTo(rShotTarget);
+                            return;
+                        }
+
                         foreach (
                             var t in
                             HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range) && InRCone(x))
@@ -482,7 +481,7 @@
                             R.Cast(R.GetPrediction(t).UnitPosition, true);
                             return;
                         }
-                    }
+                        break;
                 }
             }
         }
