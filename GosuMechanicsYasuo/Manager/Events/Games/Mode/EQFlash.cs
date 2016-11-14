@@ -41,7 +41,6 @@
 
                     if (bestPos.IsValid() && Q3.Cast(bestPos, true))
                     {
-                        Game.PrintChat("Qtarget!");
                         Utility.DelayAction.Add(10+(Game.Ping/2-5),
                                            () => Me.Spellbook.CastSpell(Me.GetSpellSlot("SummonerFlash"), bestPos));
                     }
@@ -65,7 +64,6 @@
 
                         if (eTarget != null)
                         {
-                        
                             E.CastOnUnit(eTarget, true);
                         }
                     }
