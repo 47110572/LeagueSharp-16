@@ -20,7 +20,7 @@
             {
                 comboMenu.AddItem(new MenuItem("ComboQ", "Use Q", true)).SetValue(true);
                 comboMenu.AddItem(new MenuItem("ComboW", "Use W", true)).SetValue(true);
-                comboMenu.AddItem(new MenuItem("ComboE", "Use E")).SetValue(true);
+                comboMenu.AddItem(new MenuItem("ComboE", "Use E", true)).SetValue(true);
                 comboMenu.AddItem(new MenuItem("ComboEWall", "Use E to Wall Position", true)).SetValue(true);
                 comboMenu.AddItem(
                     new MenuItem("ComboERange", "Use E| Target Distance to Player >= x", true)).SetValue(
@@ -179,7 +179,8 @@
                     }
                 }
 
-                miscMenu.AddItem(new MenuItem("KS", "KillSteal")).SetValue(true);
+                miscMenu.AddItem(new MenuItem("EQFlash", "EQFlash", true)).SetValue(new KeyBind('A', KeyBindType.Press));
+
             }
 
             var drawMenu = Menu.AddSubMenu(new Menu("Draw", "Draw"));

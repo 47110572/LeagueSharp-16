@@ -17,8 +17,8 @@
             E = new Spell(SpellSlot.E, 475f);
             R = new Spell(SpellSlot.R, 1200f);
 
-            Q.SetSkillshot(0.25f, 50f, Single.MaxValue, false, SkillshotType.SkillshotLine);
-            Q3.SetSkillshot(0.5f, 90f, 1200f, false, SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.4f, 30f, float.MaxValue, false, SkillshotType.SkillshotLine);
+            Q3.SetSkillshot(0.35f, 90f, 1200f, false, SkillshotType.SkillshotLine);
 
             var dot = ObjectManager.Player.GetSpellSlot("summonerdot");
             if (dot != SpellSlot.Unknown)

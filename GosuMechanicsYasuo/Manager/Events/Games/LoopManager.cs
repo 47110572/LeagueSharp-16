@@ -41,6 +41,12 @@
                 case Orbwalking.OrbwalkingMode.WallJump:
                     WallJump.Init();
                     break;
+                case Orbwalking.OrbwalkingMode.None:
+                    if (Menu.Item("EQFlash", true).GetValue<KeyBind>().Active)
+                    {
+                        EQFlash.Init();
+                    }
+                    break;
             }
         }
     }

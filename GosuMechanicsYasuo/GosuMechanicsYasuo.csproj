@@ -34,19 +34,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="clipper_library">
-      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\clipper_library.dll</HintPath>
+      <HintPath>D:\qMLQe\I5QEqMLQe\References\clipper_library.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp">
-      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\LeagueSharp.dll</HintPath>
+      <HintPath>D:\qMLQe\I5QEqMLQe\References\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\LeagueSharp.Common.dll</HintPath>
+      <HintPath>D:\qMLQe\I5QEqMLQe\References\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\SharpDX.dll</HintPath>
+      <HintPath>D:\qMLQe\I5QEqMLQe\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>D:\qMLQe\I5QEqMLQe\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -77,6 +77,7 @@
     <Compile Include="Manager\Events\Games\Mode\Auto.cs" />
     <Compile Include="Manager\Events\Games\Mode\Combo.cs" />
     <Compile Include="Manager\Events\Games\Mode\DodgeSpell.cs" />
+    <Compile Include="Manager\Events\Games\Mode\EQFlash.cs" />
     <Compile Include="Manager\Events\Games\Mode\Flee.cs" />
     <Compile Include="Manager\Events\Games\Mode\Harass.cs" />
     <Compile Include="Manager\Events\Games\Mode\JungleClear.cs" />

@@ -492,7 +492,7 @@
                 var orbwalkerKeyMenu = Menu.AddSubMenu(new Menu("Keys", "Keys"));
                 {
                     orbwalkerKeyMenu.AddItem(
-                        new MenuItem("WallJump", "WallJump").SetValue(new KeyBind('A', KeyBindType.Press)));
+                        new MenuItem("WallJump", "WallJump").SetValue(new KeyBind('G', KeyBindType.Press)));
                     orbwalkerKeyMenu.AddItem(new MenuItem("Flee", "Flee").SetValue(new KeyBind('Z', KeyBindType.Press)));
                     orbwalkerKeyMenu.AddItem(
                         new MenuItem("LastHit", "Last hit").SetValue(new KeyBind('X', KeyBindType.Press)));
