@@ -370,16 +370,6 @@
                                 E.Cast(target, true);
                                 E.LastCastAttemptT = Utils.TickCount + delay;
                             }
-
-                            if (Menu.Item("UseWCombo", true).GetValue<bool>() && Player.GetSpell(SpellSlot.W).IsReady() &&
-                                (target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)) ||
-                                (!E.IsReady() && target.IsValidTarget(E.Range))))
-                            {
-                                if (Player.Spellbook.CastSpell(SpellSlot.W))
-                                {
-                                    LastCastW = Utils.TickCount;
-                                }
-                            }
                         }
                         break;
                     case 2:
@@ -443,18 +433,20 @@
                             {
                                 Q.Cast(target, true);
                             }
-
-                            if (Menu.Item("UseWCombo", true).GetValue<bool>() && Player.GetSpell(SpellSlot.W).IsReady() && 
-                                (target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)) ||
-                                (!E.IsReady() && target.IsValidTarget(E.Range))))
-                            {
-                                if (Player.Spellbook.CastSpell(SpellSlot.W))
-                                {
-                                    LastCastW = Utils.TickCount;
-                                }
-                            }
                         }
                         break;
+                }
+
+                if (Menu.Item("comboMode", true).GetValue<StringList>().SelectedIndex != 0 &&
+                    Menu.Item("UseWCombo", true).GetValue<bool>() && Player.GetSpell(SpellSlot.W).IsReady() &&
+                    (target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Player)) ||
+                     (!E.IsReady() && target.IsValidTarget(E.Range))))
+
+                {
+                    if (Player.Spellbook.CastSpell(SpellSlot.W))
+                    {
+                        LastCastW = Utils.TickCount;
+                    }
                 }
 
                 if (Menu.Item("UseRCombo", true).GetValue<bool>() && R.IsReady() &&
