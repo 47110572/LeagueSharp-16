@@ -37,7 +37,7 @@
                 combo.AddItem(new MenuItem("smartE", "Smart E with R CD ", true).SetValue(false));
                 combo.AddItem(new MenuItem("UseRCombo", "Use R", true).SetValue(true));
                 combo.AddItem(
-                    new MenuItem("comboMode", "Mode", true).SetValue(new StringList(new[] {"Beta(QWEE)", "QEW", "EQW"})));
+                    new MenuItem("comboMode", "Mode", true).SetValue(new StringList(new[] {"Beta(QWEE)", "QEW", "EQW"}, 1)));
                 Menu.AddSubMenu(combo);
             }
 
@@ -49,7 +49,7 @@
                 harass.AddItem(new MenuItem("UseEDaggerHarass", "Use E to Dagger", true).SetValue(true));
                 harass.AddItem(
                     new MenuItem("harassMode", "Mode", true).SetValue(
-                        new StringList(new[] {"Beta(QWEE)", "QEW", "EQW", "Q"}, 2)));
+                        new StringList(new[] {"Beta(QWEE)", "QEW", "EQW", "Q"}, 3)));
                 harass.AddItem(
                     new MenuItem("FarmT", "Harass (toggle)!", true).SetValue(new KeyBind("N".ToCharArray()[0],
                         KeyBindType.Toggle)));
