@@ -166,37 +166,6 @@
             return (@from + distance * Vector3.Normalize(direction - @from)).To2D();
         }
 
-        public static IsSafeResult isSafePoint(Vector2 point, bool igonre = false)
-        {
-            var result = new IsSafeResult
-            {
-                SkillshotList = new List<Skillshot>(),
-                casters = new List<Obj_AI_Base>()
-            };
-
-            var safe = Logic.Orbwalker.ActiveMode == GosuMechanicsYasuo.Orbwalking.OrbwalkingMode.Combo ||
-                        point.To3D().GetEnemiesInRange(500).Count > ObjectManager.Player.HealthPercent % 65;
-
-            if (!safe)
-            {
-                result.IsSafe = false;
-                return result;
-            }
-
-            foreach (var skillshot in Logic.EvadeDetectedSkillshots)
-            {
-                if (skillshot.IsDanger(point) && skillshot.IsAboutToHit(500, ObjectManager.Player))
-                {
-                    result.SkillshotList.Add(skillshot);
-                    result.casters.Add(skillshot.Unit);
-                }
-            }
-
-            result.IsSafe = result.SkillshotList.Count == 0;
-            return result;
-        }
-
-
         public static float DistanceToPlayer(this Obj_AI_Base source)
         {
             return ObjectManager.Player.Distance(source);

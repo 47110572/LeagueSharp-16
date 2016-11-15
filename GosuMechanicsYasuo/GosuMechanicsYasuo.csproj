@@ -62,12 +62,24 @@
     <Content Include="TODO.txt" />
     <Compile Include="Common\Common.cs" />
     <Compile Include="Common\HpBarDraw.cs" />
-    <Compile Include="Evade\Collision.cs" />
-    <Compile Include="Evade\Config.cs" />
-    <Compile Include="Evade\EvadeSpellData.cs" />
-    <Compile Include="Evade\EvadeSpellDatabase.cs" />
-    <Compile Include="Evade\Geometry.cs" />
     <Compile Include="Common\IsSafeResult.cs" />
+    <Compile Include="Evade\Collision\Collision.cs" />
+    <Compile Include="Evade\Collision\CollisionObjectTypes.cs" />
+    <Compile Include="Evade\Collision\DetectedCollision.cs" />
+    <Compile Include="Evade\Collision\FastPredResult.cs" />
+    <Compile Include="Evade\Evader\EvadeManager.cs" />
+    <Compile Include="Evade\Evader\EvadeTargetManager.cs" />
+    <Compile Include="Evade\Evader\IsSafeResult.cs" />
+    <Compile Include="Evade\EvadeSpell\EvadeSpellData.cs" />
+    <Compile Include="Evade\EvadeSpell\EvadeSpellDatabase.cs" />
+    <Compile Include="Evade\Skillshot\DetectionType.cs" />
+    <Compile Include="Evade\Skillshot\FoundIntersection.cs" />
+    <Compile Include="Evade\Skillshot\SafePathResult.cs" />
+    <Compile Include="Evade\Skillshot\Skillshot.cs" />
+    <Compile Include="Evade\Skillshot\SkillshotDetector.cs" />
+    <Compile Include="Evade\Skillshot\SkillShotType.cs" />
+    <Compile Include="Evade\SpellData\SpellData.cs" />
+    <Compile Include="Evade\SpellData\SpellDatabase.cs" />
     <Compile Include="Logic.cs" />
     <Compile Include="Manager\Events\Animation\AnimationManager.cs" />
     <Compile Include="Manager\Events\Drawings\DrawManager.cs" />
@@ -76,7 +88,6 @@
     <Compile Include="Manager\Events\GameObject\DeleteManager.cs" />
     <Compile Include="Manager\Events\Games\Mode\Auto.cs" />
     <Compile Include="Manager\Events\Games\Mode\Combo.cs" />
-    <Compile Include="Manager\Events\Games\Mode\DodgeSpell.cs" />
     <Compile Include="Manager\Events\Games\Mode\EQFlash.cs" />
     <Compile Include="Manager\Events\Games\Mode\Flee.cs" />
     <Compile Include="Manager\Events\Games\Mode\Harass.cs" />
@@ -88,18 +99,12 @@
     <Compile Include="Manager\Events\Gapcloser\GapcloserManager.cs" />
     <Compile Include="Manager\Events\Interrupt\InterruptManager.cs" />
     <Compile Include="Manager\Events\Games\LoopManager.cs" />
-    <Compile Include="Manager\Events\SkillshotDetector\MissileManager.cs" />
-    <Compile Include="Manager\Events\SkillshotDetector\SkillshotManager.cs" />
+    <Compile Include="Manager\Events\SpellCast\SpellCastManager.cs" />
     <Compile Include="Manager\Menu\MenuManager.cs" />
     <Compile Include="Manager\Spells\SpellManager.cs" />
     <Compile Include="Orbwalking\Orbwalking.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Evade\Skillshot.cs" />
-    <Compile Include="Evade\SkillshotDetector.cs" />
-    <Compile Include="Evade\SpellData.cs" />
-    <Compile Include="Evade\SpellDatabase.cs" />
-    <Compile Include="Evade\Utils.cs" />
     <Compile Include="Manager\Spells\YasuoWindWall.cs" />
   </ItemGroup>
   <ItemGroup>

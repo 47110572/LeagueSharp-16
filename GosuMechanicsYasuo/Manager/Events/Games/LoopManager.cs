@@ -1,4 +1,7 @@
-﻿namespace GosuMechanicsYasuo.Manager.Events
+﻿using LeagueSharp;
+using SharpDX;
+
+namespace GosuMechanicsYasuo.Manager.Events
 {
     using System;
     using Games.Mode;
@@ -9,14 +12,16 @@
     {
         internal static void Init(EventArgs Args)
         {
+            if (Utils.TickCount - lastECast - Game.Ping > 500)
+            {
+                lastEPos = Vector3.Zero;
+            }
+
             if (Me.IsDead || Me.IsRecalling())
             {
                 return;
             }
 
-            EvadeDetectedSkillshots.RemoveAll(skillshot => !skillshot.IsActive());
-
-            DodgeSpell.Init();
             KillSteal.Init();
             Auto.Init();
 

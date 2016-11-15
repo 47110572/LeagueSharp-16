@@ -81,12 +81,11 @@
 
             if (!Menu.Item("ETower", true).GetValue<bool>())
             {
-                if (isSafePoint(posAfter).IsSafe)
+                if (Evade.EvadeManager.IsSafe(posAfter).IsSafe)
                 {
                     E.Cast(target, true);
+                    return true;
                 }
-
-                return true;
             }
 
             var pPos = Me.ServerPosition.To2D();
@@ -94,12 +93,11 @@
 
             if (!posAfterE.To3D().UnderTurret(true))
             {
-                if (isSafePoint(posAfter, true).IsSafe)
+                if (Evade.EvadeManager.IsSafe(posAfter).IsSafe)
                 {
                     E.Cast(target, true);
+                    return true;
                 }
-
-                return true;
             }
 
             return false;
@@ -107,6 +105,11 @@
 
         internal static double GetQDmg(Obj_AI_Base target)
         {
+            if (target == null)
+            {
+                return 0d;
+            }
+
             var dmgItem = 0d;
 
             if (Items.HasItem(3057) && (Items.CanUseItem(3057) || Me.HasBuff("Sheen")))
@@ -167,6 +170,11 @@
 
         internal static double GetEDmg(Obj_AI_Base target)
         {
+            if (target == null)
+            {
+                return 0d;
+            }
+
             var stacksPassive = Me.Buffs.Find(b => b.DisplayName.Equals("YasuoDashScalar"));
             var Estacks = stacksPassive?.Count ?? 0;
             var damage = (E.Level * 20 + 50) * (1 + 0.25 * Estacks) + Me.FlatMagicDamageMod * 0.6;

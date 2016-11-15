@@ -124,10 +124,7 @@
 
         public static float GetMyProjectileSpeed()
         {
-            return IsMelee(Player) || _championName == "Azir" || _championName == "Velkoz" ||
-                   _championName == "Viktor" && Player.HasBuff("ViktorPowerTransferReturn")
-                ? float.MaxValue
-                : Player.BasicAttack.MissileSpeed;
+            return float.MaxValue;
         }
 
         public static float GetRealAutoAttackRange(AttackableUnit target)
@@ -171,11 +168,6 @@
         public static bool IsAutoAttack(string name)
         {
             return name.ToLower().Contains("attack");
-        }
-
-        public static bool IsMelee(this Obj_AI_Base unit)
-        {
-            return unit.CombatType == GameObjectCombatType.Melee;
         }
 
         public static void MoveTo(Vector3 position, float holdAreaRadius = 0, bool overrideTimer = false,

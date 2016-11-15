@@ -6,32 +6,41 @@
     using SharpDX;
     using LeagueSharp;
     using LeagueSharp.Common;
+    using Orbwalking = Orbwalking;
     using static Common.Common;
 
     internal class Combo : Logic
     {
         internal static void Init()
         {
-            var target = TargetSelector.GetTarget(Q3.Range, TargetSelector.DamageType.Physical);
+            var target = TargetSelector.GetTarget(1200f, TargetSelector.DamageType.Physical);
 
-            if (target.IsValidTarget(Q3.Range))
+            if (target == null)
             {
-                Orbwalker.ForceTarget(target);
+                return;
+            }
 
-                if (Menu.Item("ComboIgnite", true).GetValue<bool>() && Ignite.IsReady()
-                    && target.IsValidTarget(Ignite.Range)
-                    && (target.Health <= Me.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite)
+            if (target.DistanceToPlayer() > R.Range)
+            {
+                return;
+            }
+
+            if (Menu.Item("ComboIgnite", true).GetValue<bool>() && Ignite.IsReady()
+                && target.IsValidTarget(Ignite.Range)
+                && (target.Health <= Me.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite)
                     || target.HealthPercent <= 25))
-                {
-                    Ignite.Cast(target);
-                }
+            {
+                Ignite.Cast(target);
+            }
 
-                if (Menu.Item("ComboItems", true).GetValue<bool>())
-                {
-                    UseItems(target, true);
-                }
+            if (Menu.Item("ComboItems", true).GetValue<bool>())
+            {
+                UseItems(target, true);
+            }
 
-                if (Menu.Item("ComboQ", true).GetValue<bool>() && !IsDashing)
+            if (Menu.Item("ComboQ", true).GetValue<bool>())
+            {
+                if (!IsDashing)
                 {
                     if (SpellManager.HaveQ3)
                     {
@@ -44,13 +53,22 @@
                     {
                         if (Q.IsReady() && target.IsValidTarget(Q.Range))
                         {
-                            var qPred = Q.GetPrediction(target, true);
-
-                            if (qPred.Hitchance >= HitChance.VeryHigh)
-                            {
-                                Q.Cast(qPred.CastPosition, true);
-                            }
+                            Q.Cast(target, true);
                         }
+                    }
+                }
+                else
+                {
+                    if (Menu.Item("ComboEQ", true).GetValue<bool>() && Q.IsReady() && !SpellManager.HaveQ3 &&
+                        target.Distance(lastEPos) <= 220)
+                    {
+                        Utility.DelayAction.Add(150 + Game.Ping, () => { Q.Cast(true); });
+                    }
+
+                    if (Menu.Item("ComboEQ3", true).GetValue<bool>() && Q3.IsReady() && SpellManager.HaveQ3 &&
+                        target.Distance(lastEPos) <= 220)
+                    {
+                        Utility.DelayAction.Add(150 + Game.Ping, () => { Q3.Cast(true); });
                     }
                 }
             }
@@ -84,18 +102,6 @@
                          dmg <= target.Health && SpellManager.CanCastE(target) && Me.IsFacing(target))
                 {
                     SpellManager.useENormal(target);
-                }
-
-                if (Menu.Item("ComboEQ", true).GetValue<bool>() && Q.IsReady() && !SpellManager.HaveQ3 && IsDashing &&
-                    target.DistanceToPlayer() <= 275)
-                {
-                    Utility.DelayAction.Add(200, () => { Q.Cast(target.Position, true); });
-                }
-
-                if (Menu.Item("ComboEQ3", true).GetValue<bool>() && Q3.IsReady() && SpellManager.HaveQ3 && IsDashing &&
-                    target.DistanceToPlayer() <= 275)
-                {
-                    Utility.DelayAction.Add(200, () => { Q3.Cast(target.Position, true);});
                 }
 
                 switch (Menu.Item("ComboEMode", true).GetValue<StringList>().SelectedIndex)
@@ -194,7 +200,7 @@
                     {
                         if (IsKnockedUp(rTarget) && CanCastDelayR(rTarget) &&
                             rTarget.HealthPercent <= Menu.Item("ComboRHp", true).GetValue<Slider>().Value &&
-                            Menu.Item("R" + rTarget.ChampionName, true).GetValue<bool>())
+                            Menu.Item("R" + rTarget.ChampionName.ToLower(), true).GetValue<bool>())
                         {
                             R.Cast();
                         }
@@ -214,7 +220,7 @@
 
         private static void ComboW(Obj_AI_Hero target)
         {
-            if (!W.IsReady() || !E.IsReady() || target.IsMelee() ||
+            if (!W.IsReady() || !E.IsReady() || target.IsMelee ||
                 !Menu.Item("ComboW" + target.ChampionName.ToLower(), true).GetValue<bool>())
             {
                 return;

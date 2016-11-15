@@ -1,6 +1,5 @@
 ﻿namespace GosuMechanicsYasuo
 {
-    using System.Collections.Generic;
     using Evade;
     using Manager.Menu;
     using Manager.Events;
@@ -23,12 +22,12 @@
         internal static bool isDashing;
         internal static bool wallCasted;
 
+        internal static int lastECast;
+        internal static SharpDX.Vector3 lastEPos;
+        
         internal static Obj_AI_Hero Me;
         internal static Orbwalking.Orbwalker Orbwalker;
         internal static YasuoWindWall wall = new YasuoWindWall();
-        internal static List<Skillshot> DetectedSkillShots = new List<Skillshot>();
-        internal static List<Skillshot> EvadeDetectedSkillshots = new List<Skillshot>();
-
 
         internal static void LoadYasuo()
         {
@@ -36,7 +35,10 @@
 
             SpellManager.Init();
             MenuManager.Init();
+            EvadeManager.Init();
+            EvadeTargetManager.Init();
             EventManager.Init();
+            DrawManager.InitPos();
         }
 
         internal static bool IsDashing => isDashing || Me.IsDashing();

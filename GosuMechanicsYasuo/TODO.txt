@@ -1,3 +1,4 @@
-﻿Much Better Combo Logic (Q? W? E? EQ? R?) just need to test more
-Update W/E Dodge Spell DataBase -> Add it in Next Update. Not Now, because need more test
-Add Draw Auto Status?
+﻿Much Better Combo Logic (W? E? R?)
+Credit:
+Kortatu Evade#
+Brian EvadeTarget
