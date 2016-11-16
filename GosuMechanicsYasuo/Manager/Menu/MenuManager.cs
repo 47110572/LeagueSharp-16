@@ -20,9 +20,9 @@
             var comboMenu = Menu.AddSubMenu(new Menu("Combo", "combo"));
             {
                 comboMenu.AddItem(new MenuItem("ComboQ", "Use Q", true).SetValue(true));
-                comboMenu.AddItem(new MenuItem("ComboW", "Use W", true).SetValue(true));
+                comboMenu.AddItem(new MenuItem("ComboW", "Use W", true).SetValue(false));
                 comboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));
-                comboMenu.AddItem(new MenuItem("ComboEWall", "Use E to Wall Position", true).SetValue(true));
+                comboMenu.AddItem(new MenuItem("ComboEWall", "Use E to Wall Position", true).SetValue(false));
                 comboMenu.AddItem(
                     new MenuItem("ComboERange", "Use E| Target Distance to Player >= x", true).SetValue(
                         new Slider(375, 0, 475)));
@@ -224,6 +224,18 @@
                                         .SetValue(false));
                         }
                     }
+                }
+
+                var skinMenu = miscMenu.AddSubMenu(new Menu("SkinChange", "SkinChange"));
+                {
+                    skinMenu.AddItem(new MenuItem("EnableSkin", "Enabled", true).SetValue(false)).ValueChanged += EnbaleSkin;
+                    skinMenu.AddItem(
+                        new MenuItem("SelectSkin", "Select Skin: ", true).SetValue(
+                            new StringList(new[]
+                            {
+                                "Classic", "High Noon", "Project: Yasuo", "Blood Moon", "Others", "Others1", "Others2",
+                                "Others3", "Others4"
+                            })));
                 }
 
                 miscMenu.AddItem(new MenuItem("EQFlash", "EQFlash", true).SetValue(new KeyBind('A', KeyBindType.Press)));

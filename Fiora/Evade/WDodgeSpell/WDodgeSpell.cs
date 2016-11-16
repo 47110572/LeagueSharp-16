@@ -13,9 +13,9 @@
         private static float RivenQRange;
         private static Vector2 RivenDashPos;
 
-        internal static void Init()
+        internal static void Init(Menu mainMenu)
         {
-            Menu = Config.WSpellMenu;
+            Menu = mainMenu;
 
             foreach (
                 var hero in
@@ -45,6 +45,8 @@
                         spell.ChampionName + " " + spell.SpellSlot, true).SetValue(true));
             }
 
+            Menu.AddItem(new MenuItem("EnabledWDodge", "Enabled W Dodge", true).SetValue(true));
+
             Game.OnUpdate += OnUpdate;
             Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
             Obj_AI_Base.OnPlayAnimation += OnPlayAnimation;
@@ -54,7 +56,7 @@
         private static void OnUpdate(EventArgs args)
         {
             if (ObjectManager.Player.IsDead || !ObjectManager.Player.GetSpell(SpellSlot.W).IsReady() ||
-                !Config.Menu.Item("Enabled").GetValue<KeyBind>().Active)
+                !Menu.Item("EnabledWDodge", true).GetValue<bool>())
             {
                 return;
             }
@@ -131,7 +133,7 @@
                     case "Riven":
                         if (Menu.Item("rivenQ", true).GetValue<bool>())
                         {
-                            if (LeagueSharp.Common.Utils.GameTimeTickCount - RivenQTime <= 100 && RivenDashPos.IsValid() &&
+                            if (Utils.GameTimeTickCount - RivenQTime <= 100 && RivenDashPos.IsValid() &&
                                 ObjectManager.Player.Distance(target) <= RivenQRange)
                             {
                                 CastW();
@@ -144,7 +146,7 @@
 
         private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
         {
-            if (!Config.Menu.Item("Enabled").GetValue<KeyBind>().Active)
+            if (!Menu.Item("EnabledWDodge", true).GetValue<bool>())
             {
                 return;
             }
@@ -537,7 +539,7 @@
             if (Menu.Item(riven.ChampionName.ToLower() + SpellSlot.Q, true).GetValue<bool>() &&
                 Args.Animation.ToLower() == "spell1c")
             {
-                RivenQTime = LeagueSharp.Common.Utils.GameTimeTickCount;
+                RivenQTime = Utils.GameTimeTickCount;
                 RivenQRange = riven.HasBuff("RivenFengShuiEngine") ? 225f : 150f;
             }
         }

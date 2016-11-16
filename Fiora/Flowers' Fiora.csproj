@@ -34,22 +34,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="clipper_library">
-      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\clipper_library.dll</HintPath>
+      <HintPath>D:\qMLQe\I5QEqMLQe\References\clipper_library.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp">
-      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\LeagueSharp.dll</HintPath>
+      <HintPath>D:\qMLQe\I5QEqMLQe\References\LeagueSharp.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Common">
-      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\LeagueSharp.Common.dll</HintPath>
+      <HintPath>D:\qMLQe\I5QEqMLQe\References\LeagueSharp.Common.dll</HintPath>
     </Reference>
     <Reference Include="LeagueSharp.Data">
-      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\LeagueSharp.Data.dll</HintPath>
+      <HintPath>D:\qMLQe\I5QEqMLQe\References\LeagueSharp.Data.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
-      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\SharpDX.dll</HintPath>
+      <HintPath>D:\qMLQe\I5QEqMLQe\References\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D9">
-      <HintPath>..\..\..\..\..\qMLQe\I5QEqMLQe\References\SharpDX.Direct3D9.dll</HintPath>
+      <HintPath>D:\qMLQe\I5QEqMLQe\References\SharpDX.Direct3D9.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -64,35 +64,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Common.cs" />
-    <Compile Include="Evade\WDodgeSpell\WDodgeSpell.cs" />
-    <Compile Include="Evade\EvadeSpellData\BlinkData.cs" />
     <Compile Include="Evade\Collision\Collision.cs" />
-    <Compile Include="Evade\Type\CollisionObjectTypes.cs" />
-    <Compile Include="Evade\Config\Config.cs" />
-    <Compile Include="Evade\EvadeSpellData\DashData.cs" />
+    <Compile Include="Evade\Collision\CollisionObjectTypes.cs" />
     <Compile Include="Evade\Collision\DetectedCollision.cs" />
-    <Compile Include="Evade\Type\DetectionType.cs" />
-    <Compile Include="Evade\Spell\EarlyEvade.cs" />
-    <Compile Include="Evade\Config\Evader.cs" />
-    <Compile Include="Evade\EvadeSpellData\EvadeSpellData.cs" />
-    <Compile Include="Evade\EvadeSpellData\EvadeSpellDatabase.cs" />
     <Compile Include="Evade\Collision\FastPredResult.cs" />
-    <Compile Include="Evade\Collision\FoundIntersection.cs" />
-    <Compile Include="Evade\Geometry\Geometry.cs" />
-    <Compile Include="Evade\EvadeSpellData\InvulnerabilityData.cs" />
-    <Compile Include="Evade\EvadeSpellData\MoveBuffData.cs" />
-    <Compile Include="Evade\Config\Program.cs" />
+    <Compile Include="Evade\Evader\EvadeManager.cs" />
+    <Compile Include="Evade\Evader\EvadeTargetManager.cs" />
+    <Compile Include="Evade\Evader\GE.cs" />
+    <Compile Include="Evade\Evader\IsSafeResult.cs" />
+    <Compile Include="Evade\EvadeSpell\EvadeSpellData.cs" />
+    <Compile Include="Evade\EvadeSpell\EvadeSpellDatabase.cs" />
+    <Compile Include="Evade\Skillshot\DetectionType.cs" />
+    <Compile Include="Evade\Skillshot\FoundIntersection.cs" />
     <Compile Include="Evade\Skillshot\SafePathResult.cs" />
-    <Compile Include="Evade\EvadeSpellData\ShieldData.cs" />
     <Compile Include="Evade\Skillshot\Skillshot.cs" />
     <Compile Include="Evade\Skillshot\SkillshotDetector.cs" />
-    <Compile Include="Evade\Type\SkillShotType.cs" />
-    <Compile Include="Evade\Spell\SpellBlocker.cs" />
-    <Compile Include="Evade\Spell\SpellData.cs" />
-    <Compile Include="Evade\Spell\SpellDatabase.cs" />
-    <Compile Include="Evade\Spell\SpellList.cs" />
-    <Compile Include="Evade\Spell\SpellValidTargets.cs" />
-    <Compile Include="Evade\Utils\Utils.cs" />
+    <Compile Include="Evade\Skillshot\SkillShotType.cs" />
+    <Compile Include="Evade\SpellData\SpellData.cs" />
+    <Compile Include="Evade\SpellData\SpellDatabase.cs" />
+    <Compile Include="Evade\WDodgeSpell\WDodgeSpell.cs" />
     <Compile Include="Evade\WDodgeSpell\WSpellData.cs" />
     <Compile Include="Evade\WDodgeSpell\WSpellDataBase.cs" />
     <Compile Include="Manager\Events\CreateManager.cs" />

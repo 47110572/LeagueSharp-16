@@ -1,5 +1,6 @@
 ﻿namespace GosuMechanicsYasuo
 {
+    using SharpDX;
     using Evade;
     using Manager.Menu;
     using Manager.Events;
@@ -16,15 +17,12 @@
         internal static Spell R;
         internal static Spell Ignite;
         internal static Spell Flash;
-
         internal static Menu Menu;
-
         internal static bool isDashing;
         internal static bool wallCasted;
-
+        internal static int SkinID;
         internal static int lastECast;
-        internal static SharpDX.Vector3 lastEPos;
-        
+        internal static Vector3 lastEPos;       
         internal static Obj_AI_Hero Me;
         internal static Orbwalking.Orbwalker Orbwalker;
         internal static YasuoWindWall wall = new YasuoWindWall();
@@ -32,6 +30,7 @@
         internal static void LoadYasuo()
         {
             Me = ObjectManager.Player;
+            SkinID = ObjectManager.Player.BaseSkinId;
 
             SpellManager.Init();
             MenuManager.Init();
@@ -42,6 +41,14 @@
         }
 
         internal static bool IsDashing => isDashing || Me.IsDashing();
+
+        internal static void EnbaleSkin(object obj, OnValueChangeEventArgs Args)
+        {
+            if (!Args.GetNewValue<bool>())
+            {
+                ObjectManager.Player.SetSkin(ObjectManager.Player.ChampionName, SkinID);
+            }
+        }
 
         internal static void UseItems(Obj_AI_Base target, bool IsCombo = false)
         {

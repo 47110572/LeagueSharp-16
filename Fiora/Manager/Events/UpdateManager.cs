@@ -15,6 +15,12 @@
         {
             Orbwalker.SetOrbwalkingPoint(Vector3.Zero);
 
+            if (Menu.Item("EnableSkin", true).GetValue<bool>())
+            {
+                ObjectManager.Player.SetSkin(ObjectManager.Player.ChampionName,
+                    Menu.Item("SelectSkin", true).GetValue<StringList>().SelectedIndex);
+            }
+
             if (Me.IsDead)
             {
                 return;
@@ -215,8 +221,8 @@
                     if (Menu.Item("LaneClearE", true).GetValue<bool>() && E.IsReady() && Orbwalking.CanAttack())
                     {
                         var eMin =
-                            minions.Where(x => Orbwalker.InAutoAttackRange(x))
-                                .FirstOrDefault(x => x.Health < E.GetDamage(x));
+                            minions.Where(x => x.DistanceToPlayer() <= Orbwalking.GetRealAutoAttackRange(Me) + 100)
+                                .FirstOrDefault(x => x.Health < Me.GetAutoAttackDamage(x) + Me.GetAutoAttackDamage(x)*1.4);
 
                         if (eMin != null)
                         {

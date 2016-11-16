@@ -4,9 +4,20 @@
     using LeagueSharp.Common;
     using SharpDX;
     using System;
+    using System.Collections.Generic;
 
     public static class Common
     {
+        public static List<Vector2> To2DList(this Vector3[] v)
+        {
+            var result = new List<Vector2>();
+            foreach (var point in v)
+            {
+                result.Add(point.To2D());
+            }
+            return result;
+        }
+
         public static bool CheckTarget(Obj_AI_Base target, float range = float.MaxValue)
         {
             if (target == null)

@@ -11,6 +11,8 @@ namespace Flowers_Fiora.Evade
 
         static SpellDatabase()
         {
+            //Add spells to the database 
+
             #region Aatrox
 
             Spells.Add(
@@ -118,7 +120,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "AhriSeduceMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -145,7 +146,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "SadMummyBandageToss",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -190,7 +190,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "FlashFrostSpell",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects = new[] {CollisionObjectTypes.YasuoWall}
                 });
@@ -279,7 +278,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 5,
                     IsDangerous = true,
                     MissileSpellName = "EnchantedCrystalArrow",
-                    EarlyEvade = new[] {EarlyObjects.Allies},
                     CanBeRemoved = true,
                     CollisionObjects = new[] {CollisionObjectTypes.Champions, CollisionObjectTypes.YasuoWall}
                 });
@@ -350,7 +348,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "BardQMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects = new[] {CollisionObjectTypes.Champions, CollisionObjectTypes.YasuoWall}
                 });
@@ -393,7 +390,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 4,
                     IsDangerous = true,
                     MissileSpellName = "RocketGrabMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -438,7 +434,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "BrandQMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -483,7 +478,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "BraumQMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -655,7 +649,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "MissileBarrageMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -678,7 +671,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "MissileBarrageMissile2",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -747,7 +739,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "DianaArcArc",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.AllyObjects},
                     CollisionObjects = new[] {CollisionObjectTypes.YasuoWall}
                 });
 
@@ -768,7 +759,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "DianaArcArc",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.AllyObjects},
                     TakeClosestPath = true,
                     CollisionObjects = new[] {CollisionObjectTypes.YasuoWall}
                 });
@@ -793,7 +783,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = false,
                     MissileSpellName = "InfectedCleaverMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -928,7 +917,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 4,
                     IsDangerous = true,
                     MissileSpellName = "EliseHumanE",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -978,7 +966,6 @@ namespace Flowers_Fiora.Evade
                     IsDangerous = false,
                     MissileSpellName = "EzrealMysticShotMissile",
                     ExtraMissileNames = new[] {"EzrealMysticShotPulseMissile"},
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -1027,6 +1014,29 @@ namespace Flowers_Fiora.Evade
 
             #endregion Ezreal
 
+            #region Fiora
+
+            Spells.Add(
+                new SpellData
+                {
+                    ChampionName = "Fiora",
+                    SpellName = "FioraW",
+                    Slot = SpellSlot.W,
+                    Type = SkillShotType.SkillshotMissileLine,
+                    Delay = 500,
+                    Range = 800,
+                    Radius = 70,
+                    MissileSpeed = 3200,
+                    FixedRange = true,
+                    AddHitbox = true,
+                    DangerValue = 2,
+                    IsDangerous = false,
+                    MissileSpellName = "FioraWMissile",
+                    CollisionObjects = new[] {CollisionObjectTypes.YasuoWall},
+                });
+
+            #endregion Fiora
+
             #region Fizz
 
             Spells.Add(
@@ -1045,7 +1055,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 5,
                     IsDangerous = true,
                     MissileSpellName = "FizzMarinerDoomMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies},
                     CollisionObjects = new[] {CollisionObjectTypes.Champions, CollisionObjectTypes.YasuoWall},
                     CanBeRemoved = true,
                 });
@@ -1070,7 +1079,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "GalioResoluteSmite",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                 });
 
             Spells.Add(
@@ -1180,7 +1188,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "GnarBigQMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CollisionObjects = new[] {CollisionObjectTypes.YasuoWall},
                 });
 
@@ -1297,7 +1304,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "GragasE",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     ExtraRange = 300,
                     CollisionObjects = new[] {CollisionObjectTypes.Champions, CollisionObjectTypes.Minion},
@@ -1613,7 +1619,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "JayceShockBlastMis",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -1636,7 +1641,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "JayceShockBlastWallMis",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -1663,7 +1667,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "JhinWMissile",
-                    EarlyEvade = new[] { EarlyObjects.Allies, EarlyObjects.AllyObjects },
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[] { CollisionObjectTypes.Champions, CollisionObjectTypes.YasuoWall },
@@ -1686,7 +1689,6 @@ namespace Flowers_Fiora.Evade
                     IsDangerous = true,
                     MissileSpellName = "JhinRShotMis",
                     ExtraMissileNames = new[] { "JhinRShotMis4" },
-                    EarlyEvade = new[] { EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects },
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[] { CollisionObjectTypes.Champions, CollisionObjectTypes.YasuoWall },
@@ -1712,7 +1714,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "JinxWMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -1735,7 +1736,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 5,
                     IsDangerous = true,
                     MissileSpellName = "JinxR",
-                    EarlyEvade = new[] {EarlyObjects.Allies},
                     CanBeRemoved = true,
                     CollisionObjects = new[] {CollisionObjectTypes.Champions, CollisionObjectTypes.YasuoWall},
                 });
@@ -1761,7 +1761,6 @@ namespace Flowers_Fiora.Evade
                     IsDangerous = false,
                     MissileSpellName = "kalistamysticshotmis",
                     ExtraMissileNames = new[] {"kalistamysticshotmistrue"},
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -1788,7 +1787,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "KarmaQMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -1811,7 +1809,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "KarmaQMissileMantra",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -1888,7 +1885,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "KennenShurikenHurlMissile1",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -1916,7 +1912,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "KhazixWMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     MultipleNumber = 3,
                     MultipleAngle = 22f*(float) Math.PI/180,
@@ -2031,7 +2026,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "KogMawQ",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -2131,7 +2125,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "LeblancSoulShackle",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -2180,7 +2173,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "BlindMonkQOne",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -2208,7 +2200,6 @@ namespace Flowers_Fiora.Evade
                     IsDangerous = true,
                     TakeClosestPath = true,
                     MissileSpellName = "LeonaZenithBladeMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies},
                     CollisionObjects = new[] {CollisionObjectTypes.YasuoWall},
                 });
 
@@ -2329,7 +2320,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "lucianwmissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                 });
 
             Spells.Add(
@@ -2349,7 +2339,6 @@ namespace Flowers_Fiora.Evade
                     IsDangerous = false,
                     MissileSpellName = "lucianrmissileoffhand",
                     ExtraMissileNames = new[] {"lucianrmissile"},
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     DontCheckForDuplicates = true,
                     DisabledByDefault = true,
                 });
@@ -2393,7 +2382,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "LuluQMissileTwo",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CollisionObjects = new[] {CollisionObjectTypes.YasuoWall},
                 });
 
@@ -2417,9 +2405,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "LuxLightBindingMis",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
-                    //CanBeRemoved = true,
-                    //CollisionObjects = new[] { CollisionObjectTypes.Champions, CollisionObjectTypes.Minion, CollisionObjectTypes.YasuoWall, },
                 });
 
             Spells.Add(
@@ -2529,7 +2514,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "DarkBindingMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -2597,12 +2581,10 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "NautilusAnchorDragMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects, EarlyObjects.Wall },
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
                         {CollisionObjectTypes.Champions, CollisionObjectTypes.Minion, CollisionObjectTypes.YasuoWall},
-                    //walls?
                 });
 
             #endregion Nautilus
@@ -2646,7 +2628,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "JavelinToss",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -2799,7 +2780,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "QuinnQ",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -2826,7 +2806,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "PoppyQ",
-                    EarlyEvade = new[] { EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects },
                 });
 
             Spells.Add(
@@ -2870,7 +2849,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "RengarEFinal",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -2897,7 +2875,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = false,
                     MissileSpellName = "RekSaiQBurrowedMis",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CollisionObjects =
                         new[]
                         {CollisionObjectTypes.Champions, CollisionObjectTypes.Minion, CollisionObjectTypes.YasuoWall},
@@ -2913,7 +2890,7 @@ namespace Flowers_Fiora.Evade
                     ChampionName = "Riven",
                     SpellName = "rivenizunablade",
                     Slot = SpellSlot.R,
-                    Type = SkillShotType.SkillshotMissileCone,
+                    Type = SkillShotType.SkillshotMissileLine,
                     Delay = 250,
                     Range = 1100,
                     Radius = 125,
@@ -2948,7 +2925,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "RumbleGrenade",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -2996,7 +2972,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "RyzeQ",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -3023,7 +2998,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     ExtraRange = 200,
                     CollisionObjects =
                         new[]
@@ -3089,7 +3063,6 @@ namespace Flowers_Fiora.Evade
                     AddHitbox = true,
                     DangerValue = 3,
                     IsDangerous = true,
-                    EarlyEvade = new[] {EarlyObjects.Allies},
                     CollisionObjects =
                         new[] {CollisionObjectTypes.Champions},
                 });
@@ -3163,7 +3136,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "ShyvanaFireballMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CollisionObjects =
                         new[]
                         {CollisionObjectTypes.Minion, CollisionObjectTypes.Champions, CollisionObjectTypes.YasuoWall},
@@ -3485,7 +3457,7 @@ namespace Flowers_Fiora.Evade
                     MissileSpellName = "talonrakemissiletwo",
                 });
 
-            #endregion Talon
+            #endregion Riven
 
             #region Tahm Kench
 
@@ -3505,7 +3477,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "tahmkenchqmissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -3554,7 +3525,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "ThreshQMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -3692,7 +3662,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "UrgotHeatseekingLineMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                 });
 
@@ -3771,7 +3740,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "VarusRMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies},
                     CanBeRemoved = true,
                     CollisionObjects = new[] {CollisionObjectTypes.Champions, CollisionObjectTypes.YasuoWall},
                 });
@@ -3796,7 +3764,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "VeigarBalefulStrikeMis",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CollisionObjects = new[] {CollisionObjectTypes.YasuoWall},
                 });
 
@@ -3882,7 +3849,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "VelkozQMissileSplit",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -3945,7 +3911,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "ViQMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies},
                 });
 
             #endregion Vi
@@ -4028,7 +3993,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = true,
                     MissileSpellName = "XerathMageSpearMissile",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = true,
                     CollisionObjects =
                         new[]
@@ -4181,7 +4145,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 2,
                     IsDangerous = false,
                     MissileSpellName = "ZiggsQSpell",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = false,
                     DisableFowDetection = true,
                 });
@@ -4203,7 +4166,6 @@ namespace Flowers_Fiora.Evade
                     IsDangerous = false,
                     MissileSpellName = "ZiggsQSpell2",
                     ExtraMissileNames = new[] {"ZiggsQSpell2"},
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = false,
                     DisableFowDetection = true,
                 });
@@ -4225,7 +4187,6 @@ namespace Flowers_Fiora.Evade
                     IsDangerous = false,
                     MissileSpellName = "ZiggsQSpell3",
                     ExtraMissileNames = new[] {"ZiggsQSpell3"},
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CanBeRemoved = false,
                     DisableFowDetection = true,
                 });
@@ -4350,7 +4311,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "ZyraE",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CollisionObjects = new[] {CollisionObjectTypes.YasuoWall},
                 });
 
@@ -4370,7 +4330,6 @@ namespace Flowers_Fiora.Evade
                     DangerValue = 3,
                     IsDangerous = true,
                     MissileSpellName = "zyrapassivedeathmanager",
-                    EarlyEvade = new[] {EarlyObjects.Allies, EarlyObjects.Minions, EarlyObjects.AllyObjects},
                     CollisionObjects = new[] {CollisionObjectTypes.YasuoWall},
                 });
 

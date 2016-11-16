@@ -17,6 +17,12 @@ namespace GosuMechanicsYasuo.Manager.Events
                 lastEPos = Vector3.Zero;
             }
 
+            if (Menu.Item("EnableSkin", true).GetValue<bool>())
+            {
+                ObjectManager.Player.SetSkin(ObjectManager.Player.ChampionName,
+                    Menu.Item("SelectSkin", true).GetValue<StringList>().SelectedIndex);
+            }
+
             if (Me.IsDead || Me.IsRecalling())
             {
                 return;

@@ -6,46 +6,42 @@
     using LeagueSharp;
     using LeagueSharp.Common;
     using SharpDX;
-    using Color = System.Drawing.Color;
     using GamePath = System.Collections.Generic.List<SharpDX.Vector2>;
+    using Geometry = GE;
 
     public class Skillshot
     {
-        public DetectionType DetectionType;
-
-        private bool _cachedValue;
-        public bool ForceDisabled;
-
-        private Vector2 _collisionEnd;
-        public Vector2 Start;
-        public Vector2 Direction;
-        public Vector2 MissilePosition;
-        public Vector2 OriginalEnd;
-        public Vector2 End;
-
-        public Geometry.Circle Circle;
         public Geometry.Polygon Polygon;
         public Geometry.Polygon DrawingPolygon;
-        public Geometry.Rectangle Rectangle;
-        public Geometry.Ring Ring;
         public Geometry.Arc Arc;
+        public Geometry.Ring Ring;
         public Geometry.Sector Sector;
+        public Geometry.Circle Circle;
+        public Geometry.Rectangle Rectangle;
+
+        public DetectionType DetectionType;
+
+        public Vector2 End;
+        public Vector2 Start;
+        public Vector2 Direction;
+        public Vector2 OriginalEnd;
+        public Vector2 MissilePosition;
+
+        public bool ForceDisabled;
 
         public SpellData SpellData;
 
         public int StartTick;
+
         private int _helperTick;
         private int _cachedValueTick;
         private int _lastCollisionCalc;
 
-        public Geometry.Polygon EvadePolygon { get; set; }
-        public Geometry.Polygon PathFindingPolygon { get; set; }
-        public Geometry.Polygon PathFindingInnerPolygon { get; set; }
+        private bool _cachedValue;
 
-        public Obj_AI_Base Unit { get; set; }
+        private Vector2 _collisionEnd;
 
-        public Skillshot(DetectionType detectionType, SpellData spellData, int startT,
-            Vector2 start, Vector2 end, Obj_AI_Base unit)
+        public Skillshot(DetectionType detectionType, SpellData spellData, int startT, Vector2 start, Vector2 end, Obj_AI_Base unit)
         {
             DetectionType = detectionType;
             SpellData = spellData;
@@ -54,6 +50,7 @@
             End = end;
             MissilePosition = start;
             Direction = (end - start).Normalized();
+
             Unit = unit;
 
             switch (spellData.Type)
@@ -75,7 +72,8 @@
                     Ring = new Geometry.Ring(CollisionEnd, spellData.Radius, spellData.RingRadius);
                     break;
                 case SkillShotType.SkillshotArc:
-                    Arc = new Geometry.Arc(start, end, Config.SkillShotsExtraRadius + (int)ObjectManager.Player.BoundingRadius);
+                    Arc = new Geometry.Arc(start, end,
+                        EvadeManager.SkillShotsExtraRadius + (int) ObjectManager.Player.BoundingRadius);
                     break;
             }
 
@@ -106,19 +104,27 @@
 
         public bool IsGlobal => SpellData.RawRange == 20000;
 
+        public Geometry.Polygon EvadePolygon { get; set; }
+
+        public Geometry.Polygon PathFindingPolygon { get; set; }
+
+        public Geometry.Polygon PathFindingInnerPolygon { get; set; }
+
+        public Obj_AI_Base Unit { get; set; }
+
         public T GetValue<T>(string name)
         {
-            return Config.Menu.Item(name + SpellData.MenuItemName).GetValue<T>();
+            return EvadeManager.Menu.Item(name + SpellData.MenuItemName, true).GetValue<T>();
         }
 
         public bool IsActive()
         {
             if (SpellData.MissileAccel != 0)
             {
-                return Utils.TickCount <= StartTick + 5000;
+                return Utils.GameTimeTickCount <= StartTick + 5000;
             }
 
-            return Utils.TickCount <=
+            return Utils.GameTimeTickCount <=
                    StartTick + SpellData.Delay + SpellData.ExtraDuration +
                    1000 * (Start.Distance(End) / SpellData.MissileSpeed);
         }
@@ -130,30 +136,23 @@
                 return false;
             }
 
-            if (LeagueSharp.Common.Utils.TickCount - _cachedValueTick < 100)
+            if (Utils.GameTimeTickCount - _cachedValueTick < 100)
             {
-                return _cachedValue;
-            }
-
-            if (!GetValue<bool>("IsDangerous") && Config.Menu.Item("OnlyDangerous").GetValue<KeyBind>().Active)
-            {
-                _cachedValue = false;
-                _cachedValueTick = Utils.TickCount;
                 return _cachedValue;
             }
 
             _cachedValue = GetValue<bool>("Enabled");
-            _cachedValueTick = Utils.TickCount;
+            _cachedValueTick = Utils.GameTimeTickCount;
 
             return _cachedValue;
         }
 
         public void OnUpdate()
         {
-            if (SpellData.CollisionObjects.Length > 0 && SpellData.CollisionObjects != null &&
-                Utils.TickCount - _lastCollisionCalc > 50 && Config.Menu.Item("EnableCollision").GetValue<bool>())
+            if (SpellData.CollisionObjects.Length > 0 && SpellData.CollisionObjects != null 
+                && Utils.GameTimeTickCount - _lastCollisionCalc > 50)
             {
-                _lastCollisionCalc = Utils.TickCount;
+                _lastCollisionCalc = Utils.GameTimeTickCount;
                 _collisionEnd = Collision.GetCollisionPoint(this);
             }
 
@@ -189,16 +188,15 @@
                 }
 
                 SpellData.MissileSpeed = (int)Unit.MoveSpeed;
-
                 if (Unit.IsValidTarget(float.MaxValue, false))
                 {
-                    if (!Unit.HasBuff("SionR") && Utils.TickCount - _helperTick > 600)
+                    if (!Unit.HasBuff("SionR") && Utils.GameTimeTickCount - _helperTick > 600)
                     {
                         StartTick = 0;
                     }
                     else
                     {
-                        StartTick = Utils.TickCount - SpellData.Delay;
+                        StartTick = Utils.GameTimeTickCount - SpellData.Delay;
                         Start = Unit.ServerPosition.To2D();
                         End = Unit.ServerPosition.To2D() + 1000 * Unit.Direction.To2D().Perpendicular();
                         Direction = (End - Start).Normalized();
@@ -224,9 +222,9 @@
             {
                 case SkillShotType.SkillshotCircle:
                     Polygon = Circle.ToPolygon();
-                    EvadePolygon = Circle.ToPolygon(Config.ExtraEvadeDistance);
-                    PathFindingPolygon = Circle.ToPolygon(Config.PathFindingDistance);
-                    PathFindingInnerPolygon = Circle.ToPolygon(Config.PathFindingDistance2);
+                    EvadePolygon = Circle.ToPolygon(15);
+                    PathFindingPolygon = Circle.ToPolygon(60);
+                    PathFindingInnerPolygon = Circle.ToPolygon(35);
                     DrawingPolygon = Circle.ToPolygon(
                         0,
                         !SpellData.AddHitbox
@@ -240,9 +238,9 @@
                         !SpellData.AddHitbox
                             ? SpellData.Radius
                             : (SpellData.Radius - ObjectManager.Player.BoundingRadius));
-                    EvadePolygon = Rectangle.ToPolygon(Config.ExtraEvadeDistance);
-                    PathFindingPolygon = Rectangle.ToPolygon(Config.PathFindingDistance);
-                    PathFindingInnerPolygon = Rectangle.ToPolygon(Config.PathFindingDistance2);
+                    EvadePolygon = Rectangle.ToPolygon(15);
+                    PathFindingPolygon = Rectangle.ToPolygon(60);
+                    PathFindingInnerPolygon = Rectangle.ToPolygon(35);
                     break;
                 case SkillShotType.SkillshotMissileLine:
                     Polygon = Rectangle.ToPolygon();
@@ -251,37 +249,37 @@
                         !SpellData.AddHitbox
                             ? SpellData.Radius
                             : (SpellData.Radius - ObjectManager.Player.BoundingRadius));
-                    EvadePolygon = Rectangle.ToPolygon(Config.ExtraEvadeDistance);
-                    PathFindingPolygon = Rectangle.ToPolygon(Config.PathFindingDistance);
-                    PathFindingInnerPolygon = Rectangle.ToPolygon(Config.PathFindingDistance2);
+                    EvadePolygon = Rectangle.ToPolygon(15);
+                    PathFindingPolygon = Rectangle.ToPolygon(60);
+                    PathFindingInnerPolygon = Rectangle.ToPolygon(35);
                     break;
                 case SkillShotType.SkillshotCone:
                     Polygon = Sector.ToPolygon();
                     DrawingPolygon = Polygon;
-                    EvadePolygon = Sector.ToPolygon(Config.ExtraEvadeDistance);
-                    PathFindingPolygon = Sector.ToPolygon(Config.PathFindingDistance);
-                    PathFindingInnerPolygon = Sector.ToPolygon(Config.PathFindingDistance2);
+                    EvadePolygon = Sector.ToPolygon(15);
+                    PathFindingPolygon = Sector.ToPolygon(60);
+                    PathFindingInnerPolygon = Sector.ToPolygon(35);
                     break;
                 case SkillShotType.SkillshotRing:
                     Polygon = Ring.ToPolygon();
                     DrawingPolygon = Polygon;
-                    EvadePolygon = Ring.ToPolygon(Config.ExtraEvadeDistance);
-                    PathFindingPolygon = Ring.ToPolygon(Config.PathFindingDistance);
-                    PathFindingInnerPolygon = Ring.ToPolygon(Config.PathFindingDistance2);
+                    EvadePolygon = Ring.ToPolygon(15);
+                    PathFindingPolygon = Ring.ToPolygon(60);
+                    PathFindingInnerPolygon = Ring.ToPolygon(35);
                     break;
                 case SkillShotType.SkillshotArc:
                     Polygon = Arc.ToPolygon();
                     DrawingPolygon = Polygon;
-                    EvadePolygon = Arc.ToPolygon(Config.ExtraEvadeDistance);
-                    PathFindingPolygon = Arc.ToPolygon(Config.PathFindingDistance);
-                    PathFindingInnerPolygon = Arc.ToPolygon(Config.PathFindingDistance2);
+                    EvadePolygon = Arc.ToPolygon(15);
+                    PathFindingPolygon = Arc.ToPolygon(60);
+                    PathFindingInnerPolygon = Arc.ToPolygon(35);
                     break;
             }
         }
 
         public Vector2 GlobalGetMissilePosition(int time)
         {
-            var t = Math.Max(0, Utils.TickCount + time - StartTick - SpellData.Delay);
+            var t = Math.Max(0, Utils.GameTimeTickCount + time - StartTick - SpellData.Delay);
 
             t = (int) Math.Max(0, Math.Min(End.Distance(Start), t * SpellData.MissileSpeed / 1000));
 
@@ -290,7 +288,7 @@
 
         public Vector2 GetMissilePosition(int time)
         {
-            var t = Math.Max(0, Utils.TickCount + time - StartTick - SpellData.Delay);
+            var t = Math.Max(0, Utils.GameTimeTickCount + time - StartTick - SpellData.Delay);
             var x = 0;
 
             if (SpellData.MissileAccel == 0)
@@ -325,32 +323,7 @@
             return Start + Direction * t;
         }
 
-        public bool IsSafeToBlink(Vector2 point, int timeOffset, int delay = 0)
-        {
-            timeOffset /= 2;
-
-            if (IsSafe(Program.PlayerPosition))
-            {
-                return true;
-            }
-
-            if (SpellData.Type == SkillShotType.SkillshotMissileLine)
-            {
-                var missilePositionAfterBlink = GetMissilePosition(delay + timeOffset);
-                var myPositionProjection = Program.PlayerPosition.ProjectOn(Start, End);
-
-                return !(missilePositionAfterBlink.Distance(End) < myPositionProjection.SegmentPoint.Distance(End));
-            }
-
-            var timeToExplode = SpellData.ExtraDuration + SpellData.Delay +
-                                (int) (1000 * Start.Distance(End) / SpellData.MissileSpeed) -
-                                (Utils.TickCount - StartTick);
-
-            return timeToExplode > timeOffset + delay;
-        }
-
-        public SafePathResult IsSafePath(GamePath path, int timeOffset, int speed = -1,
-            int delay = 0, Obj_AI_Base unit = null)
+        public SafePathResult IsSafePath(GamePath path, int timeOffset, int speed = -1, int delay = 0, Obj_AI_Base unit = null)
         {
             var Distance = 0f;
 
@@ -374,7 +347,6 @@
                 {
                     var sideStart = Polygon.Points[j];
                     var sideEnd = Polygon.Points[j == (Polygon.Points.Count - 1) ? 0 : j + 1];
-
                     var intersection = from.Intersection(to, sideStart, sideEnd);
 
                     if (intersection.Intersects)
@@ -388,8 +360,8 @@
                 }
 
                 var sortedList = segmentIntersections.OrderBy(o => o.Distance).ToList();
-
                 allIntersections.AddRange(sortedList);
+
                 Distance += from.Distance(to);
             }
 
@@ -397,7 +369,7 @@
                 SpellData.Type == SkillShotType.SkillshotMissileCone ||
                 SpellData.Type == SkillShotType.SkillshotArc)
             {
-                if (IsSafe(Program.PlayerPosition))
+                if (IsSafe(ObjectManager.Player.ServerPosition.To2D()))
                 {
                     if (allIntersections.Count == 0)
                     {
@@ -417,7 +389,6 @@
                         if (i == allIntersections.Count - 1)
                         {
                             var missilePositionOnIntersection = GetMissilePosition(enterIntersection.Time - timeOffset);
-
                             return
                                 new SafePathResult(
                                     (End.Distance(missilePositionOnIntersection) + 50 <=
@@ -460,7 +431,7 @@
                 }
             }
 
-            if (IsSafe(Program.PlayerPosition))
+            if (IsSafe(ObjectManager.Player.ServerPosition.To2D()))
             {
                 if (allIntersections.Count == 0)
                 {
@@ -482,8 +453,7 @@
 
             var timeToExplode = (SpellData.DontAddExtraDuration ? 0 : SpellData.ExtraDuration) + SpellData.Delay +
                                 (int) (1000 * Start.Distance(End) / SpellData.MissileSpeed) -
-                                (Utils.TickCount - StartTick);
-
+                                (Utils.GameTimeTickCount - StartTick);
             var myPositionWhenExplodes = path.PositionAfter(timeToExplode, speed, delay);
 
             if (!IsSafe(myPositionWhenExplodes))
@@ -514,14 +484,16 @@
                 var missilePosAfterT = GetMissilePosition(time);
                 var projection = unit.ServerPosition.To2D().ProjectOn(missilePos, missilePosAfterT);
 
-                return projection.IsOnSegment && projection.SegmentPoint.Distance(unit.ServerPosition) < SpellData.Radius;
+                return projection.IsOnSegment &&
+                       projection.SegmentPoint.Distance(unit.ServerPosition) < SpellData.Radius;
             }
 
             if (!IsSafe(unit.ServerPosition.To2D()))
             {
                 var timeToExplode = SpellData.ExtraDuration + SpellData.Delay +
-                                    (int) ((1000 * Start.Distance(End)) / SpellData.MissileSpeed) -
-                                    (Utils.TickCount - StartTick);
+                                    (int) (1000*Start.Distance(End)/SpellData.MissileSpeed) -
+                                    (Utils.GameTimeTickCount - StartTick);
+
                 if (timeToExplode <= time)
                 {
                     return true;
@@ -529,24 +501,6 @@
             }
 
             return false;
-        }
-
-        public void Draw(Color color, Color missileColor, int width = 1)
-        {
-            if (!GetValue<bool>("Draw"))
-            {
-                return;
-            }
-
-            DrawingPolygon.Draw(color, width);
-
-            if (SpellData.Type == SkillShotType.SkillshotMissileLine)
-            {
-                var position = GetMissilePosition(0);
-                Utils.DrawLineInWorld(
-                    (position + SpellData.Radius * Direction.Perpendicular()).To3D(),
-                    (position - SpellData.Radius * Direction.Perpendicular()).To3D(), 2, missileColor);
-            }
         }
     }
 }
