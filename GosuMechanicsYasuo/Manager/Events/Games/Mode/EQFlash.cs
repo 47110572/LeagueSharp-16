@@ -46,20 +46,22 @@
                     }
                 }
 
-                if (E.IsReady() && Q3.IsReady())
+                if (E.IsReady())
                 {
-                    var allTargets =
-                        ObjectManager.Get<Obj_AI_Base>()
-                            .Where(x => !x.IsAlly && !x.IsMe && x.DistanceToPlayer() <= E.Range).ToList();
+                    var allTargets = new List<Obj_AI_Base>();
+
+                    allTargets.AddRange(MinionManager.GetMinions(Me.Position, E.Range + 65, MinionTypes.All,
+                        MinionTeam.NotAlly));
+                    allTargets.AddRange(HeroManager.Enemies.Where(x => !x.IsDead && x.DistanceToPlayer() <= E.Range + 65));
 
                     if (allTargets.Any())
                     {
                         var eTarget =
-                            allTargets.Where(x => x.IsValidTarget(E.Range) && SpellManager.CanCastE(x))
+                            allTargets.Where(x => x.IsValidTarget(E.Range + 50) && SpellManager.CanCastE(x))
                                 .OrderByDescending(
                                     x =>
                                         HeroManager.Enemies.Count(
-                                            t => t.IsValidTarget(595f, true, PosAfterE(x).To3D())))
+                                            t => t.IsValidTarget(600f, true, PosAfterE(x).To3D())))
                                 .FirstOrDefault();
 
                         if (eTarget != null)

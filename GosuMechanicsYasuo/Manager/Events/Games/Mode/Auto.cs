@@ -11,14 +11,36 @@
     {
         internal static void Init()
         {
-            if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo &&
-                Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Mixed &&
-                Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Flee &&
-                Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.WallJump &&
-                Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LastHit)
+            if (Menu.Item("AutoR", true).GetValue<bool>() && R.IsReady())
             {
-                if (Menu.Item("AutoQ", true).GetValue<KeyBind>().Active)
+                var enemiesKnockedUp =
+                    HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range))
+                        .Where(x => x.HasBuffOfType(BuffType.Knockup) || x.HasBuffOfType(BuffType.Knockback));
+
+                var enemies = enemiesKnockedUp as IList<Obj_AI_Hero> ?? enemiesKnockedUp.ToList();
+
+                if (enemies.Count >= Menu.Item("AutoRCount", true).GetValue<Slider>().Value &&
+                    Me.HealthPercent >= Menu.Item("AutoRMyHp", true).GetValue<Slider>().Value &&
+                    Me.CountEnemiesInRange(1500) <= Menu.Item("AutoRRangeCount", true).GetValue<Slider>().Value)
                 {
+                    R.Cast();
+                }
+            }
+
+            if (Menu.Item("AutoQ", true).GetValue<KeyBind>().Active)
+            {
+                if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo &&
+                    Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LaneClear &&
+                    Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Flee &&
+                    Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.WallJump &&
+                    Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LastHit)
+                {
+                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed &&
+                        Me.CountEnemiesInRange(Q.Range) > 0)
+                    {
+                        return;
+                    }
+
                     if (Menu.Item("AutoQ3", true).GetValue<bool>() && Q3.IsReady() && SpellManager.HaveQ3)
                     {
                         SpellManager.CastQ3();
@@ -54,22 +76,6 @@
                             }
                         }
                     }
-                }
-            }
-
-            if (Menu.Item("AutoR", true).GetValue<bool>() && R.IsReady())
-            {
-                var enemiesKnockedUp =
-                    HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range))
-                        .Where(x => x.HasBuffOfType(BuffType.Knockup) || x.HasBuffOfType(BuffType.Knockback));
-
-                var enemies = enemiesKnockedUp as IList<Obj_AI_Hero> ?? enemiesKnockedUp.ToList();
-
-                if (enemies.Count >= Menu.Item("AutoRCount", true).GetValue<Slider>().Value &&
-                    Me.HealthPercent >= Menu.Item("AutoRMyHp", true).GetValue<Slider>().Value &&
-                    Me.CountEnemiesInRange(1500) <= Menu.Item("AutoRRangeCount", true).GetValue<Slider>().Value)
-                {
-                    R.Cast();
                 }
             }
         }
