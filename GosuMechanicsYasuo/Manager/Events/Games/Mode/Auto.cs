@@ -27,52 +27,39 @@
                 }
             }
 
-            if (Menu.Item("AutoQ", true).GetValue<KeyBind>().Active)
+            if (Menu.Item("AutoQ", true).GetValue<KeyBind>().Active && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.None)
             {
-                if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo &&
-                    Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LaneClear &&
-                    Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Flee &&
-                    Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.WallJump &&
-                    Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.LastHit)
+                if (Menu.Item("AutoQ3", true).GetValue<bool>() && Q3.IsReady() && SpellManager.HaveQ3)
                 {
-                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed &&
-                        Me.CountEnemiesInRange(Q.Range) > 0)
-                    {
-                        return;
-                    }
+                    SpellManager.CastQ3();
+                }
+                else if (!SpellManager.HaveQ3 && Q.IsReady())
+                {
+                    var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
 
-                    if (Menu.Item("AutoQ3", true).GetValue<bool>() && Q3.IsReady() && SpellManager.HaveQ3)
+                    if (target.IsValidTarget(Q.Range))
                     {
-                        SpellManager.CastQ3();
-                    }
-                    else if (!SpellManager.HaveQ3 && Q.IsReady())
-                    {
-                        var target = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
+                        var qPred = Q.GetPrediction(target, true);
 
-                        if (target.IsValidTarget(Q.Range))
+                        if (qPred.Hitchance >= HitChance.VeryHigh)
                         {
-                            var qPred = Q.GetPrediction(target, true);
-
-                            if (qPred.Hitchance >= HitChance.VeryHigh)
-                            {
-                                Q.Cast(qPred.CastPosition, true);
-                            }
+                            Q.Cast(qPred.CastPosition, true);
                         }
-                        else
+                    }
+                    else
+                    {
+                        var minions = MinionManager.GetMinions(Me.Position, Q.Range, MinionTypes.All,
+                            MinionTeam.NotAlly);
+
+                        if (minions.Any())
                         {
-                            var minions = MinionManager.GetMinions(Me.Position, Q.Range, MinionTypes.All,
-                                MinionTeam.NotAlly);
+                            var qFarm =
+                                MinionManager.GetBestLineFarmLocation(
+                                    minions.Select(x => x.Position.To2D()).ToList(), Q.Width, Q.Range);
 
-                            if (minions.Any())
+                            if (qFarm.MinionsHit >= 1)
                             {
-                                var qFarm =
-                                    MinionManager.GetBestLineFarmLocation(
-                                        minions.Select(x => x.Position.To2D()).ToList(), Q.Width, Q.Range);
-
-                                if (qFarm.MinionsHit >= 1)
-                                {
-                                    Q.Cast(qFarm.Position, true);
-                                }
+                                Q.Cast(qFarm.Position, true);
                             }
                         }
                     }

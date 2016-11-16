@@ -22,6 +22,7 @@
         internal static bool wallCasted;
         internal static int SkinID;
         internal static int lastECast;
+        internal static int lastHarassTime;
         internal static Vector3 lastEPos;       
         internal static Obj_AI_Hero Me;
         internal static Orbwalking.Orbwalker Orbwalker;

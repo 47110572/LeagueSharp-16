@@ -161,6 +161,13 @@
                     .To2D();
         }
 
+        public static Vector3 AfterEPos(Obj_AI_Base target)
+        {
+            return
+                ObjectManager.Player.ServerPosition.Extend(target.ServerPosition,
+                        ObjectManager.Player.Distance(target) < 410f ? 475f : ObjectManager.Player.Distance(target) + 65f);
+        }
+
         public static Vector2 V2E(Vector3 from, Vector3 direction, float distance)
         {
             return (@from + distance * Vector3.Normalize(direction - @from)).To2D();

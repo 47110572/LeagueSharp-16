@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using Spells;
-    using SharpDX;
     using LeagueSharp;
     using LeagueSharp.Common;
     using Orbwalking = Orbwalking;
@@ -73,104 +72,47 @@
                 }
             }
 
-            if (Menu.Item("ComboW", true).GetValue<bool>())
-            {
-                if (W.IsReady())
-                {
-                    ComboW(target);
-                }
-                else
-                {
-                    if (Menu.Item("ComboEWall", true).GetValue<bool>() && wallCasted && target.DistanceToPlayer() < 300)
-                    {
-                        ComboEWall(target);
-                    }   
-                }
-            }
+            //if (Menu.Item("ComboW", true).GetValue<bool>())
+            //{
+            //    if (W.IsReady())
+            //    {
+            //        ComboW(target);
+            //    }
+            //    else
+            //    {
+            //        if (Menu.Item("ComboEWall", true).GetValue<bool>() && wallCasted && target.DistanceToPlayer() < 300)
+            //        {
+            //            ComboEWall(target);
+            //        }   
+            //    }
+            //}
 
-            if (Menu.Item("ComboE", true).GetValue<bool>())
+            if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady())
             {
-                var dmg = (float) (SpellManager.GetQDmg(target) + SpellManager.GetEDmg(target)) + R.GetDamage(target);
+                var dmg = (float) (SpellManager.GetQDmg(target)*2 + SpellManager.GetEDmg(target)) +
+                          Me.GetAutoAttackDamage(target)*2 +
+                          (R.IsReady() ? R.GetDamage(target) : (float) SpellManager.GetQDmg(target));
 
-                if (E.IsReady() && target.DistanceToPlayer() >= Menu.Item("ComboERange", true).GetValue<Slider>().Value &&
-                    dmg >= target.Health && UnderTower(PosAfterE(target))
-                    && SpellManager.CanCastE(target) && Me.IsFacing(target))
+                if (target.DistanceToPlayer() >= Orbwalking.GetRealAutoAttackRange(Me) + 65 &&
+                    dmg >= target.Health && SpellManager.CanCastE(target) &&
+                    (Menu.Item("ComboETurret", true).GetValue<bool>() || !UnderTower(PosAfterE(target))))
                 {
                     E.CastOnUnit(target, true);
                 }
-                else if (target.DistanceToPlayer() >= Menu.Item("ComboERange", true).GetValue<Slider>().Value &&
-                         dmg <= target.Health && SpellManager.CanCastE(target) && Me.IsFacing(target))
+            }
+
+            if (Menu.Item("ComboEGapcloser", true).GetValue<bool>() && E.IsReady() &&
+                target.DistanceToPlayer() >= Menu.Item("ComboEGap", true).GetValue<Slider>().Value)
+            {
+                if (Menu.Item("ComboEMode", true).GetValue<StringList>().SelectedIndex == 0)
                 {
-                    SpellManager.useENormal(target);
+                    SpellManager.EGapTarget(target, Menu.Item("ComboETurret", true).GetValue<bool>(),
+                        Menu.Item("ComboEGap", true).GetValue<Slider>().Value);
                 }
-
-                switch (Menu.Item("ComboEMode", true).GetValue<StringList>().SelectedIndex)
+                else
                 {
-                    case 0:
-                        {
-                            if (E.IsReady())
-                            {
-                                var bestMinion =
-                                    ObjectManager.Get<Obj_AI_Base>()
-                                        .Where(x => x.DistanceToPlayer() <= E.Range)
-                                        .Where(x => x.Distance(target) < target.DistanceToPlayer())
-                                        .OrderByDescending(x => x.DistanceToPlayer())
-                                        .FirstOrDefault();
-
-                                var dmg2 =
-                                    (float)
-                                    (SpellManager.GetQDmg(target) + SpellManager.GetEDmg(target)) + R.GetDamage(target);
-
-                                if (bestMinion != null && dmg2 >= target.Health && UnderTower(PosAfterE(bestMinion)) &&
-                                    Me.IsFacing(bestMinion) &&
-                                    target.Distance(Me) >= Menu.Item("ComboEGap", true).GetValue<Slider>().Value &&
-                                    SpellManager.CanCastE(bestMinion) && Me.IsFacing(bestMinion))
-                                {
-                                    E.CastOnUnit(bestMinion, true);
-                                }
-                                else if (bestMinion != null && dmg2 <= target.Health && Me.IsFacing(bestMinion) &&
-                                         target.Distance(Me) >= Menu.Item("ComboEGap", true).GetValue<Slider>().Value &&
-                                         SpellManager.CanCastE(bestMinion) && Me.IsFacing(bestMinion))
-                                {
-                                    SpellManager.useENormal(bestMinion);
-                                }
-                            }
-                        }
-                        break;
-                    case 1:
-                        {
-                            if (E.IsReady())
-                            {
-                                var bestMinion =
-                                    ObjectManager.Get<Obj_AI_Base>()
-                                        .Where(x => x.IsValidTarget(E.Range))
-                                        .Where(
-                                            x =>
-                                                x.Distance(Game.CursorPos) <
-                                                ObjectManager.Player.Distance(Game.CursorPos))
-                                        .OrderByDescending(x => x.Distance(Me))
-                                        .FirstOrDefault();
-
-                                var dmg3 =
-                                    (float)
-                                    (SpellManager.GetQDmg(target) + SpellManager.GetEDmg(target)) + R.GetDamage(target);
-
-                                if (bestMinion != null && dmg3 >= target.Health && UnderTower(PosAfterE(bestMinion)) &&
-                                    Me.IsFacing(bestMinion) &&
-                                    target.Distance(Me) >= Menu.Item("ComboEGap", true).GetValue<Slider>().Value &&
-                                    SpellManager.CanCastE(bestMinion) && Me.IsFacing(bestMinion))
-                                {
-                                    E.CastOnUnit(bestMinion, true);
-                                }
-                                else if (bestMinion != null && dmg3 <= target.Health && Me.IsFacing(bestMinion) &&
-                                         target.Distance(Me) >= Menu.Item("ComboEGap", true).GetValue<Slider>().Value &&
-                                         SpellManager.CanCastE(bestMinion) && Me.IsFacing(bestMinion))
-                                {
-                                    SpellManager.useENormal(bestMinion);
-                                }
-                            }
-                        }
-                        break;
+                    SpellManager.EGapMouse(target, Menu.Item("ComboETurret", true).GetValue<bool>(),
+                        Menu.Item("ComboEGap", true).GetValue<Slider>().Value);
                 }
             }
 
@@ -180,89 +122,33 @@
 
                 foreach (var rTarget in enemies)
                 {
-                    if (rTarget.DistanceToPlayer() <= 1200)
+                    var enemiesKnockedUp =
+                        ObjectManager.Get<Obj_AI_Hero>()
+                            .Where(x => x.IsValidTarget(R.Range))
+                            .Where(x => x.HasBuffOfType(BuffType.Knockup));
+
+                    var enemiesKnocked = enemiesKnockedUp as IList<Obj_AI_Hero> ?? enemiesKnockedUp.ToList();
+
+                    if (rTarget.IsValidTarget(R.Range) && CanCastDelayR(rTarget) &&
+                        enemiesKnocked.Count >= Menu.Item("ComboRCount", true).GetValue<Slider>().Value)
                     {
-                        var enemiesKnockedUp =
-                            ObjectManager.Get<Obj_AI_Hero>()
-                                .Where(x => x.IsValidTarget(R.Range))
-                                .Where(x => x.HasBuffOfType(BuffType.Knockup));
-
-                        var enemiesKnocked = enemiesKnockedUp as IList<Obj_AI_Hero> ?? enemiesKnockedUp.ToList();
-
-                        if (rTarget.IsValidTarget(R.Range) && CanCastDelayR(rTarget) &&
-                            enemiesKnocked.Count >= Menu.Item("ComboRCount", true).GetValue<Slider>().Value)
-                        {
-                            R.Cast();
-                        }
+                        R.Cast();
                     }
 
-                    if (rTarget.IsValidTarget(R.Range))
+                    if (IsKnockedUp(rTarget) && CanCastDelayR(rTarget) &&
+                        rTarget.HealthPercent <= Menu.Item("ComboRHp", true).GetValue<Slider>().Value &&
+                        Menu.Item("R" + rTarget.ChampionName.ToLower(), true).GetValue<bool>())
                     {
-                        if (IsKnockedUp(rTarget) && CanCastDelayR(rTarget) &&
-                            rTarget.HealthPercent <= Menu.Item("ComboRHp", true).GetValue<Slider>().Value &&
-                            Menu.Item("R" + rTarget.ChampionName.ToLower(), true).GetValue<bool>())
+                        R.Cast();
+                    }
+
+                    if (IsKnockedUp(rTarget) && CanCastDelayR(rTarget) &&
+                        rTarget.Health >= Menu.Item("ComboRHp", true).GetValue<Slider>().Value &&
+                        Menu.Item("ComboRAlly", true).GetValue<bool>())
+                    {
+                        if (AlliesNearTarget(rTarget, 600))
                         {
                             R.Cast();
-                        }
-                        else if (IsKnockedUp(rTarget) && CanCastDelayR(rTarget) &&
-                            rTarget.Health >= Menu.Item("ComboRHp", true).GetValue<Slider>().Value &&
-                            Menu.Item("ComboRAlly", true).GetValue<bool>())
-                        {
-                            if (AlliesNearTarget(rTarget, 600))
-                            {
-                                R.Cast();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private static void ComboW(Obj_AI_Hero target)
-        {
-            if (!W.IsReady() || !E.IsReady() || target.IsMelee ||
-                !Menu.Item("ComboW" + target.ChampionName.ToLower(), true).GetValue<bool>())
-            {
-                return;
-            }
-
-            var dashPos = GetNextPos(target);
-            var po = Prediction.GetPrediction(target, 0.5f);
-            var dist = Me.Distance(po.UnitPosition);
-
-            if (!target.IsMoving || Me.Distance(dashPos) <= dist + 40)
-            {
-                if (dist < 330 && dist > 100 && W.IsReady())
-                {
-                    W.Cast(po.UnitPosition, true);
-                }
-            }
-        }
-
-        private static void ComboEWall(Obj_AI_Hero target)
-        {
-            if (!E.IsReady() || !TargetIsJump(target) || target.IsMelee())
-            {
-                return;
-            }
-
-            var dist = Me.Distance(target);
-            var pPos = Me.Position.To2D();
-            var dashPos = target.Position.To2D();
-
-            if (!target.IsMoving || Me.Distance(dashPos) <= dist)
-            {
-                foreach (var enemy in ObjectManager.Get<Obj_AI_Base>().Where(enemy => TargetIsJump(enemy)))
-                {
-                    var posAfterE = pPos + Vector2.Normalize(enemy.Position.To2D() - pPos) * E.Range;
-
-                    if ((target.Distance(posAfterE) < dist
-                        || target.Distance(posAfterE) < Orbwalking.GetRealAutoAttackRange(target) + 100)
-                        && goesThroughWall(target.Position, posAfterE.To3D()))
-                    {
-                        if (SpellManager.useENormal(target))
-                        {
-                            return;
                         }
                     }
                 }

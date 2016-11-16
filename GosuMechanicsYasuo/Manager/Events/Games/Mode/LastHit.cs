@@ -3,11 +3,17 @@
     using Spells;
     using System.Linq;
     using LeagueSharp.Common;
+    using Orbwalking = Orbwalking;
 
     internal class LastHit : Logic
     {
         internal static void Init()
         {
+            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+            {
+                return;
+            }
+
             var minions = MinionManager.GetMinions(Me.Position, Q3.Range);
 
             foreach (

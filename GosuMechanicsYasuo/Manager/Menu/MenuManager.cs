@@ -20,17 +20,21 @@
             var comboMenu = Menu.AddSubMenu(new Menu("Combo", "combo"));
             {
                 comboMenu.AddItem(new MenuItem("ComboQ", "Use Q", true).SetValue(true));
-                comboMenu.AddItem(new MenuItem("ComboW", "Use W", true).SetValue(false));
+                //comboMenu.AddItem(new MenuItem("ComboW", "Use W", true).SetValue(false));
                 comboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));
-                comboMenu.AddItem(new MenuItem("ComboEWall", "Use E to Wall Position", true).SetValue(false));
+                //comboMenu.AddItem(new MenuItem("ComboEWall", "Use E to Wall Position", true).SetValue(false));
+                comboMenu.AddItem(new MenuItem("ComboETurret", "Use E Under turret", true).SetValue(false));
+                //comboMenu.AddItem(
+                //    new MenuItem("ComboERange", "Use E| Target Distance to Player >= x", true).SetValue(
+                //        new Slider(375, 0, 475)));
+                comboMenu.AddItem(new MenuItem("ComboEGapcloser", "Use E Gapcloser", true).SetValue(true));
                 comboMenu.AddItem(
-                    new MenuItem("ComboERange", "Use E| Target Distance to Player >= x", true).SetValue(
-                        new Slider(375, 0, 475)));
+                    new MenuItem("ComboEMode", "Use E Gapcloser Mode: ", true).SetValue(
+                        new StringList(new[] {"Target", "Mouse"})));
                 comboMenu.AddItem(
                     new MenuItem("ComboEGap", "Use E GapCloser| Target Distance to Player >=x", true).SetValue(
-                        new Slider(230, 0, 1300)));
-                comboMenu.AddItem(
-                    new MenuItem("ComboEMode", "Use E Mode: ", true).SetValue(new StringList(new[] {"Target", "Mouse"})));
+                        new Slider(250, 0, 1300)));
+
                 comboMenu.AddItem(new MenuItem("ComboEQ", "Use EQ", true).SetValue(true));
                 comboMenu.AddItem(new MenuItem("ComboEQ3", "Use EQ3", true).SetValue(true));
                 comboMenu.AddItem(
@@ -50,6 +54,7 @@
             {
                 harassMenu.AddItem(new MenuItem("HarassQ", "Use Q", true).SetValue(true));
                 harassMenu.AddItem(new MenuItem("HarassQ3", "Use Q3", true).SetValue(true));
+                harassMenu.AddItem(new MenuItem("HarassE", "Use E", true).SetValue(true));
                 harassMenu.AddItem(new MenuItem("HarassTower", "Under Tower", true).SetValue(true));
             }
 

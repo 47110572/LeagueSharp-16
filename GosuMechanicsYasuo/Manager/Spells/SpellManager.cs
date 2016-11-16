@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Collections.Generic;
     using SharpDX;
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -70,37 +71,118 @@
             }
         }
 
-        internal static bool useENormal(Obj_AI_Base target)
+        internal static void EGapTarget(Obj_AI_Hero target, bool UnderTurret, int GapcloserDis, bool includeChampion = false)
         {
-            if (!E.IsReady() || target.Distance(Me) > 470)
-            {
-                return false;
-            }
+            var dashtargets = new List<Obj_AI_Base>();
+            dashtargets.AddRange(
+                HeroManager.Enemies.Where(
+                    x =>
+                        !x.IsDead && (includeChampion || x.NetworkId != target.NetworkId) && x.IsValidTarget(E.Range) &&
+                        CanCastE(x)));
+            dashtargets.AddRange(
+                MinionManager.GetMinions(Me.Position, E.Range, MinionTypes.All, MinionTeam.NotAlly)
+                    .Where(CanCastE));
 
-            var posAfter = V2E(Me.Position, target.Position, 475);
-
-            if (!Menu.Item("ETower", true).GetValue<bool>())
+            if (dashtargets.Any())
             {
-                if (Evade.EvadeManager.IsSafe(posAfter).IsSafe)
+                var dash = dashtargets.Where(
+                        x =>
+                            x.IsValidTarget(E.Range) &&
+                            (UnderTurret || !UnderTower(PosAfterE(x))))
+                    .OrderBy(x => target.Position.Distance(PosAfterE(x).To3D()))
+                    .FirstOrDefault(x => Evade.EvadeManager.IsSafe(PosAfterE(x)).IsSafe);
+
+                if (dash != null && dash.DistanceToPlayer() <= E.Range && CanCastE(dash) &&
+                    target.DistanceToPlayer() >= GapcloserDis &&
+                    target.Position.Distance(PosAfterE(dash).To3D()) <= target.DistanceToPlayer())
                 {
-                    E.Cast(target, true);
-                    return true;
+                    E.CastOnUnit(dash, true);
                 }
             }
+        }
 
-            var pPos = Me.ServerPosition.To2D();
-            var posAfterE = pPos + Vector2.Normalize(target.Position.To2D() - pPos) * E.Range;
-
-            if (!posAfterE.To3D().UnderTurret(true))
+        internal static void EGapMouse(Obj_AI_Hero target, bool UnderTurret, int GapcloserDis, bool includeChampion = true)
+        {
+            if (target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) * 1.2 ||
+                target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(target) * 0.8 ||
+                Game.CursorPos.DistanceToPlayer() >= Orbwalking.GetRealAutoAttackRange(Me) * 1.5)
             {
-                if (Evade.EvadeManager.IsSafe(posAfter).IsSafe)
+                var dashtargets = new List<Obj_AI_Base>();
+                dashtargets.AddRange(
+                    HeroManager.Enemies.Where(
+                        x =>
+                            !x.IsDead && (includeChampion || x.NetworkId != target.NetworkId) && x.IsValidTarget(E.Range) &&
+                            CanCastE(x)));
+                dashtargets.AddRange(
+                    MinionManager.GetMinions(Me.Position, E.Range, MinionTypes.All, MinionTeam.NotAlly)
+                        .Where(CanCastE));
+
+                if (dashtargets.Any())
                 {
-                    E.Cast(target, true);
-                    return true;
+                    var dash =
+                        dashtargets.Where(
+                                x =>
+                                    x.IsValidTarget(E.Range) &&
+                                    (UnderTurret || !UnderTower(PosAfterE(x))))
+                            .OrderBy(x => PosAfterE(x).To3D().Distance(Game.CursorPos))
+                            .FirstOrDefault(x => Evade.EvadeManager.IsSafe(PosAfterE(x)).IsSafe);
+
+                    if (dash != null && dash.DistanceToPlayer() <= E.Range && CanCastE(dash) &&
+                        target.DistanceToPlayer() >= GapcloserDis &&
+                        target.Position.Distance(PosAfterE(dash).To3D()) <= target.DistanceToPlayer())
+                    {
+                        E.CastOnUnit(dash, true);
+                    }
                 }
             }
+        }
 
-            return false;
+        internal static void ComboW(Obj_AI_Hero target)
+        {
+            if (!W.IsReady() || !E.IsReady() || target.IsMelee ||
+                !Menu.Item("ComboW" + target.ChampionName.ToLower(), true).GetValue<bool>())
+            {
+                return;
+            }
+
+            var dashPos = GetNextPos(target);
+            var po = Prediction.GetPrediction(target, 0.5f);
+            var dist = Me.Distance(po.UnitPosition);
+
+            if (!target.IsMoving || Me.Distance(dashPos) <= dist + 40)
+            {
+                if (dist < 330 && dist > 100 && W.IsReady())
+                {
+                    W.Cast(po.UnitPosition, true);
+                }
+            }
+        }
+
+        internal static void ComboEWall(Obj_AI_Hero target)
+        {
+            if (!E.IsReady() || !TargetIsJump(target) || target.IsMelee())
+            {
+                return;
+            }
+
+            var dist = Me.Distance(target);
+            var pPos = Me.Position.To2D();
+            var dashPos = target.Position.To2D();
+
+            if (!target.IsMoving || Me.Distance(dashPos) <= dist)
+            {
+                foreach (var enemy in ObjectManager.Get<Obj_AI_Base>().Where(enemy => TargetIsJump(enemy)))
+                {
+                    var posAfterE = pPos + Vector2.Normalize(enemy.Position.To2D() - pPos) * E.Range;
+
+                    if ((target.Distance(posAfterE) < dist
+                        || target.Distance(posAfterE) < Orbwalking.GetRealAutoAttackRange(target) + 100)
+                        && goesThroughWall(target.Position, posAfterE.To3D()))
+                    {
+                        
+                    }
+                }
+            }
         }
 
         internal static double GetQDmg(Obj_AI_Base target)
