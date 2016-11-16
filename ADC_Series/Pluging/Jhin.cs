@@ -80,6 +80,7 @@
             {
                 KillStealMenu.AddItem(new MenuItem("KillStealQ", "Use Q", true).SetValue(true));
                 KillStealMenu.AddItem(new MenuItem("KillStealW", "Use W", true).SetValue(true));
+                KillStealMenu.AddItem(new MenuItem("KillStealWInAttackRange", "Use W| Target In Attack Range", true).SetValue(true));
             }
 
             var MiscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
@@ -489,30 +490,54 @@
         private void KillSteal()
         {
             if (R.Instance.Name == "JhinRShot")
-                return;
-
-            var wTarget = TargetSelector.GetTarget(W.Range, TargetSelector.DamageType.Physical);
-
-            if (Menu.Item("KillStealW", true).GetValue<bool>() && CheckTarget(wTarget, Q.Range) && W.IsReady() &&
-                wTarget.Health < Me.GetSpellDamage(wTarget, SpellSlot.W) &&
-                !(Q.IsReady() && wTarget.IsValidTarget(Q.Range) &&
-                wTarget.Health < Me.GetSpellDamage(wTarget, SpellSlot.Q)))
             {
-                if (Orbwalker.InAutoAttackRange(wTarget) && wTarget.Health <= Me.GetAutoAttackDamage(wTarget, true))
-                {
-                    return;
-                }
-
-                W.CastTo(wTarget);
                 return;
             }
 
-            var qTarget = TargetSelector.GetTarget(Q.Range, TargetSelector.DamageType.Physical);
-
-            if (Menu.Item("KillStealQ", true).GetValue<bool>() && CheckTarget(qTarget, Q.Range) &&
-                Q.IsReady() && qTarget.Health < Me.GetSpellDamage(qTarget, SpellSlot.Q))
+            if (Menu.Item("KillStealQ", true).GetValue<bool>() && Q.IsReady())
             {
-                Q.CastOnUnit(qTarget, true);
+                foreach (
+                    var target in
+                    HeroManager.Enemies.Where(
+                        x => x.IsValidTarget(Q.Range) && x.Health < Me.GetSpellDamage(x, SpellSlot.Q)))
+                {
+                    if (CheckTarget(target, Q.Range))
+                    {
+                        Q.CastOnUnit(target, true);
+                    }
+                }
+            }
+
+            if (Menu.Item("KillStealW", true).GetValue<bool>() && W.IsReady())
+            {
+                foreach (
+                    var target in
+                    HeroManager.Enemies.Where(
+                        x => x.IsValidTarget(W.Range) && x.Health < Me.GetSpellDamage(x, SpellSlot.W)))
+                {
+                    if (CheckTarget(target, W.Range))
+                    {
+                        if (target.Health < Me.GetSpellDamage(target, SpellSlot.Q) && Q.IsReady() &&
+                            target.IsValidTarget(Q.Range))
+                        {
+                            return;
+                        }
+
+                        if (Menu.Item("KillStealWInAttackRange", true).GetValue<bool>() && Orbwalker.InAutoAttackRange(target))
+                        {
+                            W.CastTo(target);
+                            return;
+                        }
+
+                        if (Orbwalker.InAutoAttackRange(target) && target.Health <= Me.GetAutoAttackDamage(target, true))
+                        {
+                            return;
+                        }
+
+                        W.CastTo(target);
+                        return;
+                    }
+                }
             }
         }
 
