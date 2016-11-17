@@ -50,27 +50,18 @@
 ### Flowers' Fiora
 > Fiora Assembly
 
-> Dodge Jax E, Darius R, Riven Q, Riven W and more Spells
-
-### GosuMechanicsYasuo
-> Credit: tulisan69
-
-> i just rework this assembly
 
 ### Flowers' Jhin
 > Jhin Assembly
 
-> SBTW, you know that
 
 ### Flowers' Karthus
 > Karthus Assembly
 
-> SBTW, you know that
 
 ### Flowers' Nidalee
 > Nidalee Assembly
 
-> SBTW, you know that
 
 ### Flowers' Riven
 > Riven Assembly
@@ -81,7 +72,6 @@
 
 > Faster QA Logic
 
-> SBTW
 
 ### Flowers' Ryze
 > Ryze Assembly
@@ -101,24 +91,18 @@
 
 > Flee Q/E Logic
 
-> I think this is SBTW assembly
 
 ### Flowers' Tristana
 > Tristana Assembly
 
-> SBTW (just not have W Logic)
 
 ### Flowers' Twisted Fate
 > TF Assembly
-
-> SBTW
 
 > Humanizer Card Select Logic
 
 ### Flowers' Twitch
 > Twitch Assembly
-
-> SBTW
 
 > Smart Q Logic
 
