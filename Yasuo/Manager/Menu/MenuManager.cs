@@ -81,6 +81,7 @@
             var fleeMenu = Menu.AddSubMenu(new Menu("Flee", "Flee"));
             {
                 fleeMenu.AddItem(new MenuItem("FleeQ", "Use Q", true).SetValue(true));
+                fleeMenu.AddItem(new MenuItem("FleeQ3", "Use Q3", true).SetValue(true));
                 fleeMenu.AddItem(new MenuItem("FleeE", "Use E", true).SetValue(true));
             }
 

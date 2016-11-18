@@ -25,8 +25,6 @@
             Flash = ObjectManager.Player.GetSpellSlot("SummonerFlash");
         }
 
-        internal static bool HaveStatik => Me.GetBuffCount("ItemStatikShankCharge") == 100;
-
         internal static bool HaveQ3 => Me.HasBuff("YasuoQ3W");
 
         internal static bool CanCastE(Obj_AI_Base target)
@@ -178,7 +176,7 @@
                        target,
                        Damage.DamageType.Physical,
                        20*Q.Level + (result - reduction)*damageModifier)
-                   + (HaveStatik
+                   + (Me.GetBuffCount("ItemStatikShankCharge") == 100
                        ? Me.CalcDamage(
                            target,
                            Damage.DamageType.Magical,
