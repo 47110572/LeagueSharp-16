@@ -109,7 +109,7 @@
 > just Steal Enemy
 
 ### Flowers' Yasuo
-> Twitch Assembly
+> Yasuo Assembly
 
 ### xSaliceRessurected_Rework
 > Credit: xSalice
