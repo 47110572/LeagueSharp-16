@@ -99,19 +99,7 @@
                     qMenu.AddItem(
                         new MenuItem("AutoQ3", "Auto Q3 Harass Enemy", true).SetValue(false));
                 }
-
-                var wMenu = miscMenu.AddSubMenu(new Menu("W Settings", "W Settings"));
-                {
-                    var wWhitelistMenu = wMenu.AddSubMenu(new Menu("Combo W Target", "Combo W Target"));
-                    {
-                        foreach (var hero in HeroManager.Enemies)
-                        {
-                            wWhitelistMenu.AddItem(
-                                new MenuItem("ComboW" + hero.ChampionName.ToLower(), hero.ChampionName, true).SetValue(true));
-                        }
-                    }
-                }
-
+				
                 var eMenu = miscMenu.AddSubMenu(new Menu("E Settings", "E Settings"));
                 {
                     eMenu.AddItem(new MenuItem("KillStealE", "Use E KillSteal", true).SetValue(true));
