@@ -9,6 +9,11 @@
     {
         internal static void Init(EventArgs Args)
         {
+            if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.WallJump)
+            {
+                Orbwalker.SetMovement(true);
+            }
+
             DashReset.Init();
             Skin.Init();
 

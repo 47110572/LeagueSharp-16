@@ -1,4 +1,6 @@
-﻿namespace Flowers_Yasuo.Manager.Menu
+﻿using SharpDX;
+
+namespace Flowers_Yasuo.Manager.Menu
 {
     using Evade;
     using System.Linq;
@@ -100,7 +102,7 @@
                     qMenu.AddItem(
                         new MenuItem("AutoQ3", "Auto Q3 Harass Enemy", true).SetValue(false));
                 }
-				
+
                 var eMenu = miscMenu.AddSubMenu(new Menu("E Settings", "E Settings"));
                 {
                     eMenu.AddItem(new MenuItem("KillStealE", "Use E KillSteal", true).SetValue(true));
@@ -243,12 +245,48 @@
                 drawMenu.AddItem(new MenuItem("DrawStackQ", "Draw Stack Q Status", true).SetValue(true));
                 drawMenu.AddItem(new MenuItem("DrawAutoQ", "Draw Auto Q Status", true).SetValue(true));
                 drawMenu.AddItem(new MenuItem("DrawRStatus", "Draw Combo R Status", true).SetValue(true));
+                drawMenu.AddItem(new MenuItem("DrawStackQPerma", "Draw Stack Q PermaShow", true).SetValue(true))
+                    .ValueChanged += StackQChanged;
+                drawMenu.AddItem(new MenuItem("DrawAutoQPerma", "Draw Auto Q PermaShow", true).SetValue(true))
+                    .ValueChanged += AutoQChanged;
+                drawMenu.AddItem(new MenuItem("DrawRStatusPerma", "Draw Combo R PermaShow", true).SetValue(true))
+                    .ValueChanged += ComboRChanged;
             }
 
             Menu.AddItem(new MenuItem("asd ad asd ", " ", true));
             Menu.AddItem(new MenuItem("Credit", "Credit: NightMoon", true));
 
             Menu.AddToMainMenu();
+
+            if (Menu.Item("DrawStackQPerma", true).GetValue<bool>())
+            {
+                Menu.Item("StackQ", true).Permashow(true, "Stack Q Active", Color.MediumSlateBlue);
+            }
+
+            if (Menu.Item("DrawAutoQPerma", true).GetValue<bool>())
+            {
+                Menu.Item("AutoQ", true).Permashow(true, "Auto Q Active", Color.Orange);
+            }
+
+            if (Menu.Item("DrawRStatusPerma", true).GetValue<bool>())
+            {
+                Menu.Item("ComboR", true).Permashow(true, "Combo R Active", Color.PowderBlue);
+            }
+        }
+
+        private static void ComboRChanged(object obj, OnValueChangeEventArgs Args)
+        {
+            Menu.Item("ComboR", true).Permashow(Args.GetNewValue<bool>(), "Combo R Active", Color.PowderBlue);
+        }
+
+        private static void AutoQChanged(object obj, OnValueChangeEventArgs Args)
+        {
+            Menu.Item("AutoQ", true).Permashow(Args.GetNewValue<bool>(), "Auto Q Active", Color.Orange);
+        }
+
+        private static void StackQChanged(object obj, OnValueChangeEventArgs Args)
+        {
+            Menu.Item("StackQ", true).Permashow(Args.GetNewValue<bool>(), "Stack Q Active", Color.MediumSlateBlue);
         }
     }
 }

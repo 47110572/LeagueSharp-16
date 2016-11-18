@@ -1,7 +1,9 @@
 ﻿namespace Flowers_Yasuo.Manager.Events.Games.Mode
 {
+    using Common;
     using System;
     using System.Linq;
+    using System.Collections.Generic;
     using LeagueSharp;
     using LeagueSharp.Common;
     using SharpDX;
@@ -9,6 +11,7 @@
 
     internal class WallJump : Logic
     {
+        private static int lastCastTime;
         private static float LastMoveC;
 
         private static Vector2 spot1 = new Vector2(7274, 5908);
@@ -34,8 +37,38 @@
         private static Vector2 spotL = new Vector2(6574, 12256);
         private static Vector2 spotN = new Vector2(7784, 9494);
 
+        public static List<Vector2> WallJumpPos = new List<Vector2>();
+
+        internal static void InitPos()
+        {
+            WallJumpPos.Add(new Vector2(7274, 5908));
+            WallJumpPos.Add(new Vector2(8222, 3158));
+            WallJumpPos.Add(new Vector2(7784, 9494));
+            WallJumpPos.Add(new Vector2(6574, 12256));
+            WallJumpPos.Add(new Vector2(3730, 8080));
+            WallJumpPos.Add(new Vector2(10882, 8416));
+            WallJumpPos.Add(new Vector2(11072, 8306));
+            WallJumpPos.Add(new Vector2(12582, 6402));
+            WallJumpPos.Add(new Vector2(3892, 6466));
+            WallJumpPos.Add(new Vector2(8322, 2658));
+            WallJumpPos.Add(new Vector2(7046, 5426));
+            WallJumpPos.Add(new Vector2(2232, 8412));
+            WallJumpPos.Add(new Vector2(7672, 8906));
+            WallJumpPos.Add(new Vector2(4324, 6258));
+            WallJumpPos.Add(new Vector2(3674, 7058));
+            WallJumpPos.Add(new Vector2(8372, 9606));
+            WallJumpPos.Add(new Vector2(6650, 11766));
+            WallJumpPos.Add(new Vector2(1678, 8428));
+            WallJumpPos.Add(new Vector2(6424, 5208));
+            WallJumpPos.Add(new Vector2(13172, 6508));
+            WallJumpPos.Add(new Vector2(11222, 7856));
+            WallJumpPos.Add(new Vector2(10372, 8456));
+        }
+
         internal static void Init()
         {
+            Orbwalker.SetMovement(!WallJumpPos.Any(x => x.DistanceToPlayer() <= 130));
+
             if (Me.Distance(spot1) <= 150)
             {
                 MoveToLimited(spot1.To3D());
@@ -56,7 +89,20 @@
 
                 if (Me.ServerPosition.Equals(spot1.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(7110, 5612).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(7110, 5612).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(7110, 5612).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -80,7 +126,20 @@
 
                 if (Me.ServerPosition.Equals(spot2.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(8372, 2908).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(8372, 2908).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(8372, 2908).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -104,7 +163,20 @@
 
                 if (Me.ServerPosition.Equals(spot3.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(3674, 6708).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(3674, 6708).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(3674, 6708).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -128,7 +200,20 @@
 
                 if (Me.ServerPosition.Equals(spot5.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(7923, 9351).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(7923, 9351).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(7923, 9351).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -152,7 +237,20 @@
 
                 if (Me.ServerPosition.Equals(spot6.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(6426, 12138).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(6426, 12138).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(6426, 12138).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -176,7 +274,20 @@
 
                 if (Me.ServerPosition.Equals(spot7.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(2050, 8416).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(2050, 8416).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(2050, 8416).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -200,7 +311,20 @@
 
                 if (Me.ServerPosition.Equals(spot10.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(6824, 5308).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(6824, 5308).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(6824, 5308).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -224,7 +348,20 @@
 
                 if (Me.ServerPosition.Equals(spot11.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(12772, 6458).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(12772, 6458).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(12772, 6458).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -248,7 +385,20 @@
 
                 if (Me.ServerPosition.Equals(spot12.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(11072, 8156).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(11072, 8156).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(11072, 8156).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -272,7 +422,20 @@
 
                 if (Me.ServerPosition.Equals(spot13.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(10772, 8456).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(10772, 8456).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(10772, 8456).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -296,7 +459,20 @@
 
                 if (Me.ServerPosition.Equals(spot14.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(4024, 6358).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(4024, 6358).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(4024, 6358).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -320,7 +496,20 @@
 
                 if (Me.ServerPosition.Equals(spot16.To3D()) && W.IsReady())
                 {
-                    W.Cast(new Vector2(7822, 9306).To3D(), true);
+                    if (Items.GetWardSlot() != null && Items.GetWardSlot().Stacks > 0 && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (Me.Spellbook.CastSpell(Items.GetWardSlot().SpellSlot, new Vector2(7822, 9306).To3D()))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
+                    else if (W.IsReady() && Utils.TickCount - lastCastTime > 5000)
+                    {
+                        if (W.Cast(new Vector2(7822, 9306).To3D(), true))
+                        {
+                            lastCastTime = Utils.TickCount;
+                        }
+                    }
                 }
             }
 
@@ -511,12 +700,12 @@
 
         private static void MoveToLimited(Vector3 where)
         {
-            if (Environment.TickCount - LastMoveC < 80)
+            if (Utils.TickCount - LastMoveC < 500)
             {
                 return;
             }
 
-            LastMoveC = Environment.TickCount;
+            LastMoveC = Utils.TickCount;
             Me.IssueOrder(GameObjectOrder.MoveTo, where);
         }
     }

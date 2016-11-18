@@ -36,7 +36,7 @@
             EvadeManager.Init();
             EvadeTargetManager.Init();
             EventManager.Init();
-            DrawManager.InitPos();
+            Manager.Events.Games.Mode.WallJump.InitPos();
         }
 
         internal static bool IsDashing => isDashing || Me.IsDashing();

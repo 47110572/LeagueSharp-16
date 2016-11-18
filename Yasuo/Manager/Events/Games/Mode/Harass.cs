@@ -72,12 +72,17 @@
                     if (Menu.Item("HarassQ3", true).GetValue<bool>() && Q3.IsReady() && SpellManager.HaveQ3 &&
                         target.Distance(lastEPos) <= 220)
                     {
-                        if (Q3.Cast(Me.Position, true))
-                        {
-                            lastHarassTime = Utils.TickCount;
-                        }
+                        Utility.DelayAction.Add(10, Q3Harass);
                     }
                 }
+            }
+        }
+
+        private static void Q3Harass()
+        {
+            if (Q3.Cast(Me.Position, true))
+            {
+                lastHarassTime = Utils.TickCount;
             }
         }
     }

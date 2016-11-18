@@ -81,7 +81,7 @@
     <Compile Include="Manager\Events\Animation\AnimationManager.cs" />
     <Compile Include="Manager\Events\Drawings\DrawManager.cs" />
     <Compile Include="Manager\Events\EventManager.cs" />
-    <Compile Include="Manager\Events\Games\DashReset.cs" />
+    <Compile Include="Manager\Events\Games\Mode\DashReset.cs" />
     <Compile Include="Manager\Events\Games\Mode\Auto.cs" />
     <Compile Include="Manager\Events\Games\Mode\Combo.cs" />
     <Compile Include="Manager\Events\Games\Mode\EQFlash.cs" />
@@ -92,7 +92,7 @@
     <Compile Include="Manager\Events\Games\Mode\LaneClear.cs" />
     <Compile Include="Manager\Events\Games\Mode\LastHit.cs" />
     <Compile Include="Manager\Events\Games\Mode\WallJump.cs" />
-    <Compile Include="Manager\Events\Games\Skin.cs" />
+    <Compile Include="Manager\Events\Games\Mode\Skin.cs" />
     <Compile Include="Manager\Events\Gapcloser\GapcloserManager.cs" />
     <Compile Include="Manager\Events\Interrupt\InterruptManager.cs" />
     <Compile Include="Manager\Events\Games\LoopManager.cs" />

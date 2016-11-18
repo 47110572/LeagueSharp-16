@@ -119,13 +119,13 @@
                 if (Menu.Item("ComboEQ", true).GetValue<bool>() && Q.IsReady() && !SpellManager.HaveQ3 &&
                     target.Distance(lastEPos) <= 220)
                 {
-                    Utility.DelayAction.Add(50 + Game.Ping, () => { Q.Cast(Me.Position, true); });
+                    Utility.DelayAction.Add(10, () => Q.Cast(Me.Position, true));
                 }
 
                 if (Menu.Item("ComboEQ3", true).GetValue<bool>() && Q3.IsReady() && SpellManager.HaveQ3 &&
                     target.Distance(lastEPos) <= 220)
                 {
-                    Utility.DelayAction.Add(50 + Game.Ping, () => { Q3.Cast(Me.Position, true); });
+                    Utility.DelayAction.Add(10, () => Q3.Cast(Me.Position, true));
                 }
             }
         }

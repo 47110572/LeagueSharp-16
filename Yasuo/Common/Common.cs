@@ -24,9 +24,9 @@
 
         public static Vector3 PosAfterE(Obj_AI_Base target)
         {
-            return
-                ObjectManager.Player.ServerPosition.Extend(target.ServerPosition,
-                        ObjectManager.Player.Distance(target) < 410f ? 475f : ObjectManager.Player.Distance(target) + 65f);
+            var pred = Prediction.GetPrediction(target, 200);
+
+            return ObjectManager.Player.ServerPosition.Extend(pred.UnitPosition, 475f);
         }
 
         public static float DistanceToPlayer(this Obj_AI_Base source)

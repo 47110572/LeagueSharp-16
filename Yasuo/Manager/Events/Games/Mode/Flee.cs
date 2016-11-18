@@ -17,7 +17,7 @@
 
                     if (qMinion.IsValidTarget(220))
                     {
-                        Utility.DelayAction.Add(50 + Game.Ping / 2, () => Q.Cast(Me.Position, true));
+                        Utility.DelayAction.Add(10, () => Q.Cast(Me.Position, true));
                     }
                 }
             }
@@ -30,7 +30,7 @@
                             .OrderBy(x => x.Position.Distance(Game.CursorPos))
                             .FirstOrDefault();
 
-                    if (eMinion != null && SpellManager.CanCastE(eMinion) && E.IsReady())
+                    if (eMinion != null && SpellManager.CanCastE(eMinion) && E.IsReady() && Me.IsFacing(eMinion))
                     {
                         E.CastOnUnit(eMinion, true);
                     }

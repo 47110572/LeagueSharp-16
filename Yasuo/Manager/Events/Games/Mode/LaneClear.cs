@@ -3,7 +3,6 @@
     using System.Linq;
     using Common;
     using Spells;
-    using LeagueSharp;
     using LeagueSharp.Common;
     using static Common.Common;
 
@@ -58,7 +57,7 @@
 
                         if (qminions.Count >= 2)
                         {
-                            Utility.DelayAction.Add(50 + Game.Ping/2, () => Q.Cast(Me.Position));
+                            Utility.DelayAction.Add(10, () => Q.Cast(Me.Position, true));
                         }
                     }
                 }
@@ -82,7 +81,7 @@
 
                         if (q3minions.Count >= 2)
                         {
-                            Utility.DelayAction.Add(50 + Game.Ping/2, () => Q3.Cast(Me.Position));
+                            Utility.DelayAction.Add(10, () => Q3.Cast(Me.Position, true));
                         }
                     }
                 }
