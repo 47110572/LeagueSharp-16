@@ -109,9 +109,8 @@
                 if (dashtargets.Any())
                 {
                     var dash =
-                        dashtargets.Where(x =>x.IsValidTarget(E.Range))
-                            .OrderBy(x => PosAfterE(x).To3D().Distance(Game.CursorPos))
-                            .FirstOrDefault(x => Evade.EvadeManager.IsSafe(PosAfterE(x)).IsSafe);
+                        dashtargets.Where(x => x.IsValidTarget(E.Range) && Evade.EvadeManager.IsSafe(PosAfterE(x)).IsSafe)
+                            .MinOrDefault(x => PosAfterE(x).To3D().Distance(Game.CursorPos));
 
                     if (dash != null && dash.DistanceToPlayer() <= E.Range && CanCastE(dash) &&
                         target.DistanceToPlayer() >= GapcloserDis &&
