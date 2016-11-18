@@ -76,16 +76,14 @@
 
             if (dashtargets.Any())
             {
-                var dash = dashtargets.Where(
-                        x =>
-                            x.IsValidTarget(E.Range) &&
-                            (UnderTurret || !UnderTower(PosAfterE(x))))
+                var dash = dashtargets.Where(x =>x.IsValidTarget(E.Range))
                     .OrderBy(x => target.Position.Distance(PosAfterE(x).To3D()))
                     .FirstOrDefault(x => Evade.EvadeManager.IsSafe(PosAfterE(x)).IsSafe);
 
                 if (dash != null && dash.DistanceToPlayer() <= E.Range && CanCastE(dash) &&
                     target.DistanceToPlayer() >= GapcloserDis &&
-                    target.Position.Distance(PosAfterE(dash).To3D()) <= target.DistanceToPlayer())
+                    target.Position.Distance(PosAfterE(dash).To3D()) <= target.DistanceToPlayer() && 
+                    (UnderTurret || !UnderTower(PosAfterE(dash))))
                 {
                     E.CastOnUnit(dash, true);
                 }
@@ -96,7 +94,7 @@
         {
             if (target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) * 1.2 ||
                 target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(target) * 0.8 ||
-                Game.CursorPos.DistanceToPlayer() >= Orbwalking.GetRealAutoAttackRange(Me) * 1.5)
+                Game.CursorPos.DistanceToPlayer() >= Orbwalking.GetRealAutoAttackRange(Me) * 1.2)
             {
                 var dashtargets = new List<Obj_AI_Base>();
                 dashtargets.AddRange(
@@ -111,16 +109,14 @@
                 if (dashtargets.Any())
                 {
                     var dash =
-                        dashtargets.Where(
-                                x =>
-                                    x.IsValidTarget(E.Range) &&
-                                    (UnderTurret || !UnderTower(PosAfterE(x))))
+                        dashtargets.Where(x =>x.IsValidTarget(E.Range))
                             .OrderBy(x => PosAfterE(x).To3D().Distance(Game.CursorPos))
                             .FirstOrDefault(x => Evade.EvadeManager.IsSafe(PosAfterE(x)).IsSafe);
 
                     if (dash != null && dash.DistanceToPlayer() <= E.Range && CanCastE(dash) &&
                         target.DistanceToPlayer() >= GapcloserDis &&
-                        target.Position.Distance(PosAfterE(dash).To3D()) <= target.DistanceToPlayer())
+                        target.Position.Distance(PosAfterE(dash).To3D()) <= target.DistanceToPlayer() &&
+                        (UnderTurret || !UnderTower(PosAfterE(dash))))
                     {
                         E.CastOnUnit(dash, true);
                     }

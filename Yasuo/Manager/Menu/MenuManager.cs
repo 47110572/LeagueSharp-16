@@ -29,7 +29,6 @@
                 comboMenu.AddItem(
                     new MenuItem("ComboEGap", "Use E GapCloser| Target Distance to Player >=x", true).SetValue(
                         new Slider(250, 0, 1300)));
-
                 comboMenu.AddItem(new MenuItem("ComboEQ", "Use EQ", true).SetValue(true));
                 comboMenu.AddItem(new MenuItem("ComboEQ3", "Use EQ3", true).SetValue(true));
                 comboMenu.AddItem(
@@ -49,8 +48,8 @@
             {
                 harassMenu.AddItem(new MenuItem("HarassQ", "Use Q", true).SetValue(true));
                 harassMenu.AddItem(new MenuItem("HarassQ3", "Use Q3", true).SetValue(true));
-                harassMenu.AddItem(new MenuItem("HarassE", "Use E", true).SetValue(true));
-                harassMenu.AddItem(new MenuItem("HarassTower", "Under Tower", true).SetValue(true));
+                harassMenu.AddItem(new MenuItem("HarassE", "Use E", true).SetValue(false));
+                harassMenu.AddItem(new MenuItem("HarassTower", "Use E Under Tower", true).SetValue(true));
             }
 
             var laneClearMenu = Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
@@ -76,6 +75,7 @@
                 lastHitMenu.AddItem(new MenuItem("LastHitQ", "Use Q", true).SetValue(true));
                 lastHitMenu.AddItem(new MenuItem("LastHitQ3", "Use Q3", true).SetValue(true));
                 lastHitMenu.AddItem(new MenuItem("LastHitE", "Use E", true).SetValue(true));
+                lastHitMenu.AddItem(new MenuItem("LastHitETurret", "Use E Under Turret", true).SetValue(false));
             }
 
             var fleeMenu = Menu.AddSubMenu(new Menu("Flee", "Flee"));
@@ -93,9 +93,11 @@
                     qMenu.AddItem(new MenuItem("Q3Int", "Use Q3 Interrupter", true).SetValue(true));
                     qMenu.AddItem(new MenuItem("Q3Anti", "Use Q3 AntiGapcloser", true).SetValue(true));
                     qMenu.AddItem(
-                        new MenuItem("AutoQ", "Auto Q", true).SetValue(new KeyBind('T', KeyBindType.Toggle, true)));
+                        new MenuItem("AutoQ", "Stack Q", true).SetValue(new KeyBind('T', KeyBindType.Toggle, true)));
                     qMenu.AddItem(
-                        new MenuItem("AutoQ3", "Auto Q3", true).SetValue(false));
+                        new MenuItem("AutoQChampion", "Auto Q Harass Enemy", true).SetValue(false));
+                    qMenu.AddItem(
+                        new MenuItem("AutoQ3", "Auto Q3 Harass Enemy", true).SetValue(false));
                 }
 
                 var wMenu = miscMenu.AddSubMenu(new Menu("W Settings", "W Settings"));
@@ -113,7 +115,6 @@
                 var eMenu = miscMenu.AddSubMenu(new Menu("E Settings", "E Settings"));
                 {
                     eMenu.AddItem(new MenuItem("KillStealE", "Use E KillSteal", true).SetValue(true));
-                    eMenu.AddItem(new MenuItem("ETower", "Dont Jump turrets", true).SetValue(true));
                 }
 
                 var rMenu = miscMenu.AddSubMenu(new Menu("R Settings", "R Settings"));

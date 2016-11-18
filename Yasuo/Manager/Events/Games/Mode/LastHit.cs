@@ -4,6 +4,7 @@
     using System.Linq;
     using LeagueSharp.Common;
     using Orbwalking = Orbwalking;
+    using static Common.Common;
 
     internal class LastHit : Logic
     {
@@ -44,8 +45,9 @@
 
                 if (Menu.Item("LastHitE", true).GetValue<bool>() && E.IsReady())
                 {
-                    if (minion.IsValidTarget(E.Range) && minion.Health < E.GetDamage(minion) 
-                        && SpellManager.CanCastE(minion))
+                    if (minion.IsValidTarget(E.Range) && minion.Health < E.GetDamage(minion)
+                        && SpellManager.CanCastE(minion) &&
+                        (Menu.Item("LastHitETurret", true).GetValue<bool>() || !UnderTower(PosAfterE(minion))))
                     {
                         E.CastOnUnit(minion, true);
                     }

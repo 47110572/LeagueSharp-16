@@ -19,7 +19,7 @@
 
         public static bool UnderTower(Vector2 pos)
         {
-            return ObjectManager.Get<Obj_AI_Turret>().Any(i => i.IsEnemy && i.IsValid && i.Health > 1 && i.Distance(pos) <= 950);
+            return ObjectManager.Get<Obj_AI_Turret>().Any(turret => turret.IsValidTarget(950, true, pos.To3D()));
         }
 
         public static Vector2 PosAfterE(Obj_AI_Base target)
