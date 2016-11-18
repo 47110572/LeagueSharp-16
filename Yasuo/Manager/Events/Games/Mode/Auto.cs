@@ -24,7 +24,9 @@
                 }
             }
 
-            if (Menu.Item("AutoQ", true).GetValue<KeyBind>().Active && Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.None)
+            if (Menu.Item("AutoQ", true).GetValue<KeyBind>().Active &&
+                Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Mixed &&
+                Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo)
             {
                 if (Menu.Item("AutoQ3", true).GetValue<bool>() && Q3.IsReady() && SpellManager.HaveQ3)
                 {
@@ -43,22 +45,24 @@
                             Q.Cast(qPred.CastPosition, true);
                         }
                     }
-                    else
+                }
+            }
+
+            if (Menu.Item("StackQ", true).GetValue<KeyBind>().Active && Q.IsReady() && !SpellManager.HaveQ3 && 
+                Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.None)
+            {
+                var minions = MinionManager.GetMinions(Me.Position, Q.Range, MinionTypes.All,
+                    MinionTeam.NotAlly);
+
+                if (minions.Any())
+                {
+                    var qFarm =
+                        MinionManager.GetBestLineFarmLocation(
+                            minions.Select(x => x.Position.To2D()).ToList(), Q.Width, Q.Range);
+
+                    if (qFarm.MinionsHit >= 1)
                     {
-                        var minions = MinionManager.GetMinions(Me.Position, Q.Range, MinionTypes.All,
-                            MinionTeam.NotAlly);
-
-                        if (minions.Any())
-                        {
-                            var qFarm =
-                                MinionManager.GetBestLineFarmLocation(
-                                    minions.Select(x => x.Position.To2D()).ToList(), Q.Width, Q.Range);
-
-                            if (qFarm.MinionsHit >= 1)
-                            {
-                                Q.Cast(qFarm.Position, true);
-                            }
-                        }
+                        Q.Cast(qFarm.Position, true);
                     }
                 }
             }

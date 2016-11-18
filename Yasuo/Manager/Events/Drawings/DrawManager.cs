@@ -76,14 +76,24 @@
                     }
                 }
 
+                if (Menu.Item("DrawStackQ", true).GetValue<bool>() && Q.Level > 0)
+                {
+                    var stackQ = Menu.Item("StackQ", true).GetValue<KeyBind>();
+                    var MePos = Drawing.WorldToScreen(Me.Position);
+
+                    Drawing.DrawText(MePos[0] - 50, MePos[1] + 25, Color.Red,
+                        "Stack Q(" + new string(System.Text.Encoding.Default.GetChars(BitConverter.GetBytes(stackQ.Key))));
+                    Drawing.DrawText(MePos[0] + 29, MePos[1] + 25, Color.Red, "): " + (stackQ.Active ? "On" : "Off"));
+                }
+
                 if (Menu.Item("DrawAutoQ", true).GetValue<bool>() && Q.Level > 0)
                 {
                     var autoQ = Menu.Item("AutoQ", true).GetValue<KeyBind>();
                     var MePos = Drawing.WorldToScreen(Me.Position);
 
-                    Drawing.DrawText(MePos[0] - 35, MePos[1] + 25, Color.Red,
+                    Drawing.DrawText(MePos[0] - 35, MePos[1] + 45, Color.Red,
                         "Auto Q(" + new string(System.Text.Encoding.Default.GetChars(BitConverter.GetBytes(autoQ.Key))));
-                    Drawing.DrawText(MePos[0] + 29, MePos[1] + 25, Color.Red, "): " + (autoQ.Active ? "On" : "Off"));
+                    Drawing.DrawText(MePos[0] + 29, MePos[1] + 45, Color.Red, "): " + (autoQ.Active ? "On" : "Off"));
                 }
 
                 if (Menu.Item("DrawRStatus", true).GetValue<bool>() && R.Level > 0)
@@ -91,9 +101,9 @@
                     var comboR = Menu.Item("ComboR", true).GetValue<KeyBind>();
                     var MePos = Drawing.WorldToScreen(Me.Position);
 
-                    Drawing.DrawText(MePos[0] - 50, MePos[1] + 45, Color.Red,
+                    Drawing.DrawText(MePos[0] - 50, MePos[1] + 65, Color.Red,
                         "Combo R(" + new string(System.Text.Encoding.Default.GetChars(BitConverter.GetBytes(comboR.Key))));
-                    Drawing.DrawText(MePos[0] + 29, MePos[1] + 45, Color.Red, "): " + (comboR.Active ? "On" : "Off"));
+                    Drawing.DrawText(MePos[0] + 29, MePos[1] + 65, Color.Red, "): " + (comboR.Active ? "On" : "Off"));
                 }
             }
         }

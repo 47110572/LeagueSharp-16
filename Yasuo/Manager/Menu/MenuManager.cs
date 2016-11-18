@@ -93,9 +93,9 @@
                     qMenu.AddItem(new MenuItem("Q3Int", "Use Q3 Interrupter", true).SetValue(true));
                     qMenu.AddItem(new MenuItem("Q3Anti", "Use Q3 AntiGapcloser", true).SetValue(true));
                     qMenu.AddItem(
-                        new MenuItem("AutoQ", "Stack Q", true).SetValue(new KeyBind('T', KeyBindType.Toggle, true)));
+                        new MenuItem("StackQ", "Stack Q", true).SetValue(new KeyBind('T', KeyBindType.Toggle, true)));
                     qMenu.AddItem(
-                        new MenuItem("AutoQChampion", "Auto Q Harass Enemy", true).SetValue(false));
+                        new MenuItem("AutoQ", "Auto Q Harass Enemy", true).SetValue(new KeyBind('N', KeyBindType.Toggle, true)));
                     qMenu.AddItem(
                         new MenuItem("AutoQ3", "Auto Q3 Harass Enemy", true).SetValue(false));
                 }
@@ -251,6 +251,7 @@
                 drawMenu.AddItem(new MenuItem("DrawE", "Draw E Range", true).SetValue(true));
                 drawMenu.AddItem(new MenuItem("DrawR", "Draw R Range", true).SetValue(true));
                 drawMenu.AddItem(new MenuItem("DrawSpots", "Draw WallJump Spots", true).SetValue(true));
+                drawMenu.AddItem(new MenuItem("DrawStackQ", "Draw Stack Q Status", true).SetValue(true));
                 drawMenu.AddItem(new MenuItem("DrawAutoQ", "Draw Auto Q Status", true).SetValue(true));
                 drawMenu.AddItem(new MenuItem("DrawRStatus", "Draw Combo R Status", true).SetValue(true));
             }
