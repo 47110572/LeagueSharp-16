@@ -35,9 +35,7 @@
                                     ? SpellManager.GetQDmg(x) + SpellManager.GetEDmg(x)
                                     : SpellManager.GetEDmg(x))))
                     {
-                        if ((Menu.Item("LaneClearETurret", true).GetValue<bool>() ||
-                            !UnderTower(PosAfterE(min))) &&
-                            !HeroManager.Enemies.Any(x => x.Distance(PosAfterE(x).To3D()) <= 600))
+                        if (Menu.Item("LaneClearETurret", true).GetValue<bool>() || !UnderTower(PosAfterE(min)))
                         {
                             E.CastOnUnit(min, true);
                         }
