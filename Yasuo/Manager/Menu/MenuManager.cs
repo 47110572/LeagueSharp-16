@@ -22,7 +22,9 @@ namespace Flowers_Yasuo.Manager.Menu
             var comboMenu = Menu.AddSubMenu(new Menu("Combo", "combo"));
             {
                 comboMenu.AddItem(new MenuItem("ComboQ", "Use Q", true).SetValue(true));
-                comboMenu.AddItem(new MenuItem("ComboQStack", "Use Q| Dash to Stack Q", true).SetValue(false));
+                comboMenu.AddItem(
+                    new MenuItem("ComboQStack", "Use Q| Stack Q(When Dashing)", true).SetValue(
+                        new StringList(new[] {"Both", "Only Heros", "Only Minion", "Off"}, 3)));
                 comboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));
                 comboMenu.AddItem(new MenuItem("ComboETurret", "Use E Under turret", true).SetValue(false));
                 comboMenu.AddItem(new MenuItem("ComboEGapcloser", "Use E Gapcloser", true).SetValue(true));

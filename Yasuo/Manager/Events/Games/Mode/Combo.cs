@@ -116,15 +116,6 @@
 
             if (IsDashing)
             {
-                if (Menu.Item("ComboQStack", true).GetValue<bool>() && Q.IsReady() && !SpellManager.HaveQ3)
-                {
-                    if (MinionManager.GetMinions(lastEPos, 220, MinionTypes.All, MinionTeam.NotAlly).Count > 0 ||
-                        HeroManager.Enemies.Count(x => x.IsValidTarget(220, true, lastEPos)) > 0)
-                    {
-                        Utility.DelayAction.Add(10, () => Q.Cast(Me.Position, true));
-                    }
-                }
-
                 if (Menu.Item("ComboEQ", true).GetValue<bool>() && Q.IsReady() && !SpellManager.HaveQ3 &&
                     target.Distance(lastEPos) <= 220)
                 {
@@ -135,6 +126,32 @@
                     target.Distance(lastEPos) <= 220)
                 {
                     Utility.DelayAction.Add(10, () => Q3.Cast(Me.Position, true));
+                }
+
+                if (Menu.Item("ComboQStack", true).GetValue<StringList>().SelectedIndex != 3 && Q.IsReady() && !SpellManager.HaveQ3)
+                {
+                    switch (Menu.Item("ComboQStack", true).GetValue<StringList>().SelectedIndex)
+                    {
+                        case 0:
+                            if (MinionManager.GetMinions(lastEPos, 220, MinionTypes.All, MinionTeam.NotAlly).Count > 0 ||
+                                HeroManager.Enemies.Count(x => x.IsValidTarget(220, true, lastEPos)) > 0)
+                            {
+                                Utility.DelayAction.Add(10, () => Q.Cast(Me.Position, true));
+                            }
+                            break;
+                        case 1:
+                            if (HeroManager.Enemies.Count(x => x.IsValidTarget(220, true, lastEPos)) > 0)
+                            {
+                                Utility.DelayAction.Add(10, () => Q.Cast(Me.Position, true));
+                            }
+                            break;
+                        case 2:
+                            if (MinionManager.GetMinions(lastEPos, 220, MinionTypes.All, MinionTeam.NotAlly).Count > 0)
+                            {
+                                Utility.DelayAction.Add(10, () => Q.Cast(Me.Position, true));
+                            }
+                            break;
+                    }
                 }
             }
         }
