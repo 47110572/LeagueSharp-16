@@ -199,6 +199,11 @@
                 return;
             }
 
+            if (Menu.Item("SemiR", true).GetValue<KeyBind>().Active)
+            {
+                OneKeyR();
+            }
+
             AutoRLogic();
             KillSteal();
 
@@ -213,12 +218,6 @@
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     LaneClear();
                     JungleClear();
-                    break;
-                case Orbwalking.OrbwalkingMode.None:
-                    if (Menu.Item("SemiR", true).GetValue<KeyBind>().Active)
-                    {
-                        OneKeyR();
-                    }
                     break;
             }
         }
