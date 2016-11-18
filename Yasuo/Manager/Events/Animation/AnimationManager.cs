@@ -7,15 +7,13 @@
     {
         internal static void Init(Obj_AI_Base sender, GameObjectPlayAnimationEventArgs Args)
         {
-            if (!sender.IsMe)
+            if (sender.IsMe)
             {
-                return;
-            }
-
-            if (Args.Animation == "Spell3")
-            {
-                lastECast = Utils.TickCount;
-                isDashing = true;
+                if (Args.Animation == "Spell3")
+                {
+                    lastECast = Utils.TickCount;
+                    isDashing = true;
+                }
             }
         }
     }

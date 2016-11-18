@@ -15,11 +15,6 @@
             }
             else
             {
-                if (isDashing && !Me.IsDashing())
-                {
-                    isDashing = false;
-                }
-
                 if (Utils.TickCount - lastECast - Game.Ping > 500)
                 {
                     isDashing = false;
