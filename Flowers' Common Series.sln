@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xSaliceResurrected_Rework",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowers' Fiora", "Fiora\Flowers' Fiora.csproj", "{78647BCB-02CA-4DD4-9903-16CE54E1D2F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowers' Yasuo", "Yasuo\Flowers' Yasuo.csproj", "{212714EB-6276-44C2-9887-A63040F4C20F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,10 @@ Global
 		{78647BCB-02CA-4DD4-9903-16CE54E1D2F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78647BCB-02CA-4DD4-9903-16CE54E1D2F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78647BCB-02CA-4DD4-9903-16CE54E1D2F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{212714EB-6276-44C2-9887-A63040F4C20F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{212714EB-6276-44C2-9887-A63040F4C20F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{212714EB-6276-44C2-9887-A63040F4C20F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{212714EB-6276-44C2-9887-A63040F4C20F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
