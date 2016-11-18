@@ -67,6 +67,53 @@
                 }
             }
 
+            if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady())
+            {
+                var dmg = (float)(SpellManager.GetQDmg(target) * 2 + SpellManager.GetEDmg(target)) +
+                          Me.GetAutoAttackDamage(target) * 2 +
+                          (R.IsReady() ? R.GetDamage(target) : (float)SpellManager.GetQDmg(target));
+
+                if (target.DistanceToPlayer() >= Orbwalking.GetRealAutoAttackRange(Me) + 65 &&
+                    dmg >= target.Health && SpellManager.CanCastE(target) &&
+                    (Menu.Item("ComboETurret", true).GetValue<bool>() || !UnderTower(PosAfterE(target))))
+                {
+                    E.CastOnUnit(target, true);
+                }
+            }
+
+            if (Menu.Item("ComboEGapcloser", true).GetValue<bool>() && E.IsReady() &&
+                target.DistanceToPlayer() >= Menu.Item("ComboEGap", true).GetValue<Slider>().Value)
+            {
+                if (Menu.Item("ComboEMode", true).GetValue<StringList>().SelectedIndex == 0)
+                {
+                    SpellManager.EGapTarget(target, Menu.Item("ComboETurret", true).GetValue<bool>(),
+                        Menu.Item("ComboEGap", true).GetValue<Slider>().Value, false);
+                }
+                else
+                {
+                    SpellManager.EGapMouse(target, Menu.Item("ComboETurret", true).GetValue<bool>(),
+                        Menu.Item("ComboEGap", true).GetValue<Slider>().Value, false);
+                }
+            }
+
+            if (Menu.Item("ComboQ", true).GetValue<bool>() && Me.Spellbook.GetSpell(SpellSlot.Q).IsReady() && !isDashing)
+            {
+                if (SpellManager.HaveQ3)
+                {
+                    if (target.IsValidTarget(Q3.Range))
+                    {
+                        SpellManager.CastQ3();
+                    }
+                }
+                else
+                {
+                    if (target.IsValidTarget(Q.Range))
+                    {
+                        Q.Cast(target, true);
+                    }
+                }
+            }
+
             if (IsDashing)
             {
                 if (Menu.Item("ComboEQ", true).GetValue<bool>() && Q.IsReady() && !SpellManager.HaveQ3 &&
@@ -79,55 +126,6 @@
                     target.Distance(lastEPos) <= 220)
                 {
                     Utility.DelayAction.Add(50 + Game.Ping, () => { Q3.Cast(true); });
-                }
-            }
-            else
-            {
-                if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady())
-                {
-                    var dmg = (float)(SpellManager.GetQDmg(target) * 2 + SpellManager.GetEDmg(target)) +
-                              Me.GetAutoAttackDamage(target) * 2 +
-                              (R.IsReady() ? R.GetDamage(target) : (float)SpellManager.GetQDmg(target));
-
-                    if (target.DistanceToPlayer() >= Orbwalking.GetRealAutoAttackRange(Me) + 65 &&
-                        dmg >= target.Health && SpellManager.CanCastE(target) &&
-                        (Menu.Item("ComboETurret", true).GetValue<bool>() || !UnderTower(PosAfterE(target))))
-                    {
-                        E.CastOnUnit(target, true);
-                    }
-                }
-
-                if (Menu.Item("ComboEGapcloser", true).GetValue<bool>() && E.IsReady() &&
-                    target.DistanceToPlayer() >= Menu.Item("ComboEGap", true).GetValue<Slider>().Value)
-                {
-                    if (Menu.Item("ComboEMode", true).GetValue<StringList>().SelectedIndex == 0)
-                    {
-                        SpellManager.EGapTarget(target, Menu.Item("ComboETurret", true).GetValue<bool>(),
-                            Menu.Item("ComboEGap", true).GetValue<Slider>().Value, false);
-                    }
-                    else
-                    {
-                        SpellManager.EGapMouse(target, Menu.Item("ComboETurret", true).GetValue<bool>(),
-                            Menu.Item("ComboEGap", true).GetValue<Slider>().Value, false);
-                    }
-                }
-
-                if (Menu.Item("ComboQ", true).GetValue<bool>() && Me.Spellbook.GetSpell(SpellSlot.Q).IsReady())
-                {
-                    if (SpellManager.HaveQ3)
-                    {
-                        if (target.IsValidTarget(Q3.Range))
-                        {
-                            SpellManager.CastQ3();
-                        }
-                    }
-                    else
-                    {
-                        if (target.IsValidTarget(Q.Range))
-                        {
-                            Q.Cast(target, true);
-                        }
-                    }
                 }
             }
         }
