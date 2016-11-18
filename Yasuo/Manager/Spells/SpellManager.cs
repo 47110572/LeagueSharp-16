@@ -77,12 +77,12 @@
             if (dashtargets.Any())
             {
                 var dash = dashtargets.Where(x =>x.IsValidTarget(E.Range))
-                    .OrderBy(x => target.Position.Distance(PosAfterE(x).To3D()))
-                    .FirstOrDefault(x => Evade.EvadeManager.IsSafe(PosAfterE(x)).IsSafe);
+                    .OrderBy(x => target.Position.Distance(PosAfterE(x)))
+                    .FirstOrDefault(x => Evade.EvadeManager.IsSafe(PosAfterE(x).To2D()).IsSafe);
 
                 if (dash != null && dash.DistanceToPlayer() <= E.Range && CanCastE(dash) &&
                     target.DistanceToPlayer() >= GapcloserDis &&
-                    target.Position.Distance(PosAfterE(dash).To3D()) <= target.DistanceToPlayer() && 
+                    target.Position.Distance(PosAfterE(dash)) <= target.DistanceToPlayer() && 
                     (UnderTurret || !UnderTower(PosAfterE(dash))))
                 {
                     E.CastOnUnit(dash, true);
@@ -109,12 +109,11 @@
                 if (dashtargets.Any())
                 {
                     var dash =
-                        dashtargets.Where(x => x.IsValidTarget(E.Range) && Evade.EvadeManager.IsSafe(PosAfterE(x)).IsSafe)
-                            .MinOrDefault(x => PosAfterE(x).To3D().Distance(Game.CursorPos));
+                        dashtargets.Where(x => x.IsValidTarget(E.Range) && Evade.EvadeManager.IsSafe(PosAfterE(x).To2D()).IsSafe)
+                            .MinOrDefault(x => PosAfterE(x).Distance(Game.CursorPos));
 
                     if (dash != null && dash.DistanceToPlayer() <= E.Range && CanCastE(dash) &&
                         target.DistanceToPlayer() >= GapcloserDis &&
-                        target.Position.Distance(PosAfterE(dash).To3D()) <= target.DistanceToPlayer() &&
                         (UnderTurret || !UnderTower(PosAfterE(dash))))
                     {
                         E.CastOnUnit(dash, true);

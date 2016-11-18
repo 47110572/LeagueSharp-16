@@ -17,17 +17,16 @@
                    (buff.EndTime - buff.StartTime)/(buff.EndTime - buff.StartTime <= 0.5 ? 1.5 : 3);
         }
 
-        public static bool UnderTower(Vector2 pos)
+        public static bool UnderTower(Vector3 pos)
         {
-            return ObjectManager.Get<Obj_AI_Turret>().Any(turret => turret.IsValidTarget(950, true, pos.To3D()));
+            return ObjectManager.Get<Obj_AI_Turret>().Any(turret => turret.IsValidTarget(950, true, pos));
         }
 
-        public static Vector2 PosAfterE(Obj_AI_Base target)
+        public static Vector3 PosAfterE(Obj_AI_Base target)
         {
             return
                 ObjectManager.Player.ServerPosition.Extend(target.ServerPosition,
-                        ObjectManager.Player.Distance(target) < 410f ? 475f : ObjectManager.Player.Distance(target) + 65f)
-                    .To2D();
+                        ObjectManager.Player.Distance(target) < 410f ? 475f : ObjectManager.Player.Distance(target) + 65f);
         }
 
         public static float DistanceToPlayer(this Obj_AI_Base source)

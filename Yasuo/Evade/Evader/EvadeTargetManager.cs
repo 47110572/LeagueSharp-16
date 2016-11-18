@@ -327,9 +327,9 @@
                         obj.Where(
                             i =>
                             SpellManager.CanCastE(i) && EvadeManager.IsSafe(i.ServerPosition.To2D()).IsSafe
-                            && EvadeManager.IsSafe(PosAfterE(i)).IsSafe
+                            && EvadeManager.IsSafe(PosAfterE(i).To2D()).IsSafe
                             && (!UnderTower(PosAfterE(i)) || Menu.Item("EvadeTargetETower", true).GetValue<bool>())
-                            && GoThroughWall(ObjectManager.Player.ServerPosition.To2D(), PosAfterE(i)))
+                            && GoThroughWall(ObjectManager.Player.ServerPosition.To2D(), PosAfterE(i).To2D()))
                             .OrderBy(i => PosAfterE(i).Distance(Game.CursorPos))
                             .Any(i => Logic.E.CastOnUnit(i, true)))
                     {

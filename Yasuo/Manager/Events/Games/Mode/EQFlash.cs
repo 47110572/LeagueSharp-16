@@ -61,7 +61,7 @@
                                 .OrderByDescending(
                                     x =>
                                         HeroManager.Enemies.Count(
-                                            t => t.IsValidTarget(600f, true, PosAfterE(x).To3D())))
+                                            t => t.IsValidTarget(600f, true, PosAfterE(x))))
                                 .FirstOrDefault();
 
                         if (eTarget != null)

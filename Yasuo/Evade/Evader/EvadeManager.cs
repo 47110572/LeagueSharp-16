@@ -114,7 +114,7 @@ namespace Flowers_Yasuo.Evade
                                     GetEvadeTargets(evadeSpell)
                                         .Where(
                                             x =>
-                                                IsSafe(PosAfterE(x)).IsSafe &&
+                                                IsSafe(PosAfterE(x).To2D()).IsSafe &&
                                                 (!UnderTower(PosAfterE(x)) ||
                                                  Menu.Item("ETower", true).GetValue<bool>()));
 
@@ -122,7 +122,7 @@ namespace Flowers_Yasuo.Evade
                                 {
                                     var dodgeTarget =
                                         dodgeList.Where(x => !x.HasBuff("YasuoDashWrapper"))
-                                            .MinOrDefault(i => PosAfterE(i).Distance(Pos));
+                                            .MinOrDefault(i => PosAfterE(i).Distance(Pos.To3D()));
 
                                     if (dodgeTarget != null && dodgeTarget.DistanceToPlayer() <= Logic.E.Range &&
                                         SpellManager.CanCastE(dodgeTarget))

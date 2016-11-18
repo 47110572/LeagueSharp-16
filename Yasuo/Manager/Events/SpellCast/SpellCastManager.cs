@@ -1,7 +1,6 @@
 ﻿namespace Flowers_Yasuo.Manager.Events
 {
     using LeagueSharp;
-    using LeagueSharp.Common;
 
     internal class SpellCastManager : Logic
     {
@@ -13,7 +12,7 @@
                 {
                     var target = (Obj_AI_Base)Args.Target;
 
-                    lastEPos = Common.Common.PosAfterE(target).To3D();
+                    lastEPos = Common.Common.PosAfterE(target);
                 }
             }
         }
