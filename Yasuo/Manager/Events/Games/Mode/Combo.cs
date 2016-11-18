@@ -116,6 +116,15 @@
 
             if (IsDashing)
             {
+                if (Menu.Item("ComboQStack", true).GetValue<bool>() && Q.IsReady() && !SpellManager.HaveQ3)
+                {
+                    if (MinionManager.GetMinions(lastEPos, 220, MinionTypes.All, MinionTeam.NotAlly).Count > 0 ||
+                        HeroManager.Enemies.Count(x => x.IsValidTarget(220, true, lastEPos)) > 0)
+                    {
+                        Utility.DelayAction.Add(10, () => Q.Cast(Me.Position, true));
+                    }
+                }
+
                 if (Menu.Item("ComboEQ", true).GetValue<bool>() && Q.IsReady() && !SpellManager.HaveQ3 &&
                     target.Distance(lastEPos) <= 220)
                 {
