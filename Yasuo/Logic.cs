@@ -1,6 +1,7 @@
 ﻿namespace Flowers_Yasuo
 {
     using Evade;
+    using System.Linq;
     using Manager.Menu;
     using Manager.Events;
     using Manager.Spells;
@@ -47,6 +48,28 @@
             {
                 ObjectManager.Player.SetSkin(ObjectManager.Player.ChampionName, SkinID);
             }
+        }
+
+        public static bool CanCastDelayR(Obj_AI_Hero target)
+        {
+            //copy from valvesharp
+            var buff = target.Buffs.FirstOrDefault(i => i.Type == BuffType.Knockback || i.Type == BuffType.Knockup);
+
+            return buff != null &&
+                   buff.EndTime - Game.Time <=
+                   (buff.EndTime - buff.StartTime) / (buff.EndTime - buff.StartTime <= 0.5 ? 1.5 : 3);
+        }
+
+        public static bool UnderTower(Vector3 pos)
+        {
+            return ObjectManager.Get<Obj_AI_Turret>().Any(turret => turret.Health > 1 && turret.IsValidTarget(950, true, pos));
+        }
+
+        public static Vector3 PosAfterE(Obj_AI_Base target)
+        {
+            var pred = Prediction.GetPrediction(target, 375f);
+
+            return ObjectManager.Player.ServerPosition.Extend(pred.UnitPosition, 475f);
         }
 
         internal static void UseItems(Obj_AI_Base target, bool IsCombo = false)

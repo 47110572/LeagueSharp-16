@@ -12,7 +12,7 @@
                 {
                     var target = (Obj_AI_Base)Args.Target;
 
-                    lastEPos = Common.Common.PosAfterE(target);
+                    lastEPos = PosAfterE(target);
                 }
             }
         }
