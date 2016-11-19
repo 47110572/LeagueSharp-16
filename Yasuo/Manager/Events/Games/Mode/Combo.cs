@@ -33,7 +33,7 @@
 
             if (Menu.Item("ComboItems", true).GetValue<bool>())
             {
-                UseItems(target, true);
+                SpellManager.UseItems(target, true);
             }
 
             if (Menu.Item("ComboR", true).GetValue<KeyBind>().Active && R.IsReady())

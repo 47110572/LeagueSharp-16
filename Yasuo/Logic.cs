@@ -71,41 +71,5 @@
 
             return ObjectManager.Player.ServerPosition.Extend(pred.UnitPosition, 475f);
         }
-
-        internal static void UseItems(Obj_AI_Base target, bool IsCombo = false)
-        {
-            if (IsCombo)
-            {
-                if (Items.HasItem(3153, Me) && Items.CanUseItem(3153) && Me.HealthPercent <= 80)
-                {
-                    Items.UseItem(3153, target);
-                }
-
-                if (Items.HasItem(3143, Me) && Items.CanUseItem(3143) && Me.Distance(target.Position) <= 400)
-                {
-                    Items.UseItem(3143);
-                }
-
-                if (Items.HasItem(3144, Me) && Items.CanUseItem(3144) && target.IsValidTarget(Q.Range))
-                {
-                    Items.UseItem(3144, target);
-                }
-
-                if (Items.HasItem(3142, Me) && Items.CanUseItem(3142) && Me.Distance(target.Position) <= Q.Range)
-                {
-                    Items.UseItem(3142);
-                }
-            }
-
-            if (Items.HasItem(3074, Me) && Items.CanUseItem(3074) && Me.Distance(target.Position) <= 400)
-            {
-                Items.UseItem(3074);
-            }
-
-            if (Items.HasItem(3077, Me) && Items.CanUseItem(3077) && Me.Distance(target.Position) <= 400)
-            {
-                Items.UseItem(3077);
-            }
-        }
     }
 }

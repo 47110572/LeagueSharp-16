@@ -4,7 +4,6 @@
     using Common;
     using Spells;
     using LeagueSharp.Common;
-    using static Common.Common;
 
     internal class LaneClear : Logic
     {
@@ -18,7 +17,7 @@
                 {
                     foreach (var min in minions.Where(x => x.DistanceToPlayer() <= 400))
                     {
-                        UseItems(min);
+                        SpellManager.UseItems(min);
                     }
                 }
 

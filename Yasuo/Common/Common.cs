@@ -1,6 +1,5 @@
 ﻿namespace Flowers_Yasuo.Common
 {
-    using System.Linq;
     using LeagueSharp;
     using LeagueSharp.Common;
     using SharpDX;
