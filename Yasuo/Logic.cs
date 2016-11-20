@@ -2,12 +2,14 @@
 {
     using Evade;
     using System.Linq;
+    using System.Collections.Generic;
     using Manager.Menu;
     using Manager.Events;
     using Manager.Spells;
     using LeagueSharp;
     using LeagueSharp.Common;
     using SharpDX;
+    using Common;
 
     internal class Logic
     {
@@ -21,11 +23,14 @@
         internal static Menu Menu;
         internal static bool isDashing;
         internal static int SkinID;
+        internal static int lastCheckTime;
+        internal static float lastWardCast;
         internal static int lastECast;
         internal static int lastHarassTime;
         internal static Vector3 lastEPos;       
         internal static Obj_AI_Hero Me;
         internal static Orbwalking.Orbwalker Orbwalker;
+        internal static readonly List<ChampionObject> championObject = new List<ChampionObject>();
 
         internal static void LoadYasuo()
         {
@@ -67,9 +72,9 @@
 
         public static Vector3 PosAfterE(Obj_AI_Base target)
         {
-            var pred = Prediction.GetPrediction(target, 375f);
-
-            return ObjectManager.Player.ServerPosition.Extend(pred.UnitPosition, 475f);
+            return ObjectManager.Player.IsFacing(target)
+                ? ObjectManager.Player.ServerPosition.Extend(target.ServerPosition, 475f)
+                : ObjectManager.Player.ServerPosition.Extend(Prediction.GetPrediction(target, 350f).UnitPosition, 475f);
         }
     }
 }

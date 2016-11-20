@@ -59,7 +59,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ChampionObject.cs" />
     <Compile Include="Common\Common.cs" />
+    <Compile Include="Common\GrassLocation.cs" />
+    <Compile Include="Common\WardLocation.cs" />
     <Compile Include="Evade\Collision\Collision.cs" />
     <Compile Include="Evade\Collision\CollisionObjectTypes.cs" />
     <Compile Include="Evade\Collision\DetectedCollision.cs" />
@@ -93,6 +96,7 @@
     <Compile Include="Manager\Events\Games\Mode\LastHit.cs" />
     <Compile Include="Manager\Events\Games\Mode\WallJump.cs" />
     <Compile Include="Manager\Events\Games\Mode\Skin.cs" />
+    <Compile Include="Manager\Events\Games\Mode\Ward.cs" />
     <Compile Include="Manager\Events\Gapcloser\GapcloserManager.cs" />
     <Compile Include="Manager\Events\Interrupt\InterruptManager.cs" />
     <Compile Include="Manager\Events\Games\LoopManager.cs" />
