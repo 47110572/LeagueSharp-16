@@ -121,7 +121,7 @@
                     if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady() &&
                         (Q.IsReady() || target.Health < E.GetDamage(target)))
                     {
-                        E.CastTo(target);
+                        E.Cast(target.Position, true);
                     }
 
                     if (Menu.Item("ComboW", true).GetValue<bool>() && W.IsReady())
@@ -152,7 +152,7 @@
                             if (Menu.Item("ComboFirstE", true).GetValue<bool>() && E.IsReady() &&
                                 Menu.Item("ComboE", true).GetValue<bool>() && target.IsValidTarget(E.Range))
                             {
-                                E.CastTo(target);
+                                E.Cast(target.Position, true);
                             }
                             else
                             {
