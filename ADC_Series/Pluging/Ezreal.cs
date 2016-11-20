@@ -191,8 +191,8 @@
                     return;
                 }
 
-                if (Me.CountEnemiesInRange(1000) == 0 &&
-                    !MinionManager.GetMinions(Me.Position, Q.Range, MinionTypes.All, MinionTeam.NotAlly).Any())
+                if (Me.CountEnemiesInRange(Q.Range + E.Range) == 0 &&
+                    !MinionManager.GetMinions(Me.Position, Q.Range + 200, MinionTypes.All, MinionTeam.NotAlly).Any())
                 {
                     if (Menu.Item("AutoStackQ", true).GetValue<bool>() && Q.IsReady() &&
                         Utils.TickCount - lastSpellCast > 4100)
