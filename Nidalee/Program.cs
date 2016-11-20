@@ -389,10 +389,10 @@
                 {
                     var target = TargetSelector.GetTarget(900, TargetSelector.DamageType.Magical);
 
-                    if (target.IsValidTarget(900f) && HavePassive(target) &&
+                    if (target.IsValidTarget(850f) && HavePassive(target) &&
                         (target.DistanceToPlayer() > 180 || target.Health + target.MagicalShield < GetW1Damage(target)))
                     {
-                        W2.Cast(target.Position, true);
+                        W2.Cast(target, true);
                     }
                     else
                     {
@@ -401,7 +401,7 @@
                         if (target.IsValidTarget(W1.Range - 50) && !HavePassive(target) &&
                             (target.DistanceToPlayer() > 180 || target.Health + target.MagicalShield < GetW1Damage(target)))
                         {
-                            W1.Cast(target.Position, true);
+                            W1.Cast(target, true);
                         }
                     }
                 }
