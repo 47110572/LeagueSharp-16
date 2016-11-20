@@ -7,8 +7,8 @@
     <ProjectGuid>{43BA8561-C67E-4830-8E0D-437FD874415E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Flowers_Rengar</RootNamespace>
-    <AssemblyName>Flowers%27 Rengar</AssemblyName>
+    <RootNamespace>Flowers_XX</RootNamespace>
+    <AssemblyName>Flowers%27 XX</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -53,13 +53,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ChampionObject.cs" />
     <Compile Include="Common\Common.cs" />
+    <Compile Include="Common\GrassLocation.cs" />
+    <Compile Include="Common\WardLocation.cs" />
     <Compile Include="Logic.cs" />
     <Compile Include="Manager\Events\Drawings\DrawManager.cs" />
     <Compile Include="Manager\Events\EventManager.cs" />
     <Compile Include="Manager\Events\Games\LoopManager.cs" />
+    <Compile Include="Manager\Events\Games\Mode\Auto.cs" />
     <Compile Include="Manager\Events\Games\Mode\Combo.cs" />
+    <Compile Include="Manager\Events\Games\Mode\Harass.cs" />
+    <Compile Include="Manager\Events\Games\Mode\JungleClear.cs" />
+    <Compile Include="Manager\Events\Games\Mode\KillSteal.cs" />
+    <Compile Include="Manager\Events\Games\Mode\LaneClear.cs" />
+    <Compile Include="Manager\Events\Games\Mode\LastHit.cs" />
     <Compile Include="Manager\Events\Games\Mode\Skin.cs" />
+    <Compile Include="Manager\Events\Games\Mode\Ward.cs" />
     <Compile Include="Manager\Menu\MenuManager.cs" />
     <Compile Include="Manager\Spells\SpellManager.cs" />
     <Compile Include="Program.cs" />

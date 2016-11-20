@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowers' Fiora", "Fiora\Flo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowers' Yasuo", "Yasuo\Flowers' Yasuo.csproj", "{212714EB-6276-44C2-9887-A63040F4C20F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowers' Rengar", "Flowers' Rengar\Flowers' Rengar.csproj", "{43BA8561-C67E-4830-8E0D-437FD874415E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly", "Assembly\Assembly.csproj", "{43BA8561-C67E-4830-8E0D-437FD874415E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

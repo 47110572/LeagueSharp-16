@@ -1,4 +1,4 @@
-﻿namespace Flowers_Rengar.Manager.Events
+﻿namespace Flowers_XX.Manager.Events
 {
     using LeagueSharp.Common;
     using LeagueSharp;

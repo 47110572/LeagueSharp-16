@@ -1,4 +1,4 @@
-﻿namespace Flowers_Rengar.Common
+﻿namespace Flowers_XX.Common
 {
     using LeagueSharp;
     using LeagueSharp.Common;

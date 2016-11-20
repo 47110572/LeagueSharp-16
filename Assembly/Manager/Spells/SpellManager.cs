@@ -1,4 +1,4 @@
-﻿namespace Flowers_Rengar.Manager.Spells
+﻿namespace Flowers_XX.Manager.Spells
 {
     using LeagueSharp;
     using LeagueSharp.Common;

@@ -1,18 +1,12 @@
-﻿namespace Flowers_Rengar.Manager.Menu
+﻿namespace Flowers_XX.Manager.Menu
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using LeagueSharp;
     using LeagueSharp.Common;
 
     internal class MenuManager : Logic
     {
         internal static void Init()
         {
-            Menu = new Menu("Flowers' Rengar", "Flowers' Rengar", true);
+            Menu = new Menu("Flowers' XX", "Flowers' XX", true);
 
             var miscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             {
@@ -25,6 +19,12 @@
                             {
                                 "Classic", "Head Hunter", "Night Hunter", "SSW"
                             })));
+                }
+
+                var autoWardMenu = miscMenu.AddSubMenu(new Menu("Auto Ward", "Auto Ward"));
+                {
+                    autoWardMenu.AddItem(new MenuItem("AutoWardEnable", "Enabled", true).SetValue(true));
+                    autoWardMenu.AddItem(new MenuItem("OnlyCombo", "Only Combo Mode Active", true).SetValue(true));
                 }
             }
 

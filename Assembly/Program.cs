@@ -1,4 +1,4 @@
-﻿namespace Flowers_Rengar
+﻿namespace Flowers_XX
 {
     using System;
     using LeagueSharp;
