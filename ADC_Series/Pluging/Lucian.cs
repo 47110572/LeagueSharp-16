@@ -92,6 +92,7 @@
             var DrawMenu = Menu.AddSubMenu(new Menu("Drawings", "Drawings"));
             {
                 DrawMenu.AddItem(new MenuItem("DrawQ", "Draw Q Range", true).SetValue(false));
+                DrawMenu.AddItem(new MenuItem("DrawQEx", "Draw QEx Range", true).SetValue(false));
                 DrawMenu.AddItem(new MenuItem("DrawW", "Draw W Range", true).SetValue(false));
                 DrawMenu.AddItem(new MenuItem("DrawE", "Draw E Range", true).SetValue(false));
                 DrawMenu.AddItem(new MenuItem("DrawDamage", "Draw ComboDamage", true).SetValue(true));
@@ -440,6 +441,11 @@
                 if (Menu.Item("DrawQ", true).GetValue<bool>() && Q.IsReady())
                 {
                     Render.Circle.DrawCircle(Me.Position, Q.Range, Color.Green, 1);
+                }
+
+                if (Menu.Item("DrawQEx", true).GetValue<bool>() && QExtend.IsReady())
+                {
+                    Render.Circle.DrawCircle(Me.Position, QExtend.Range, Color.Green, 1);
                 }
 
                 if (Menu.Item("DrawW", true).GetValue<bool>() && W.IsReady())
