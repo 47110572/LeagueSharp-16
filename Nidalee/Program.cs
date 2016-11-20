@@ -213,20 +213,6 @@
                             }
                         }
                         break;
-                    case Orbwalking.OrbwalkingMode.LastHit:
-                        break;
-                    case Orbwalking.OrbwalkingMode.Mixed:
-                        break;
-                    case Orbwalking.OrbwalkingMode.Freeze:
-                        break;
-                    case Orbwalking.OrbwalkingMode.CustomMode:
-                        break;
-                    case Orbwalking.OrbwalkingMode.None:
-                        break;
-                    case Orbwalking.OrbwalkingMode.Flee:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
                 }
             }
         }
@@ -403,14 +389,17 @@
                 {
                     var target = TargetSelector.GetTarget(900, TargetSelector.DamageType.Magical);
 
-                    if (target.IsValidTarget() && !target.IsDead && !target.IsZombie && target.IsValidTarget(900) &&
+                    if (target.IsValidTarget(900f) && HavePassive(target) &&
                         (target.DistanceToPlayer() > 180 || target.Health + target.MagicalShield < GetW1Damage(target)))
                     {
-                        if (HavePassive(target) && target.IsValidTarget(W2.Range + 50))
-                        {
-                            W2.Cast(target.Position, true);
-                        }
-                        else if (!HavePassive(target) && target.IsValidTarget(W1.Range + 30))
+                        W2.Cast(target.Position, true);
+                    }
+                    else
+                    {
+                        var otherTarget = TargetSelector.GetTarget(W1.Range, TargetSelector.DamageType.Magical);
+
+                        if (target.IsValidTarget(W1.Range - 50) && !HavePassive(target) &&
+                            (target.DistanceToPlayer() > 180 || target.Health + target.MagicalShield < GetW1Damage(target)))
                         {
                             W1.Cast(target.Position, true);
                         }
