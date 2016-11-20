@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowers' Yasuo", "Yasuo\Flo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly", "Assembly\Assembly.csproj", "{43BA8561-C67E-4830-8E0D-437FD874415E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowers' Rengar", "Rengar\Flowers' Rengar.csproj", "{A00FD5BA-9007-4D1F-A313-2E0049032486}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +125,10 @@ Global
 		{43BA8561-C67E-4830-8E0D-437FD874415E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43BA8561-C67E-4830-8E0D-437FD874415E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43BA8561-C67E-4830-8E0D-437FD874415E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A00FD5BA-9007-4D1F-A313-2E0049032486}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A00FD5BA-9007-4D1F-A313-2E0049032486}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A00FD5BA-9007-4D1F-A313-2E0049032486}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A00FD5BA-9007-4D1F-A313-2E0049032486}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
