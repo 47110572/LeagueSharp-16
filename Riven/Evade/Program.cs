@@ -31,7 +31,6 @@ namespace Flowers_Riven.Evade
         private static bool _evading;
         public static bool NoSolutionFound;
         public static Vector2 EvadeToPoint;
-        public static int LastWardJumpAttempt;
         public static Vector2 PreviousTickPosition;
         public static Vector2 PlayerPosition;
         public static string PlayerChampionName;
@@ -835,11 +834,6 @@ namespace Flowers_Riven.Evade
 
                                     return;
                                 }
-                                if (Utils.TickCount - LastWardJumpAttempt < 250)
-                                {
-                                    NoSolutionFound = true;
-                                    return;
-                                }
                             }
                             else
                             {
@@ -945,12 +939,6 @@ namespace Flowers_Riven.Evade
                                         }
                                     }
 
-                                    NoSolutionFound = true;
-                                    return;
-                                }
-
-                                if (Utils.TickCount - LastWardJumpAttempt < 250)
-                                {
                                     NoSolutionFound = true;
                                     return;
                                 }
