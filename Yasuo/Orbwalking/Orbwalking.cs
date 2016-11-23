@@ -589,7 +589,7 @@
                 }
 
                 _config.AddItem(new MenuItem("  cerdit", "    "));
-                _config.AddItem(new MenuItem("Bysebby", "Credit: Sebby & PlaySharp"));
+                _config.AddItem(new MenuItem("Bysebby", "Credit: NightMoon & Sebby & PlaySharp"));
 
                 _config.Item("StillCombo").ValueChanged += MoveChanged;
 

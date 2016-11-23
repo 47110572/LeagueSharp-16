@@ -1,9 +1,7 @@
 ﻿namespace Flowers_Yasuo.Manager.Events.Games.Mode
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using SharpDX;
     using Spells;
     using LeagueSharp;
     using LeagueSharp.Common;
@@ -35,11 +33,11 @@
                 if (Me.IsDashing() && Flash != SpellSlot.Unknown && Flash.IsReady())
                 {
                     var bestPos =
-                        FlashPoints().Where(x => HeroManager.Enemies.Count(a => a.IsValidTarget(600f)) > 0)
+                        FlashPoints().Where(x => HeroManager.Enemies.Count(a => a.IsValidTarget(600f, true, x)) > 0)
                             .OrderByDescending(x => HeroManager.Enemies.Count(i => i.Distance(x, true) <= 220*220))
                             .FirstOrDefault();
 
-                    if (bestPos.IsValid() && Q3.Cast(bestPos, true))
+                    if (bestPos.IsValid() && bestPos.CountEnemiesInRange(220) > 0 && Q3.Cast(bestPos, true))
                     {
                         Utility.DelayAction.Add(10+(Game.Ping/2-5),
                                            () => Me.Spellbook.CastSpell(Flash, bestPos));
@@ -71,23 +69,6 @@
                     }
                 }
             }
-        }
-
-
-        private static List<Vector3> FlashPoints()
-        {
-            var points = new List<Vector3>();
-
-            for (var i = 1; i <= 360; i++)
-            {
-                var angle = i * 2 * Math.PI / 360;
-                var point = new Vector2(Me.Position.X + 425f*(float) Math.Cos(angle),
-                    Me.Position.Y + 425f*(float) Math.Sin(angle)).To3D();
-
-                points.Add(point);
-            }
-
-            return points;
         }
     }
 }

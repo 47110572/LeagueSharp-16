@@ -1,6 +1,7 @@
 ﻿namespace Flowers_Yasuo
 {
     using Evade;
+    using System;
     using System.Linq;
     using System.Collections.Generic;
     using Manager.Menu;
@@ -72,9 +73,31 @@
 
         public static Vector3 PosAfterE(Obj_AI_Base target)
         {
-            return ObjectManager.Player.IsFacing(target)
-                ? ObjectManager.Player.ServerPosition.Extend(target.ServerPosition, 475f)
-                : ObjectManager.Player.ServerPosition.Extend(Prediction.GetPrediction(target, 350f).UnitPosition, 475f);
+            if (target.IsValidTarget())
+            {
+                return ObjectManager.Player.IsFacing(target)
+                    ? ObjectManager.Player.ServerPosition.Extend(target.ServerPosition, 475f)
+                    : ObjectManager.Player.ServerPosition.Extend(Prediction.GetPrediction(target, 350f).UnitPosition,
+                        475f);
+            }
+
+            return Vector3.Zero;
+        }
+
+        public static List<Vector3> FlashPoints()
+        {
+            var points = new List<Vector3>();
+
+            for (var i = 1; i <= 360; i++)
+            {
+                var angle = i * 2 * Math.PI / 360;
+                var point = new Vector2(Me.Position.X + 425f * (float)Math.Cos(angle),
+                    Me.Position.Y + 425f * (float)Math.Sin(angle)).To3D();
+
+                points.Add(point);
+            }
+
+            return points;
         }
     }
 }
