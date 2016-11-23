@@ -11,7 +11,8 @@
     {
         internal static void Init()
         {
-            var target = TargetSelector.GetTarget(1200f, TargetSelector.DamageType.Physical);
+            var target = TargetSelector.GetSelectedTarget() ??
+                         TargetSelector.GetTarget(1200f, TargetSelector.DamageType.Physical);
 
             if (target == null)
             {
