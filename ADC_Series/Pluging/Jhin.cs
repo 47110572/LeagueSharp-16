@@ -10,7 +10,7 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Jhin : Program
+    internal class Jhin : Logic
     {
         private Obj_AI_Hero rShotTarget;
         private int LastPingT;
@@ -18,7 +18,7 @@
         private int LastShowNoit;
         private bool IsAttack;
         private Vector2 PingLocation;
-        private new readonly Menu Menu = Championmenu;
+        private readonly Menu Menu = Championmenu;
 
         public Jhin()
         {

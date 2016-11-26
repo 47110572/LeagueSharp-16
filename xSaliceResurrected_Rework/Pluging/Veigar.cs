@@ -2,8 +2,5 @@
 {
     internal class Veigar
     {
-        public Veigar()
-        {
-        }
     }
 }

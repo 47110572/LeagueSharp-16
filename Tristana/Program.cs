@@ -6,9 +6,7 @@
     using LeagueSharp;
     using LeagueSharp.Common;
     using Item = LeagueSharp.Common.Data.ItemData;
-    using SharpDX;
     using System;
-    using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
     using Color = System.Drawing.Color;
@@ -18,10 +16,10 @@
 
     public static class Program
     {
-        public static Obj_AI_Hero Player;
-        public static Spell Q, W, E, R;
-        public static Menu Menu;
-        public static Orbwalking.Orbwalker Orbwalker;
+        private static Obj_AI_Hero Player;
+        private static Spell Q, W, E, R;
+        private static Menu Menu;
+        private static Orbwalking.Orbwalker Orbwalker;
 
         static void Main(string[] args)
         {
@@ -35,12 +33,11 @@
 
             Player = ObjectManager.Player;
             LoadSpells();
-            CheckVersion.Check();
 
             Menu = new Menu("Flowers - Tristana", "FLTA", true);
             Menu.SetFontStyle(FontStyle.Regular, SharpDX.Color.Red);
 
-            Menu.AddItem(new MenuItem("nightmoon.menu.lanuguage", "Language Switch (Need F5): ").SetValue(new StringList(new[] { "English", "Chinese" }, 0)));
+            Menu.AddItem(new MenuItem("nightmoon.menu.lanuguage", "Language Switch (Need F5): ").SetValue(new StringList(new[] { "English", "Chinese" })));
 
             Menu.AddItem(new MenuItem("nightmoon.credit", "Credit : NightMoon"));
 
@@ -320,38 +317,17 @@
 
         public static bool CanCastR()
         {
-            if (Player.ManaPercent > Menu.Item("nightmoon.r.mana").GetValue<Slider>().Value && R.IsReady())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Player.ManaPercent > Menu.Item("nightmoon.r.mana").GetValue<Slider>().Value && R.IsReady();
         }
 
         public static bool CanCastE()
         {
-            if(Player.ManaPercent > Menu.Item("nightmoon.e.mana").GetValue<Slider>().Value && E.IsReady())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Player.ManaPercent > Menu.Item("nightmoon.e.mana").GetValue<Slider>().Value && E.IsReady();
         }
 
         public static bool CanCastQ()
         {
-            if (Player.ManaPercent > Menu.Item("nightmoon.q.mana").GetValue<Slider>().Value && Q.IsReady())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Player.ManaPercent > Menu.Item("nightmoon.q.mana").GetValue<Slider>().Value && Q.IsReady();
         }
 
         private static void Orbwalking_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
@@ -376,7 +352,7 @@
                             {
                                 Obj_AI_Hero Target = args.Target.Type == GameObjectType.obj_AI_Hero ? (Obj_AI_Hero)args.Target : null;
 
-                                if (Target.HasBuff("TristanaEChargeSound") || Target.HasBuff("TristanaECharge"))
+                                if (Target != null && (Target.HasBuff("TristanaEChargeSound") || Target.HasBuff("TristanaECharge")))
                                     Q.Cast();
                             }
                             else if(!Menu.Item("nightmoon.q.onlye").GetValue<bool>() && CanCastQ())

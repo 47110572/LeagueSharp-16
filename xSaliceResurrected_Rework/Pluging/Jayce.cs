@@ -13,12 +13,14 @@
 
     internal class Jayce : Champion
     {
-        public static float Qcd, QcdEnd;
-        public static float Q1Cd, Q1CdEnd;
-        public static float Wcd, WcdEnd;
-        public static float W1Cd, W1CdEnd;
-        public static float Ecd, EcdEnd;
-        public static float E1Cd, E1CdEnd;
+        public static float Qcd;
+        private static float QcdEnd;
+        private static float Q1Cd, Q1CdEnd;
+        private static float Wcd, WcdEnd;
+        private static float W1Cd, W1CdEnd;
+        public static float Ecd;
+        private static float EcdEnd;
+        private static float E1Cd, E1CdEnd;
 
         public static bool IsMelee => !ObjectManager.Player.HasBuff("jaycestancegun");
 
@@ -690,7 +692,7 @@
                         var gateVector = Player.ServerPosition +
                                          Vector3.Normalize(Game.CursorPos - Player.ServerPosition)*50;
 
-                        if (mob.IsValidTarget(QExtend.Range))
+                        if (mob != null && mob.IsValidTarget(QExtend.Range))
                         {
                             E.Cast(gateVector);
                             QExtend.Cast(mob.Position);

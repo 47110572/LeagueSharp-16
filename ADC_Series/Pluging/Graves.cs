@@ -10,10 +10,10 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Graves : Program
+    internal class Graves : Logic
     {
         private readonly float SearchERange;
-        private new readonly Menu Menu = Championmenu;
+        private readonly Menu Menu = Championmenu;
 
         public Graves()
         {

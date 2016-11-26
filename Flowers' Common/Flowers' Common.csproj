@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{43BA8561-C67E-4830-8E0D-437FD874415E}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{D26C324E-CB78-4E7B-A2D9-188C5B4A024D}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Flowers_XX</RootNamespace>
-    <AssemblyName>Flowers%27 XX</AssemblyName>
+    <RootNamespace>Flowers_Common</RootNamespace>
+    <AssemblyName>Flowers%27 Common</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,9 +20,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -53,32 +51,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\ChampionObject.cs" />
-    <Compile Include="Common\Common.cs" />
-    <Compile Include="Common\GrassLocation.cs" />
-    <Compile Include="Common\WardLocation.cs" />
-    <Compile Include="Logic.cs" />
-    <Compile Include="Manager\Events\Drawings\DrawManager.cs" />
-    <Compile Include="Manager\Events\EventManager.cs" />
-    <Compile Include="Manager\Events\Games\LoopManager.cs" />
-    <Compile Include="Manager\Events\Games\Mode\Auto.cs" />
-    <Compile Include="Manager\Events\Games\Mode\Combo.cs" />
-    <Compile Include="Manager\Events\Games\Mode\Harass.cs" />
-    <Compile Include="Manager\Events\Games\Mode\JungleClear.cs" />
-    <Compile Include="Manager\Events\Games\Mode\KillSteal.cs" />
-    <Compile Include="Manager\Events\Games\Mode\LaneClear.cs" />
-    <Compile Include="Manager\Events\Games\Mode\LastHit.cs" />
-    <Compile Include="Manager\Events\Games\Mode\Skin.cs" />
-    <Compile Include="Manager\Events\Games\Mode\Ward.cs" />
-    <Compile Include="Manager\Menu\MenuManager.cs" />
-    <Compile Include="Manager\Spells\SpellManager.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="CheckStatus.cs" />
+    <Compile Include="DamageCalculate.cs" />
+    <Compile Include="DamageIndicator.cs" />
+    <Compile Include="Distance.cs" />
+    <Compile Include="HumanizerManager.cs" />
+    <Compile Include="LevelsManager.cs" />
+    <Compile Include="ManaManager.cs" />
+    <Compile Include="MinionCache.cs" />
+    <Compile Include="Orbwalking.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SkinManager.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

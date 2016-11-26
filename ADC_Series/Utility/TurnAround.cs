@@ -6,12 +6,12 @@
     using LeagueSharp.Common;
     using System.Collections.Generic;
 
-    internal class TurnAround : Program //This Part From SFX Utility 
+    internal class TurnAround : Logic //This Part From SFX Utility 
     {
         private static float blockMovementTime;
         private static Vector3 lastMove;
 
-        private new static readonly Menu Menu = Utilitymenu;
+        private static readonly Menu Menu = Utilitymenu;
 
         private static readonly List<SpellInfo> spellInfos = new List<SpellInfo>
         {
@@ -97,7 +97,7 @@
             }
         }
 
-        internal class SpellInfo
+        private class SpellInfo
         {
             public SpellInfo(string owner, string name, float range, bool target, bool turnOpposite, float castTime)
             {

@@ -8,7 +8,6 @@
     using Base;
     using Managers;
     using Utilities;
-    using Orbwalking = Orbwalking;
 
     internal class Vladimir : Champion
     {

@@ -6,7 +6,7 @@
     using LeagueSharp.Common;
     using Orbwalking = Orbwalking;
 
-    internal class Cleaness : Program
+    internal class Cleaness : Logic
     {
         private static int UseCleanTime, CleanID;
 
@@ -17,7 +17,7 @@
 
         private static readonly List<BuffType> DebuffTypes = new List<BuffType>();
 
-        private new static readonly Menu Menu = Utilitymenu;
+        private static readonly Menu Menu = Utilitymenu;
 
         public static void Init()
         {

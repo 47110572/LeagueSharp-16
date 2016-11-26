@@ -1,28 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
-using SharpDX;
 using Color = System.Drawing.Color;
 
 namespace FlowersTwistedFate
 {
     public static class Program
     {
-        private static Obj_AI_Hero Player
-        {
-            get
-            {
-                return ObjectManager.Player;
-            }
-        }
-        internal static float getManaPer
-        {
-            get { return Player.Mana / Player.MaxMana * 100; }
-        }
+        private static Obj_AI_Hero Player => ObjectManager.Player;
+
+        internal static float getManaPer => Player.ManaPercent;
 
         private static Spell Q;
         public static Spell W;
@@ -64,10 +52,10 @@ namespace FlowersTwistedFate
             Menu.AddSubMenu(new Menu("Clear", "Clear"));
             Menu.SubMenu("Clear").AddItem(new MenuItem("qxq", "Use Q LaneClear").SetValue(true));
             Menu.SubMenu("Clear").AddItem(new MenuItem("qxw", "Use W LaneClear (Red or Blue)").SetValue(true));
-            Menu.SubMenu("Clear").AddItem(new MenuItem("qxmp", "LC Use Blue Mana <=%", true).SetValue(new Slider(45, 0, 100)));
+            Menu.SubMenu("Clear").AddItem(new MenuItem("qxmp", "LC Use Blue Mana <=%", true).SetValue(new Slider(45)));
             Menu.SubMenu("Clear").AddItem(new MenuItem("qyq", "Use Q JungleClear").SetValue(true));
             Menu.SubMenu("Clear").AddItem(new MenuItem("qyw", "Use W JungleClear (Red or Blue)").SetValue(true));
-            Menu.SubMenu("Clear").AddItem(new MenuItem("qymp", "JC Use Blue Mana <=%", true).SetValue(new Slider(45, 0, 100)));
+            Menu.SubMenu("Clear").AddItem(new MenuItem("qymp", "JC Use Blue Mana <=%", true).SetValue(new Slider(45)));
 
             Menu.AddSubMenu(new Menu("Card Select", "CardSelect"));
             Menu.SubMenu("CardSelect").AddItem(new MenuItem("blue", "Blue Card").SetValue(new KeyBind("E".ToCharArray()[0], KeyBindType.Press)));
@@ -113,7 +101,7 @@ namespace FlowersTwistedFate
             Drawing.OnDraw += DRAW;
             Drawing.OnEndScene += DRAWEND;
             Orbwalking.BeforeAttack += OrbwalkingOnBeforeAttack;//H7 
-            Obj_AI_Hero.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;//H7 
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Hero_OnProcessSpellCast;//H7 
             AntiGapcloser.OnEnemyGapcloser += AntiGapcloser_OnEnemyGapcloser;
             Interrupter2.OnInterruptableTarget += Interrupter2_OnInterruptableTarget;
         }
@@ -230,7 +218,9 @@ namespace FlowersTwistedFate
 
             if (MINIR.Active)
             {
+#pragma warning disable 618
                 Utility.DrawCircle(Player.Position, 5500, MINIR.Color, 1, 30, true);
+#pragma warning restore 618
             }
         }
 
@@ -347,7 +337,7 @@ namespace FlowersTwistedFate
         {
             if (Q.IsReady() && Menu.Item("qxq").GetValue<bool>() && getManaPer > 40)
             {
-                var allMinionsQ = MinionManager.GetMinions(Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.Enemy);
+                var allMinionsQ = MinionManager.GetMinions(Player.ServerPosition, Q.Range);
                 var locQ = Q.GetLineFarmLocation(allMinionsQ);
 
                 if (locQ.MinionsHit >= 3)
@@ -406,13 +396,10 @@ namespace FlowersTwistedFate
 
             foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(Q.Range) && !x.IsDead && !x.HasBuffOfType(BuffType.Invulnerability)))
             {
-                if (target != null)
+                if (Q.GetDamage(target) >= target.Health + 20 & Q.GetPrediction(target).Hitchance >= HitChance.VeryHigh)
                 {
-                    if (Q.GetDamage(target) >= target.Health + 20 & Q.GetPrediction(target).Hitchance >= HitChance.VeryHigh)
-                    {
-                        if (Q.IsReady())
-                            Q.Cast(target);
-                    }
+                    if (Q.IsReady())
+                        Q.Cast(target);
                 }
             }
         }

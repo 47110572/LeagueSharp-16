@@ -10,7 +10,7 @@
 
     public static class Orbwalking
     {
-        public static readonly string[] AttackResets =
+        private static readonly string[] AttackResets =
         {
             "dariusnoxiantacticsonh", "fioraflurry", "garenq",
             "gravesmove", "hecarimrapidslash", "jaxempowertwo", "jaycehypercharge", "leonashieldofdaybreak", "luciane",
@@ -21,7 +21,7 @@
             "illaoiw", "elisespiderw", "fiorae", "meditate", "sejuaninorthernwinds","asheq"
         };
 
-        public static readonly string[] NoAttacks =
+        private static readonly string[] NoAttacks =
         {
             "volleyattack", "volleyattackwithsound",
             "jarvanivcataclysmattack", "monkeykingdoubleattack", "shyvanadoubleattack", "shyvanadoubleattackdragon",
@@ -34,41 +34,41 @@
             "kindredwolfbasicattack"
         };
 
-        public static readonly string[] Attacks =
+        private static readonly string[] Attacks =
         {
             "caitlynheadshotmissile", "frostarrow", "garenslash2",
             "kennenmegaproc", "masteryidoublestrike", "quinnwenhanced", "renektonexecute", "renektonsuperexecute",
             "rengarnewpassivebuffdash", "trundleq", "xenzhaothrust", "xenzhaothrust2", "xenzhaothrust3", "viktorqbuff"
         };
 
-        public static int _autoattackCounter;
-        public static int LastAATick;
+        private static int _autoattackCounter;
+        private static int LastAATick;
         public static int DelayOnFire;
         public static int DelayOnFireId;
         public static int BrainFarmInt = -100;
-        public static int LastAttackCommandT;
-        public static int LastMoveCommandT;
+        private static int LastAttackCommandT;
+        private static int LastMoveCommandT;
 
-        public static bool _missileLaunched;
-        public static bool DisableNextAttack;
-        public static bool Attack = true;
-        public static bool Move = true;
+        private static bool _missileLaunched;
+        private static bool DisableNextAttack;
+        private static bool Attack = true;
+        private static bool Move = true;
 
-        public static float _minDistance = 400;
+        private static float _minDistance = 400;
 
-        public static AttackableUnit _lastTarget;
+        private static AttackableUnit _lastTarget;
 
-        public static Vector3 LastMoveCommandPosition = Vector3.Zero;
+        private static Vector3 LastMoveCommandPosition = Vector3.Zero;
 
-        public static List<Obj_AI_Base> MinionListAA = new List<Obj_AI_Base>();
+        private static List<Obj_AI_Base> MinionListAA = new List<Obj_AI_Base>();
 
-        public static readonly Obj_AI_Hero Player;
+        private static readonly Obj_AI_Hero Player;
 
-        public static readonly string _championName;
+        private static readonly string _championName;
 
-        public static readonly Random _random = new Random(DateTime.Now.Millisecond);
+        private static readonly Random _random = new Random(DateTime.Now.Millisecond);
 
-        public static int Delay { get; private set; }
+        private static int Delay { get; set; }
 
         public delegate void AfterAttackEvenH(AttackableUnit unit, AttackableUnit target);
         public delegate void BeforeAttackEvenH(BeforeAttackEventArgs args);
@@ -227,7 +227,7 @@
             return Utils.GameTimeTickCount + Game.Ping / 2 + 25 >= LastAATick + Player.AttackDelay * 1000;
         }
 
-        public static bool CanMove(float extraWindup, bool disableMissileCheck = false)
+        private static bool CanMove(float extraWindup, bool disableMissileCheck = false)
         {
             if (_missileLaunched && Orbwalker.MissileCheck && !disableMissileCheck)
             {
@@ -239,8 +239,7 @@
                        >= LastAATick + Player.AttackCastDelay * 1000 + extraWindup);
         }
 
-        public static void MoveTo(Vector3 position, float holdAreaRadius = 0, bool overrideTimer = false,
-            bool useFixedDistance = true, bool randomizeMinDistance = true)
+        public static void MoveTo(Vector3 position, float holdAreaRadius = 0, bool overrideTimer = false, bool randomizeMinDistance = true)
         {
             var playerPosition = Player.ServerPosition;
 
@@ -305,7 +304,7 @@
         }
 
         public static void Orbwalk(AttackableUnit target, Vector3 position, float extraWindup = 90,
-            float holdAreaRadius = 0, bool useFixedDistance = true, bool randomizeMinDistance = true)
+            float holdAreaRadius = 0, bool randomizeMinDistance = true)
         {
             if (Utils.GameTimeTickCount - LastAttackCommandT < 70 + Math.Min(60, Game.Ping))
             {
@@ -342,7 +341,7 @@
                     return;
                 }
 
-                MoveTo(position, Math.Max(holdAreaRadius, 30), false, useFixedDistance, randomizeMinDistance);
+                MoveTo(position, Math.Max(holdAreaRadius, 30), false, randomizeMinDistance);
             }
         }
 
@@ -363,7 +362,7 @@
             return LastMoveCommandT;
         }
 
-        public static float GetMyProjectileSpeed()
+        private static float GetMyProjectileSpeed()
         {
             return Player.BasicAttack.MissileSpeed;
         }
@@ -422,7 +421,7 @@
                    || Attacks.Contains(name.ToLower());
         }
 
-        public static bool IsAutoAttackReset(string name)
+        private static bool IsAutoAttackReset(string name)
         {
             return AttackResets.Contains(name.ToLower());
         }
@@ -462,7 +461,7 @@
         public class BeforeAttackEventArgs : EventArgs
         {
             public AttackableUnit Target;
-            public Obj_AI_Base Unit = ObjectManager.Player;
+            public readonly Obj_AI_Base Unit = ObjectManager.Player;
             private bool _process = true;
 
             public bool Process
@@ -479,7 +478,7 @@
             }
         }
 
-        public class Orbwalker
+        public sealed class Orbwalker
         {
             private const float LaneClearWaitTimeMod = 2f;
             private static Menu _config;
@@ -490,7 +489,7 @@
             private Obj_AI_Minion _prevMinion;
             private string CustomModeName;
 
-            public static List<Orbwalker> Instances = new List<Orbwalker>();
+            private static readonly List<Orbwalker> Instances = new List<Orbwalker>();
 
             public Orbwalker(Menu attachToMenu)
             {
@@ -561,7 +560,7 @@
                 Instances.Add(this);
             }
 
-            internal int FarmDelay => _config.Item("FarmDelay").GetValue<Slider>().Value;
+            private int FarmDelay => _config.Item("FarmDelay").GetValue<Slider>().Value;
 
             internal static bool MissileCheck => _config.Item("MissileCheck").GetValue<bool>();
 
@@ -635,12 +634,12 @@
                 _forcedTarget = target;
             }
 
-            public virtual bool InAutoAttackRange(AttackableUnit target)
+            public bool InAutoAttackRange(AttackableUnit target)
             {
                 return Orbwalking.InAutoAttackRange(target);
             }
 
-            public virtual void RegisterCustomMode(string name, string displayname, uint key)
+            public void RegisterCustomMode(string name, string displayname, uint key)
             {
                 CustomModeName = name;
 
@@ -688,7 +687,7 @@
                     Math.Max(_config.Item("HoldPosRadius").GetValue<Slider>().Value, 30));
             }
 
-            public virtual AttackableUnit GetTarget()
+            public AttackableUnit GetTarget()
             {
                 AttackableUnit result = null;
                 var mode = ActiveMode;
@@ -1117,7 +1116,7 @@
                 return result;
             }
 
-            public bool ShouldWait()
+            private bool ShouldWait()
             {
                 return
                     ObjectManager.Get<Obj_AI_Minion>()

@@ -2,7 +2,6 @@
 {
     using Spells;
     using System.Linq;
-    using LeagueSharp;
     using LeagueSharp.Common;
 
     internal class KillSteal : Logic

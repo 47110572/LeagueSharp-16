@@ -4,9 +4,9 @@
     using LeagueSharp;
     using LeagueSharp.Common;
 
-    internal class AutoLevels : Program
+    internal class AutoLevels : Logic
     {
-        private new static readonly Menu Menu = Utilitymenu;
+        private static readonly Menu Menu = Utilitymenu;
 
         public static void Init()
         {

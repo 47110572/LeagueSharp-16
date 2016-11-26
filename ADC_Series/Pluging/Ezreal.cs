@@ -10,10 +10,10 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Ezreal : Program
+    internal class Ezreal : Logic
     {
         private float lastSpellCast;
-        private new readonly Menu Menu = Championmenu;
+        private readonly Menu Menu = Championmenu;
 
         public Ezreal()
         {

@@ -2,14 +2,12 @@
 {
     using Base;
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using LeagueSharp;
     using LeagueSharp.Common;
     using Managers;
     using Utilities;
     using Color = System.Drawing.Color;
-    using ObjectManager = LeagueSharp.ObjectManager;
     using Orbwalking = Orbwalking;
 
     internal class Rumble : Champion

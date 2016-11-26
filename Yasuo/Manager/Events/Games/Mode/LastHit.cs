@@ -4,7 +4,6 @@
     using System.Linq;
     using LeagueSharp.Common;
     using Orbwalking = Orbwalking;
-    using static Common.Common;
 
     internal class LastHit : Logic
     {

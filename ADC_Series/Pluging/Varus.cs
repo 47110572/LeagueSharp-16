@@ -10,10 +10,10 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Varus : Program
+    internal class Varus : Logic
     {
-        private float qRange = 1600f;
-        private new readonly Menu Menu = Championmenu;
+        private readonly float qRange = 1600f;
+        private readonly Menu Menu = Championmenu;
 
         public Varus()
         {

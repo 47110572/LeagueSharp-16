@@ -10,9 +10,9 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Kindred : Program
+    internal class Kindred : Logic
     {
-        private new readonly Menu Menu = Championmenu;
+        private readonly Menu Menu = Championmenu;
 
         public Kindred()
         {

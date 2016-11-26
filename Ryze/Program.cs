@@ -10,10 +10,10 @@
         private static Spell Q, W, E, R;
         private static SpellSlot Ignite = SpellSlot.Unknown;
         private static Menu Menu;
-        private static Obj_AI_Hero Me, combotarget = null;
-        private static int SkinID = 0;
+        private static Obj_AI_Hero Me, combotarget;
+        private static int SkinID;
         private static float SpellTime;
-        private static bool CanShield = false;
+        private static bool CanShield;
         private static Orbwalking.Orbwalker Orbwalker;
         private static HpBarDraw DrawHpBar = new HpBarDraw();
 
@@ -304,40 +304,27 @@
         {
             if (Me.ManaPercent >= Menu.GetSlider("LaneClearMana"))
             {
-                var minions = MinionManager.GetMinions(Me.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.Enemy);
+                var minions = MinionManager.GetMinions(Me.ServerPosition, Q.Range);
 
-                if (minions.Count() > 0)
+                if (minions.Any())
                 {
                     if (Menu.GetBool("E.LaneClear") && E.IsReady())
                     {
                         foreach (var minE in minions.Where(x => x.IsValidTarget(E.Range) && MinionManager.GetMinions(x.Position, 250).Count() >= Menu.GetSlider("EMin.LaneClear")))
                         {
-                            if (minE != null)
-                            {
-                                E.Cast(minE, UsePacket);
-                            }
+                            E.Cast(minE, UsePacket);
                         }
                     }
 
                     foreach (var min in minions.Where(x => x.IsValidTarget(600) && x.HasBuff("RyzeE")))
                     {
-                        if (min != null)
+                        if (Menu.GetBool("W.LaneClear") && W.IsReady() && min.Health < W.GetDamage(min))
                         {
-                            if (Menu.GetBool("W.LaneClear") && W.IsReady() && min.Health < W.GetDamage(min))
-                            {
-                                W.CastOnUnit(min, UsePacket);
-                            }
-                            else if (Menu.GetBool("Q.LaneClear") && Q.IsReady())
-                            {
-                                Q.Cast(min, UsePacket);
-                            }
+                            W.CastOnUnit(min, UsePacket);
                         }
-                        else if (min == null)
+                        else if (Menu.GetBool("Q.LaneClear") && Q.IsReady())
                         {
-                            if (Menu.GetBool("Q.LaneClear") && Q.IsReady())
-                            {
-                                Q.Cast(minions.FirstOrDefault(), UsePacket);
-                            }
+                            Q.Cast(min, UsePacket);
                         }
                     }
                 }
@@ -369,7 +356,6 @@
                     if (Menu.GetBool("W.JungleClear") && W.IsReady())
                     {
                         W.CastOnUnit(mob, UsePacket);
-                        return;
                     }
                 }
             }
@@ -379,28 +365,30 @@
         {
             if (Me.ManaPercent >= Menu.GetSlider("LastHitMana"))
             {
-                var Minions = MinionManager.GetMinions(Me.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.Enemy);
+                var Minions = MinionManager.GetMinions(Me.ServerPosition, Q.Range);
 
-                if (Minions.Count() > 0)
+                if (Minions.Count > 0)
                 {
                     var min = Minions.FirstOrDefault();
 
-                    if (Menu.GetBool("E.LastHit") && E.IsReady() && min.IsValidTarget(E.Range) && min.Health < E.GetDamage(min))
+                    if (min != null)
                     {
-                        E.Cast(min, UsePacket);
-                        return;
-                    }
+                        if (Menu.GetBool("E.LastHit") && E.IsReady() && min.IsValidTarget(E.Range) && min.Health < E.GetDamage(min))
+                        {
+                            E.Cast(min, UsePacket);
+                            return;
+                        }
 
-                    if (Menu.GetBool("W.LastHit") && W.IsReady() && min.IsValidTarget(W.Range) && min.Health < W.GetDamage(min))
-                    {
-                        W.Cast(min, UsePacket);
-                        return;
-                    }
+                        if (Menu.GetBool("W.LastHit") && W.IsReady() && min.IsValidTarget(W.Range) && min.Health < W.GetDamage(min))
+                        {
+                            W.Cast(min, UsePacket);
+                            return;
+                        }
 
-                    if (Menu.GetBool("Q.LastHit") && Q.IsReady() && !Me.HasBuff("ryzeqiconfullcharge") && min.IsValidTarget(Q.Range) && min.Health < Q.GetDamage(min))
-                    {
-                        Q.Cast(min, UsePacket);
-                        return;
+                        if (Menu.GetBool("Q.LastHit") && Q.IsReady() && !Me.HasBuff("ryzeqiconfullcharge") && min.IsValidTarget(Q.Range) && min.Health < Q.GetDamage(min))
+                        {
+                            Q.Cast(min, UsePacket);
+                        }
                     }
                 }
             }

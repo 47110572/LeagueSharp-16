@@ -328,7 +328,10 @@
 
                     if (Menu.Item("nightmoon.jc.w", true).GetValue<bool>() && W.IsReady())
                     {
-                        W.Cast(mob.Position, true);
+                        if (mob != null)
+                        {
+                            W.Cast(mob.Position, true);
+                        }
                     }
 
                     if (Menu.Item("nightmoon.jc.q", true).GetValue<bool>() && Q.IsReady())

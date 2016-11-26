@@ -7,12 +7,12 @@
 
     public class HpBarDraw
     {
-        public static Device DxDevice = Drawing.Direct3DDevice;
-        public static Line DxLine;
+        private static readonly Device DxDevice = Drawing.Direct3DDevice;
+        private static Line DxLine;
         public static float Hight = 9;
-        public static float Width = 104;
+        private const float Width = 104;
 
-        public static Obj_AI_Hero Unit { get; set; }
+        public static Obj_AI_Hero Unit { private get; set; }
 
         private static Vector2 Offset
         {
@@ -27,7 +27,7 @@
             }
         }
 
-        public static Vector2 StartPosition
+        private static Vector2 StartPosition
             => new Vector2(Unit.HPBarPosition.X + Offset.X, Unit.HPBarPosition.Y + Offset.Y);
 
         public HpBarDraw()

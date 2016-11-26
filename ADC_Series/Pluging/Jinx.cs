@@ -10,11 +10,11 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Jinx : Program
+    internal class Jinx : Logic
     {
         private float bigGunRange;
         private float rCoolDown;
-        private new readonly Menu Menu = Championmenu;
+        private readonly Menu Menu = Championmenu;
 
         public Jinx()
         {

@@ -9,15 +9,13 @@
     using System.Net;
     using System.Web.Script.Serialization;
 
-    internal class SkinChange : Program
+    internal class SkinChange : Logic
     {
         private static int SkinID;
-
         private static readonly WebClient Webclient = new WebClient();
         private static readonly JavaScriptSerializer JSerializer = new JavaScriptSerializer();
         private static readonly List<SkinInfo> SkinList = new List<SkinInfo>();
-
-        private new static readonly Menu Menu = Utilitymenu;
+        private static readonly Menu Menu = Utilitymenu;
 
         private class SkinInfo
         {

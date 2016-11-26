@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowers' Rengar", "Rengar\F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowers' Leblanc", "Leblanc\Flowers' Leblanc.csproj", "{EFFAC1F7-FB54-4BA7-A0B6-D6720E47A2B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flowers' Common", "Flowers' Common\Flowers' Common.csproj", "{D26C324E-CB78-4E7B-A2D9-188C5B4A024D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +137,10 @@ Global
 		{EFFAC1F7-FB54-4BA7-A0B6-D6720E47A2B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFFAC1F7-FB54-4BA7-A0B6-D6720E47A2B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFFAC1F7-FB54-4BA7-A0B6-D6720E47A2B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D26C324E-CB78-4E7B-A2D9-188C5B4A024D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D26C324E-CB78-4E7B-A2D9-188C5B4A024D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D26C324E-CB78-4E7B-A2D9-188C5B4A024D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D26C324E-CB78-4E7B-A2D9-188C5B4A024D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

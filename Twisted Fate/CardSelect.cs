@@ -1,10 +1,7 @@
 ﻿using LeagueSharp;
 using LeagueSharp.Common;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FlowersTwistedFate
 {
@@ -27,15 +24,14 @@ namespace FlowersTwistedFate
 
     public static class CardSelect
     {
-        public static Cards Select;
-        public static int LastWSent = 0;
+        private static Cards Select;
+        public static int LastWSent;
         public static int LastSendWSent = 0;
-        public static Obj_AI_Hero Player = ObjectManager.Player;
+        private static readonly Obj_AI_Hero Player = ObjectManager.Player;
         public static string LastCard = "";
         public static SelectStatus Status
         {
-            get;
-            set;
+            get; private set;
         }
         static CardSelect()
         {

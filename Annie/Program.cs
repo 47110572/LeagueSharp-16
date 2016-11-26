@@ -508,12 +508,9 @@
 
                     foreach (var min in Minions.Where(m => !m.IsZombie && m.Health < Q.GetDamage(m)))
                     {
-                        if (min != null)
+                        if (min.Health > Me.GetAutoAttackDamage(min))
                         {
-                            if (min.Health > Me.GetAutoAttackDamage(min))
-                            {
-                                Q.Cast(min, true);
-                            }
+                            Q.Cast(min, true);
                         }
                     }
                 }
@@ -554,7 +551,6 @@
 
             foreach (var e in HeroManager.Enemies.Where(em => em.IsValidTarget(R.Range + 425) && !em.IsZombie))
             {
-                if (e != null)
                 {
                     Game.PrintChat(e.ChampionName);
                     if (BuffCounts == 3 && E.IsReady() && !HaveStun)
@@ -603,31 +599,28 @@
         {
             foreach (var e in HeroManager.Enemies.Where(e => !e.IsZombie && !e.IsDead && e.IsValidTarget()))
             {
-                if (e != null)
+                if (Q.IsReady() && Menu.GetBool("KillStealQ") && e.Health + e.MagicalShield < Q.GetDamage(e) && e.IsValidTarget(Q.Range))
                 {
-                    if (Q.IsReady() && Menu.GetBool("KillStealQ") && e.Health + e.MagicalShield < Q.GetDamage(e) && e.IsValidTarget(Q.Range))
-                    {
-                        Q.Cast(e, true);
-                        return;
-                    }
+                    Q.Cast(e, true);
+                    return;
+                }
 
-                    if (W.IsReady() && Menu.GetBool("KillStealW") && e.Health + e.MagicalShield < W.GetDamage(e) && e.IsValidTarget(W.Range))
-                    {
-                        W.Cast(e, true);
-                        return;
-                    }
+                if (W.IsReady() && Menu.GetBool("KillStealW") && e.Health + e.MagicalShield < W.GetDamage(e) && e.IsValidTarget(W.Range))
+                {
+                    W.Cast(e, true);
+                    return;
+                }
 
-                    if (R.IsReady() && Menu.GetBool("KillStealR") && e.Health + e.MagicalShield < R.GetDamage(e) && e.IsValidTarget(R.Range))
-                    {
-                        R.Cast(e, true);
-                        return;
-                    }
+                if (R.IsReady() && Menu.GetBool("KillStealR") && e.Health + e.MagicalShield < R.GetDamage(e) && e.IsValidTarget(R.Range))
+                {
+                    R.Cast(e, true);
+                    return;
+                }
 
-                    if (Ignite.IsReady() && Menu.GetBool("KillStealIgnite") && e.Health < Me.GetSummonerSpellDamage(e, Damage.SummonerSpell.Ignite) && e.IsValidTarget(600))// ignite range is 600f
-                    {
-                        Me.Spellbook.CastSpell(Ignite, e);
-                        return;
-                    }
+                if (Ignite.IsReady() && Menu.GetBool("KillStealIgnite") && e.Health < Me.GetSummonerSpellDamage(e, Damage.SummonerSpell.Ignite) && e.IsValidTarget(600))// ignite range is 600f
+                {
+                    Me.Spellbook.CastSpell(Ignite, e);
+                    return;
                 }
             }
         }
@@ -765,13 +758,13 @@
                 damage += (float)Me.GetSummonerSpellDamage(target, Damage.SummonerSpell.Ignite);
             }
 
-            if (target.HasBuff("Undying Rage"))
+            if (target != null && target.HasBuff("Undying Rage"))
                 damage = 0;
 
-            if (target.HasBuff("Judicator's Intervention"))
+            if (target != null && target.HasBuff("Judicator's Intervention"))
                 damage = 0;
 
-            if (target.HasBuff("KindredrNoDeathBuff"))
+            if (target != null && target.HasBuff("KindredrNoDeathBuff"))
                 damage = 0;
 
             return damage;

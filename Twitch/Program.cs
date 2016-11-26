@@ -1,10 +1,7 @@
 ﻿namespace Flowers_Twitch
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using LeagueSharp;
     using LeagueSharp.Common;
     using Color = System.Drawing.Color;
@@ -43,7 +40,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error in OnGameLoad " + ex); ;
+                Console.WriteLine("Error in OnGameLoad " + ex);
             }
         }
 
@@ -68,7 +65,7 @@
             {
                 if (sender.IsMe)
                     if (Menu.Item("IfKillSomeoneAutoQ", true).GetValue<bool>())
-                        if (PlayerIsKillTarget == true)
+                        if (PlayerIsKillTarget)
                             if (Q.IsReady())
                                 if (Me.CountEnemiesInRange(1000) >= 1)
                                     Q.Cast(); 
@@ -359,7 +356,7 @@
                 Menu.SubMenu("nightmoon.Draw.Menu").AddItem(new MenuItem("RRange", "R Range", true).SetValue(new Circle(true, Color.LawnGreen)));
                 Menu.SubMenu("nightmoon.Draw.Menu").AddItem(new MenuItem("DrawComboDamage", "Draw (W+E) Damage", true).SetValue(true));
 
-                Menu.AddToMainMenu(); ;
+                Menu.AddToMainMenu();
             }
             catch (Exception ex)
             {

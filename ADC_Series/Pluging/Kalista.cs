@@ -10,11 +10,11 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Kalista : Program
+    internal class Kalista : Logic
     {
         private int lastWCast;
         private int lastECast;
-        private new readonly Menu Menu = Championmenu;
+        private readonly Menu Menu = Championmenu;
 
         public Kalista()
         {

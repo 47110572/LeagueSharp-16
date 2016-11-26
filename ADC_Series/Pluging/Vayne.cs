@@ -10,9 +10,9 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Vayne : Program
+    internal class Vayne : Logic
     {
-        private new readonly Menu Menu = Championmenu;
+        private readonly Menu Menu = Championmenu;
 
         public Vayne()
         {
@@ -83,9 +83,9 @@
                     foreach (var target in HeroManager.Enemies)
                     {
                         EMenu.AddItem(new MenuItem("AntiGapcloser" + target.ChampionName.ToLower(),
-                            "AntiGapcloser: " + target.ChampionName, true).SetValue(true));
+                            "AntiGapcloser: " + target.ChampionName, true).SetValue(false));
                     }
-                    EMenu.AddItem(new MenuItem("AutoE", "Auto E?", true).SetValue(true));
+                    EMenu.AddItem(new MenuItem("AutoE", "Auto E?", true).SetValue(false));
                     foreach (var target in HeroManager.Enemies)
                     {
                         EMenu.AddItem(new MenuItem("AutoE" + target.ChampionName.ToLower(),

@@ -10,10 +10,10 @@
     using Orbwalking = Orbwalking;
     using static Common.Common;
 
-    internal class Twitch : Program
+    internal class Twitch : Logic
     {
         private bool PlayerIsKillTarget;
-        private new readonly Menu Menu = Championmenu;
+        private readonly Menu Menu = Championmenu;
 
         public Twitch()
         {
