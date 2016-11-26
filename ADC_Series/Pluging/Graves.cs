@@ -12,6 +12,7 @@
 
     internal class Graves : Logic
     {
+        private bool canE;
         private readonly float SearchERange;
         private readonly Menu Menu = Championmenu;
 
@@ -33,6 +34,7 @@
                 ComboMenu.AddItem(new MenuItem("ComboQ", "Use Q", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboW", "Use W", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));
+                ComboMenu.AddItem(new MenuItem("ComboEAA", "Use E| Reset Attack", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboECheck", "Use E| Safe Check", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(false));
                 ComboMenu.AddItem(
@@ -75,6 +77,12 @@
                 }
             }
 
+            var BurstMenu = Menu.AddSubMenu(new Menu("Burst", "Burst"));
+            {
+                BurstMenu.AddItem(new MenuItem("BurstKeys", "Burst Key -> Please Check The Orbwalker Key!", true));
+                BurstMenu.AddItem(new MenuItem("Bursttarget", "Burst Target -> Left Click to Lock!", true));
+            }
+            
             var MiscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             {
                 MiscMenu.AddItem(new MenuItem("GapW", "Use W| Anti GapCloser", true).SetValue(true));
@@ -86,13 +94,40 @@
                 DrawMenu.AddItem(new MenuItem("DrawW", "Draw W Range", true).SetValue(false));
                 DrawMenu.AddItem(new MenuItem("DrawE", "Draw E Range", true).SetValue(false));
                 DrawMenu.AddItem(new MenuItem("DrawR", "Draw R Range", true).SetValue(false));
+                DrawMenu.AddItem(new MenuItem("DrawBurst", "Draw Burst Range", true).SetValue(false));
                 DrawMenu.AddItem(new MenuItem("DrawDamage", "Draw ComboDamage", true).SetValue(true));
             }
 
+            Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
             Game.OnUpdate += OnUpdate;
             Obj_AI_Base.OnDoCast += OnDoCast;
             AntiGapcloser.OnEnemyGapcloser += OnEnemyGapcloser;
             Drawing.OnDraw += OnDraw;
+        }
+
+        private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
+        {
+            if (!sender.IsMe)
+            {
+                return;
+            }
+
+            switch (Args.SData.Name)
+            {
+                case "GravesMove":
+                    Orbwalking.ResetAutoAttackTimer();
+                    canE = false;
+                    break;
+                case "GravesChargeShot":
+                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst &&
+                        TargetSelector.GetSelectedTarget() != null && E.IsReady())
+                    {
+                        var target = TargetSelector.GetSelectedTarget();
+
+                        E.Cast(target.Position, true);
+                    }
+                    break;
+            }
         }
 
         private void OnUpdate(EventArgs Args)
@@ -106,6 +141,9 @@
 
             switch (Orbwalker.ActiveMode)
             {
+                case Orbwalking.OrbwalkingMode.Burst:
+                    Burst();
+                    break;
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo();
                     break;
@@ -158,6 +196,47 @@
             }
         }
 
+        private void Burst()
+        {
+            var target = TargetSelector.GetSelectedTarget();
+
+            if (CheckTarget(target, 700f))
+            {
+                if (R.IsReady() && E.IsReady())
+                {
+                    var rPred = R.GetPrediction(target, true);
+
+                    if (rPred.Hitchance >= HitChance.VeryHigh && target.IsValidTarget(R.Range))
+                    {
+                        if (R.Cast(rPred.CastPosition, true))
+                        {
+                            E.Cast(target.Position, true);
+                            Orbwalking.ResetAutoAttackTimer();
+                        }
+                    }
+                }
+                else
+                {
+                    if (Q.IsReady() && target.IsValidTarget(Q.Range))
+                    {
+                        Q.CastTo(target);
+                    }
+
+                    if (W.IsReady() && target.IsValidTarget(W.Range) &&
+                             (target.DistanceToPlayer() <= target.AttackRange + 70 ||
+                              (target.DistanceToPlayer() >= Orbwalking.GetRealAutoAttackRange(Me) + 80)))
+                    {
+                        W.CastTo(target);
+                    }
+
+                    if (E.IsReady() && !R.IsReady())
+                    {
+                        ELogic(target);
+                    }
+                }
+            }
+        }
+
         private void Combo()
         {
             var target = TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
@@ -171,13 +250,12 @@
 
                 if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady() && target.IsValidTarget(SearchERange))
                 {
-                    if (CanCaseE(target, Game.CursorPos))
-                    {
-                        E.Cast(Game.CursorPos);
-                    }
+                    ELogic(target);
                 }
 
-                if (Menu.Item("ComboW", true).GetValue<bool>() && W.IsReady() && target.IsValidTarget(W.Range))
+                if (Menu.Item("ComboW", true).GetValue<bool>() && W.IsReady() && target.IsValidTarget(W.Range) &&
+                    (target.DistanceToPlayer() <= target.AttackRange + 70 ||
+                     (target.DistanceToPlayer() >= Orbwalking.GetRealAutoAttackRange(Me) + 80)))
                 {
                     W.CastTo(target);
                 }
@@ -258,45 +336,46 @@
 
         private void OnDoCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
         {
-            if (!sender.IsMe || !Orbwalking.IsAutoAttack(Args.SData.Name))
+            if (!sender.IsMe)
             {
                 return;
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
+            if (Orbwalking.IsAutoAttack(Args.SData.Name))
             {
-                var target = Args.Target as Obj_AI_Hero;
-
-                if (target != null && !target.IsDead && !target.IsZombie)
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
-                    if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady())
+                    var target = Args.Target as Obj_AI_Hero;
+
+                    if (target != null && !target.IsDead && !target.IsZombie)
                     {
-                        if (CanCaseE(target, Game.CursorPos))
+                        if (Menu.Item("ComboEAA", true).GetValue<bool>() && E.IsReady())
                         {
-                            E.Cast(Game.CursorPos);
+                            ELogic(target);
                         }
                     }
                 }
-            }
-            else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
-            {
-                var target = Args.Target as Obj_AI_Minion;
 
-                if (target != null && !target.IsDead && !target.IsZombie)
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.LaneClear)
                 {
-                    if (Me.ManaPercent >= Menu.Item("JungleClearMana", true).GetValue<Slider>().Value)
-                    {
-                        if (Menu.Item("JungleClearE", true).GetValue<bool>() && E.IsReady())
-                        {
-                            var mobs =
-                                MinionManager.GetMinions(Me.Position, W.Range, MinionTypes.All, MinionTeam.Neutral,
-                                MinionOrderTypes.MaxHealth).Where(x => !x.Name.ToLower().Contains("mini"));
+                    var target = Args.Target as Obj_AI_Minion;
 
-                            if (mobs.Any())
+                    if (target != null && !target.IsDead)
+                    {
+                        if (Me.ManaPercent >= Menu.Item("JungleClearMana", true).GetValue<Slider>().Value)
+                        {
+                            if (Menu.Item("JungleClearE", true).GetValue<bool>() && E.IsReady())
                             {
-                                if (CanCaseE(mobs.FirstOrDefault(), Game.CursorPos) && !Me.Spellbook.IsCastingSpell)
+                                var mobs =
+                                    MinionManager.GetMinions(Me.Position, W.Range, MinionTypes.All, MinionTeam.Neutral,
+                                    MinionOrderTypes.MaxHealth).Where(x => !x.Name.ToLower().Contains("mini"));
+
+                                if (mobs.FirstOrDefault() != null)
                                 {
-                                    E.Cast(Game.CursorPos);
+                                    if (!Me.Spellbook.IsCastingSpell)
+                                    {
+                                        ELogic(mobs.FirstOrDefault());
+                                    }
                                 }
                             }
                         }
@@ -338,6 +417,11 @@
                     Render.Circle.DrawCircle(Me.Position, R.Range, Color.FromArgb(19, 130, 234), 1);
                 }
 
+                if (Menu.Item("DrawBurst", true).GetValue<bool>())
+                {
+                    Render.Circle.DrawCircle(Me.Position, 700f, Color.FromArgb(90, 255, 255), 1);
+                }
+
                 if (Menu.Item("DrawDamage", true).GetValue<bool>())
                 {
                     foreach (
@@ -350,51 +434,94 @@
             }
         }
 
-        private bool CanCaseE(Obj_AI_Base target, Vector3 Pos)
+        private void ELogic(Obj_AI_Base target)
         {
-            if (E.IsReady() && target.IsValidTarget(SearchERange))
+            if (!E.IsReady())
             {
-                var EndPos = Me.ServerPosition.Extend(Pos, E.Range);
-
-                if (!EndPos.IsWall())
-                {
-                    if (EndPos.UnderTurret(true) && Menu.Item("ComboECheck", true).GetValue<bool>())
-                    {
-                        return false;
-                    }
-
-                    if (EndPos.CountEnemiesInRange(E.Range) >= 3 && Me.HealthPercent >= 80)
-                    {
-                        return true;
-                    }
-
-                    if (EndPos.CountEnemiesInRange(E.Range) < 3)
-                    {
-                        return true;
-                    }
-
-                    if (target.Distance(EndPos) < Orbwalking.GetRealAutoAttackRange(Me))
-                    {
-                        return true;
-                    }
-
-                    if (!target.IsValidTarget(E.Range) && target.IsValidTarget(SearchERange) && 
-                        Me.MoveSpeed > target.MoveSpeed)
-                    {
-                        return true;
-                    }
-
-                    if (!Me.HasBuff("gravesbasicattackammo2") && Me.HasBuff("gravesbasicattackammo1") &&
-                        target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Me)))
-                    {
-                        return true;
-                    }
-                }
-                else
-                    return false;
+                return;
             }
 
-            return false;
+            var ePosition = Me.ServerPosition.Extend(Game.CursorPos, E.Range);
+            var targetDisE = target.ServerPosition.Distance(ePosition);
+
+            if (ePosition.UnderTurret(true) && Me.HealthPercent <= 60)
+            {
+                canE = false;
+            }
+
+            if (Menu.Item("ComboECheck", true).GetValue<bool>())
+            {
+                if (ePosition.CountEnemiesInRange(350f) >= 3)
+                {
+                    canE = false;
+                }
+
+                //Catilyn W
+                if (ObjectManager
+                        .Get<Obj_GeneralParticleEmitter>()
+                        .FirstOrDefault(
+                            x =>
+                                x != null && x.IsValid &&
+                                x.Name.ToLower().Contains("yordletrap_idle_red.troy") &&
+                                x.Position.Distance(ePosition) <= 100) != null)
+                {
+                    canE = false;
+                }
+
+                //Jinx E
+                if (ObjectManager.Get<Obj_AI_Minion>()
+                        .FirstOrDefault(x => x.IsValid && x.IsEnemy && x.Name == "k" &&
+                                             x.Position.Distance(ePosition) <= 100) != null)
+                {
+                    canE = false;
+                }
+
+                //Teemo R
+                if (ObjectManager.Get<Obj_AI_Minion>()
+                        .FirstOrDefault(x => x.IsValid && x.IsEnemy && x.Name == "Noxious Trap" &&
+                                             x.Position.Distance(ePosition) <= 100) != null)
+                {
+                    canE = false;
+                }
+
+                if (ePosition.CountEnemiesInRange(350) >= 3)
+                {
+                    canE = false;
+                }
+            }
+
+            if (target.Distance(ePosition) > Orbwalking.GetRealAutoAttackRange(Me))
+            {
+                canE = false;
+            }
+
+            if (target.Health < Me.GetAutoAttackDamage(target, true)*2 && 
+                target.Distance(ePosition) <= Orbwalking.GetRealAutoAttackRange(Me) && Me.CanAttack)
+            {
+                canE = true;
+            }
+
+            if (!Me.HasBuff("GravesBasicAttackAmmo2") && Me.HasBuff("GravesBasicAttackAmmo1") &&
+                target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Me)) &&
+                target.Distance(ePosition) <= Orbwalking.GetRealAutoAttackRange(Me))
+            {
+                canE = true;
+            }
+
+            if (!Me.HasBuff("GravesBasicAttackAmmo2") && !Me.HasBuff("GravesBasicAttackAmmo1") && 
+                target.IsValidTarget(Orbwalking.GetRealAutoAttackRange(Me)))
+            {
+                canE = true;
+            }
+
+            if (canE)
+            {
+                if (E.Cast(ePosition, true))
+                {
+                    Orbwalking.ResetAutoAttackTimer();
+                    canE = false;
+                }
+            }
         }
     }
 }

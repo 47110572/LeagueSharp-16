@@ -455,6 +455,7 @@
             Freeze,
             Flee,
             CustomMode,
+            Burst,
             None
         }
 
@@ -534,6 +535,11 @@
 
                 var keyMenu = _config.AddSubMenu(new Menu("Keys", "Keys"));
                 {
+                    if (ObjectManager.Player.ChampionName == "Graves")
+                    {
+                        keyMenu.AddItem(
+                            new MenuItem("Burst", "Burst").SetValue(new KeyBind('T', KeyBindType.Press)));
+                    }
                     keyMenu.AddItem(
                         new MenuItem("Orbwalk", "Combo").SetValue(new KeyBind(32, KeyBindType.Press)));
                     keyMenu.AddItem(
@@ -613,6 +619,12 @@
                     if (_config.Item("Flee").GetValue<KeyBind>().Active)
                     {
                         return OrbwalkingMode.Flee;
+                    }
+
+                    if (ObjectManager.Player.ChampionName == "Graves" && _config.Item("Burst") != null &&
+                        _config.Item("Burst").GetValue<KeyBind>().Active)
+                    {
+                        return OrbwalkingMode.Burst;
                     }
 
                     if (_config.Item(CustomModeName) != null
