@@ -206,7 +206,7 @@
                 {
                     var rPred = R.GetPrediction(target, true);
 
-                    if (rPred.Hitchance >= HitChance.VeryHigh && target.IsValidTarget(R.Range))
+                    if (rPred.Hitchance >= HitChance.High && target.IsValidTarget(R.Range))
                     {
                         if (R.Cast(rPred.CastPosition, true))
                         {
