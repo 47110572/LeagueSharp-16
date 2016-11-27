@@ -81,6 +81,8 @@
             {
                 BurstMenu.AddItem(new MenuItem("BurstKeys", "Burst Key -> Please Check The Orbwalker Key!", true));
                 BurstMenu.AddItem(new MenuItem("Bursttarget", "Burst Target -> Left Click to Lock!", true));
+                BurstMenu.AddItem(new MenuItem("Burstranges", "Burst Range -> Make Sure Target In Burst Range!", true));
+                BurstMenu.AddItem(new MenuItem("BurstER", "Burst Mode -> Enabled E->R ?", true).SetValue(false));
             }
             
             var MiscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
@@ -112,21 +114,28 @@
                 return;
             }
 
-            switch (Args.SData.Name)
+            if (Args.SData.Name.Contains("GravesMove"))
             {
-                case "GravesMove":
-                    Orbwalking.ResetAutoAttackTimer();
-                    canE = false;
-                    break;
-                case "GravesChargeShot":
-                    if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst &&
-                        TargetSelector.GetSelectedTarget() != null && E.IsReady())
-                    {
-                        var target = TargetSelector.GetSelectedTarget();
+                Orbwalking.ResetAutoAttackTimer();
+                canE = false;
 
-                        E.Cast(target.Position, true);
-                    }
-                    break;
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst && Menu.Item("BurstER", true).GetValue<bool>() &&
+                    TargetSelector.GetSelectedTarget() != null && R.IsReady())
+                {
+                    var target = TargetSelector.GetSelectedTarget();
+                    R.CastIfHitchanceEquals(target, HitChance.VeryHigh);
+                }
+            }
+
+            if (Args.SData.Name.Contains("GravesChargeShot"))
+            {
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst &&  TargetSelector.GetSelectedTarget() != null && 
+                    E.IsReady())
+                {
+                    var target = TargetSelector.GetSelectedTarget();
+                    var pos = Me.Position.Extend(target.Position, E.Range);
+                    E.Cast(pos);
+                }
             }
         }
 
@@ -200,18 +209,19 @@
         {
             var target = TargetSelector.GetSelectedTarget();
 
-            if (CheckTarget(target, 700f))
+            if (CheckTarget(target, Orbwalking.GetRealAutoAttackRange(Me)))
             {
-                if (R.IsReady() && E.IsReady())
-                {
-                    var rPred = R.GetPrediction(target, true);
+                var pos = Me.Position.Extend(target.Position, E.Range);
 
-                    if (rPred.Hitchance >= HitChance.High && target.IsValidTarget(R.Range))
+                if (R.IsReady())
+                {
+                    if (E.IsReady())
                     {
-                        if (R.Cast(rPred.CastPosition, true))
+                        R.CastIfHitchanceEquals(target, HitChance.VeryHigh);
+
+                        if (!R.IsReady())
                         {
-                            E.Cast(target.Position, true);
-                            Orbwalking.ResetAutoAttackTimer();
+                            E.Cast(pos);
                         }
                     }
                 }
@@ -341,8 +351,40 @@
                 return;
             }
 
+            if (Args.SData.Name.Contains("GravesChargeShot"))
+            {
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst &&
+                    TargetSelector.GetSelectedTarget() != null && E.IsReady())
+                {
+                    var target = TargetSelector.GetSelectedTarget();
+                    var pos = Me.Position.Extend(target.Position, E.Range);
+                    E.Cast(pos);
+                }
+            }
+
             if (Orbwalking.IsAutoAttack(Args.SData.Name))
             {
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst)
+                {
+                    var target = Args.Target as Obj_AI_Hero;
+
+                    if (target != null && !target.IsDead && !target.IsZombie)
+                    {
+                        if (R.IsReady())
+                        {
+                            var rPred = R.GetPrediction(target);
+
+                            if (rPred.Hitchance >= HitChance.VeryHigh)
+                            {
+                                if (R.Cast(rPred.CastPosition))
+                                {
+                                    E.Cast(Me.Position.Extend(target.Position, E.Range));
+                                }
+                            }
+                        }
+                    }
+                }
+
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
                     var target = Args.Target as Obj_AI_Hero;
@@ -419,7 +461,7 @@
 
                 if (Menu.Item("DrawBurst", true).GetValue<bool>())
                 {
-                    Render.Circle.DrawCircle(Me.Position, 700f, Color.FromArgb(90, 255, 255), 1);
+                    Render.Circle.DrawCircle(Me.Position, Orbwalking.GetRealAutoAttackRange(Me), Color.FromArgb(90, 255, 255), 1);
                 }
 
                 if (Menu.Item("DrawDamage", true).GetValue<bool>())
@@ -516,11 +558,8 @@
 
             if (canE)
             {
-                if (E.Cast(ePosition, true))
-                {
-                    Orbwalking.ResetAutoAttackTimer();
-                    canE = false;
-                }
+                E.Cast(ePosition, true);
+                canE = false;
             }
         }
     }
