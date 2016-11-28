@@ -9,11 +9,10 @@
     using SharpDX;
     using Manager.Spells;
 
-    // Credit: Brian
-    internal class EvadeTargetManager
+    internal class EvadeTargetManager // Credit By Brian
     {
         public static Menu Menu;
-        public static List<SpellData> Spells = new List<SpellData>();
+        public static readonly List<SpellData> Spells = new List<SpellData>();
         private static Vector2 wallCastedPos;
         private static readonly List<Targets> DetectedTargets = new List<Targets>();
 
@@ -245,8 +244,8 @@
                 Spells.FirstOrDefault(
                     i =>
                     i.SpellNames.Contains(missile.SData.Name.ToLower())
-                    && Menu.SubMenu("ET_" + i.ChampionName).Item(i.MissileName, true) != null
-                    && Menu.SubMenu("ET_" + i.ChampionName).Item(i.MissileName, true).GetValue<bool>());
+                    && Menu.Item(i.MissileName, true) != null
+                    && Menu.Item(i.MissileName, true).GetValue<bool>());
 
             if (spellData == null && missile.SData.IsAutoAttack()
                 && (!missile.SData.Name.ToLower().Contains("crit")

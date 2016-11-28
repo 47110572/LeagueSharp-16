@@ -32,18 +32,45 @@
         internal static Obj_AI_Hero Me;
         internal static Orbwalking.Orbwalker Orbwalker;
         internal static readonly List<ChampionObject> championObject = new List<ChampionObject>();
+        internal static readonly List<Vector2> WallJumpPos = new List<Vector2>();
 
         internal static void LoadYasuo()
         {
             Me = ObjectManager.Player;
             SkinID = ObjectManager.Player.BaseSkinId;
 
+            InitWallPos();
+
             SpellManager.Init();
             MenuManager.Init();
             EvadeManager.Init();
             EvadeTargetManager.Init();
             EventManager.Init();
-            Manager.Events.Games.Mode.WallJump.InitPos();
+        }
+
+        private static void InitWallPos()
+        {
+            WallJumpPos.Add(new Vector2(7274, 5908));
+            WallJumpPos.Add(new Vector2(8222, 3158));
+            WallJumpPos.Add(new Vector2(7784, 9494));
+            WallJumpPos.Add(new Vector2(6574, 12256));
+            WallJumpPos.Add(new Vector2(10882, 8416));
+            WallJumpPos.Add(new Vector2(11072, 8306));
+            WallJumpPos.Add(new Vector2(12582, 6402));
+            WallJumpPos.Add(new Vector2(3892, 6466));
+            WallJumpPos.Add(new Vector2(8322, 2658));
+            WallJumpPos.Add(new Vector2(7046, 5426));
+            WallJumpPos.Add(new Vector2(2232, 8412));
+            WallJumpPos.Add(new Vector2(7672, 8906));
+            WallJumpPos.Add(new Vector2(4324, 6258));
+            WallJumpPos.Add(new Vector2(3674, 7058));
+            WallJumpPos.Add(new Vector2(8372, 9606));
+            WallJumpPos.Add(new Vector2(6650, 11766));
+            WallJumpPos.Add(new Vector2(1678, 8428));
+            WallJumpPos.Add(new Vector2(6424, 5208));
+            WallJumpPos.Add(new Vector2(13172, 6508));
+            WallJumpPos.Add(new Vector2(11222, 7856));
+            WallJumpPos.Add(new Vector2(10372, 8456));
         }
 
         internal static bool IsDashing => isDashing || Me.IsDashing();
@@ -56,7 +83,7 @@
             }
         }
 
-        public static bool CanCastDelayR(Obj_AI_Hero target)
+        protected static bool CanCastDelayR(Obj_AI_Hero target)
         {
             //copy from valvesharp
             var buff = target.Buffs.FirstOrDefault(i => i.Type == BuffType.Knockback || i.Type == BuffType.Knockup);
@@ -84,7 +111,7 @@
             return Vector3.Zero;
         }
 
-        public static List<Vector3> FlashPoints()
+        protected static List<Vector3> FlashPoints()
         {
             var points = new List<Vector3>();
 

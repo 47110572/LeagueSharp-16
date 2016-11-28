@@ -9,11 +9,6 @@
     {
         internal static void Init(EventArgs Args)
         {
-            if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.WallJump)
-            {
-                Orbwalker.SetMovement(true);
-            }
-
             DashReset.Init();
             Skin.Init();
             
@@ -43,9 +38,6 @@
                     break;
                 case Orbwalking.OrbwalkingMode.Flee:
                     Flee.Init();
-                    break;
-                case Orbwalking.OrbwalkingMode.WallJump:
-                    WallJump.Init();
                     break;
                 case Orbwalking.OrbwalkingMode.None:
                     if (Menu.Item("EQFlash", true).GetValue<KeyBind>().Active)

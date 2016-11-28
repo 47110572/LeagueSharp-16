@@ -17,9 +17,9 @@ namespace Flowers_Yasuo.Evade
         public const int EvadingFirstTimeOffset = 250;
         public const int EvadingSecondTimeOffset = 80;
 
-        public static Menu Menu = Logic.Menu;
+        public static readonly Menu Menu = Logic.Menu;
 
-        public static List<Skillshot> DetectedSkillshots = new List<Skillshot>();
+        public static readonly List<Skillshot> DetectedSkillshots = new List<Skillshot>();
 
         public static void Init()
         {

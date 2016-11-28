@@ -81,6 +81,7 @@
     <Compile Include="Evade\SpellData\SpellData.cs" />
     <Compile Include="Evade\SpellData\SpellDatabase.cs" />
     <Compile Include="Logic.cs" />
+    <Compile Include="Manager\Attack\AfterAttackManager.cs" />
     <Compile Include="Manager\Events\Animation\AnimationManager.cs" />
     <Compile Include="Manager\Events\Drawings\DrawManager.cs" />
     <Compile Include="Manager\Events\EventManager.cs" />
@@ -94,7 +95,6 @@
     <Compile Include="Manager\Events\Games\Mode\KillSteal.cs" />
     <Compile Include="Manager\Events\Games\Mode\LaneClear.cs" />
     <Compile Include="Manager\Events\Games\Mode\LastHit.cs" />
-    <Compile Include="Manager\Events\Games\Mode\WallJump.cs" />
     <Compile Include="Manager\Events\Games\Mode\Skin.cs" />
     <Compile Include="Manager\Events\Games\Mode\Ward.cs" />
     <Compile Include="Manager\Events\Gapcloser\GapcloserManager.cs" />
@@ -103,6 +103,7 @@
     <Compile Include="Manager\Events\SpellCast\SpellCastManager.cs" />
     <Compile Include="Manager\Menu\MenuManager.cs" />
     <Compile Include="Manager\Spells\SpellManager.cs" />
+    <Compile Include="Orbwalking\MinionCache.cs" />
     <Compile Include="Orbwalking\Orbwalking.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

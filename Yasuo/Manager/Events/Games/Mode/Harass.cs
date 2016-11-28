@@ -74,16 +74,11 @@
                 if (Menu.Item("HarassQ3", true).GetValue<bool>() && Q3.IsReady() && SpellManager.HaveQ3 &&
                     lastEPos.CountEnemiesInRange(220) > 0)
                 {
-                    Utility.DelayAction.Add(10, Q3Harass);
+                    if (Q3.Cast(Me.Position, true))
+                    {
+                        lastHarassTime = Utils.TickCount;
+                    }
                 }
-            }
-        }
-
-        private static void Q3Harass()
-        {
-            if (Q3.Cast(Me.Position, true))
-            {
-                lastHarassTime = Utils.TickCount;
             }
         }
     }

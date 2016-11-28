@@ -54,9 +54,9 @@
                     {
                         var qminions = MinionManager.GetMinions(lastEPos, 220);
 
-                        if (qminions.Count >= 2)
+                        if (qminions.Count >= 3)
                         {
-                            Utility.DelayAction.Add(10, () => Q.Cast(Me.Position, true));
+                            Q.Cast(Me.Position, true);
                         }
                     }
                 }
@@ -80,7 +80,7 @@
 
                         if (q3minions.Count >= 2)
                         {
-                            Utility.DelayAction.Add(10, () => Q3.Cast(Me.Position, true));
+                            Q3.Cast(Me.Position, true);
                         }
                     }
                 }
