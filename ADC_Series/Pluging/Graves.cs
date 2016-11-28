@@ -122,8 +122,7 @@
                 Orbwalking.ResetAutoAttackTimer();
                 canE = false;
 
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst && Menu.Item("BurstER", true).GetValue<bool>() &&
-                    TargetSelector.GetSelectedTarget() != null && R.IsReady())
+                if (Menu.Item("BurstER", true).GetValue<bool>() && TargetSelector.GetSelectedTarget() != null && R.IsReady())
                 {
                     var target = TargetSelector.GetSelectedTarget();
 
@@ -134,15 +133,10 @@
                 }
             }
 
-            if ((Args.Animation == "Spell4" || Args.Animation == "785121b3") &&
+            if ((Args.Animation == "Spell4" || Args.Animation == "785121b3") && TargetSelector.GetSelectedTarget() != null && 
                 !Menu.Item("BurstER", true).GetValue<bool>() && E.IsReady())
             {
-                var target = TargetSelector.GetSelectedTarget();
-
-                if (target != null && E.IsReady())
-                {
-                    E.Cast(target.Position, true);
-                }
+                E.Cast(TargetSelector.GetSelectedTarget().Position, true);
             }
         }
 
@@ -230,7 +224,7 @@
         {
             var target = TargetSelector.GetSelectedTarget();
 
-            if (CheckTarget(target, 600f))
+            if (CheckTarget(target, 800f))
             {
                 var pos = Me.Position.Extend(target.Position, E.Range);
 
@@ -238,19 +232,19 @@
                 {
                     if (!Menu.Item("BurstER", true).GetValue<bool>())
                     {
-                        if (E.IsReady())
+                        if (E.IsReady() && target.IsValidTarget(600f))
                         {
                             if (R.CanCast(target))
                             {
-                                Utility.DelayAction.Add(Game.Ping, () => R.Cast(target));
+                                R.Cast(target, true);
                             }
                         }
                     }
                     else
                     {
-                        if (E.IsReady())
+                        if (E.IsReady() && target.IsValidTarget(600f))
                         {
-                            ELogic(target);
+                            E.Cast(target.Position, true);
                         }
                     }
                 }
