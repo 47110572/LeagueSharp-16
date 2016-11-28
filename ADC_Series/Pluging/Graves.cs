@@ -81,8 +81,10 @@
             {
                 BurstMenu.AddItem(new MenuItem("BurstKeys", "Burst Key -> Please Check The Orbwalker Key!", true));
                 BurstMenu.AddItem(new MenuItem("Bursttarget", "Burst Target -> Left Click to Lock!", true));
-                BurstMenu.AddItem(new MenuItem("Burstranges", "Burst Range -> Make Sure Target In Burst Range!", true));
-                BurstMenu.AddItem(new MenuItem("BurstER", "Burst Mode -> Enabled E->R ?", true).SetValue(false));
+                BurstMenu.AddItem(new MenuItem("Burstranges",
+                    "How to Burst -> Lock the target and then just press Burst Key!", true));
+                BurstMenu.AddItem(new MenuItem("BurstER", "Burst Mode -> Enabled E->R?", true).SetValue(false))
+                    .SetTooltip("if you dont enabled is RE Burst Mode");
             }
             
             var MiscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
@@ -100,11 +102,48 @@
                 DrawMenu.AddItem(new MenuItem("DrawDamage", "Draw ComboDamage", true).SetValue(true));
             }
 
+            Obj_AI_Base.OnPlayAnimation += OnPlayAnimation;
             Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
             Game.OnUpdate += OnUpdate;
             Obj_AI_Base.OnDoCast += OnDoCast;
             AntiGapcloser.OnEnemyGapcloser += OnEnemyGapcloser;
             Drawing.OnDraw += OnDraw;
+        }
+
+        private void OnPlayAnimation(Obj_AI_Base sender, GameObjectPlayAnimationEventArgs Args)
+        {
+            if (!sender.IsMe || Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Burst)
+            {
+                return;
+            }
+
+            if (Args.Animation == "Spell3")
+            {
+                Orbwalking.ResetAutoAttackTimer();
+                canE = false;
+
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst && Menu.Item("BurstER", true).GetValue<bool>() &&
+                    TargetSelector.GetSelectedTarget() != null && R.IsReady())
+                {
+                    var target = TargetSelector.GetSelectedTarget();
+
+                    if (target != null)
+                    {
+                        Utility.DelayAction.Add(Game.Ping, () => R.Cast(target.ServerPosition, true));
+                    }
+                }
+            }
+
+            if ((Args.Animation == "Spell4" || Args.Animation == "785121b3") &&
+                !Menu.Item("BurstER", true).GetValue<bool>() && E.IsReady())
+            {
+                var target = TargetSelector.GetSelectedTarget();
+
+                if (target != null && E.IsReady())
+                {
+                    E.Cast(target.Position, true);
+                }
+            }
         }
 
         private void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
@@ -118,24 +157,6 @@
             {
                 Orbwalking.ResetAutoAttackTimer();
                 canE = false;
-
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst && Menu.Item("BurstER", true).GetValue<bool>() &&
-                    TargetSelector.GetSelectedTarget() != null && R.IsReady())
-                {
-                    var target = TargetSelector.GetSelectedTarget();
-                    R.CastIfHitchanceEquals(target, HitChance.VeryHigh);
-                }
-            }
-
-            if (Args.SData.Name.Contains("GravesChargeShot"))
-            {
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst &&  TargetSelector.GetSelectedTarget() != null && 
-                    E.IsReady())
-                {
-                    var target = TargetSelector.GetSelectedTarget();
-                    var pos = Me.Position.Extend(target.Position, E.Range);
-                    E.Cast(pos);
-                }
             }
         }
 
@@ -209,19 +230,27 @@
         {
             var target = TargetSelector.GetSelectedTarget();
 
-            if (CheckTarget(target, Orbwalking.GetRealAutoAttackRange(Me)))
+            if (CheckTarget(target, 600f))
             {
                 var pos = Me.Position.Extend(target.Position, E.Range);
 
                 if (R.IsReady())
                 {
-                    if (E.IsReady())
+                    if (!Menu.Item("BurstER", true).GetValue<bool>())
                     {
-                        R.CastIfHitchanceEquals(target, HitChance.VeryHigh);
-
-                        if (!R.IsReady())
+                        if (E.IsReady())
                         {
-                            E.Cast(pos);
+                            if (R.CanCast(target))
+                            {
+                                Utility.DelayAction.Add(Game.Ping, () => R.Cast(target));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (E.IsReady())
+                        {
+                            ELogic(target);
                         }
                     }
                 }
@@ -364,27 +393,6 @@
 
             if (Orbwalking.IsAutoAttack(Args.SData.Name))
             {
-                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst)
-                {
-                    var target = Args.Target as Obj_AI_Hero;
-
-                    if (target != null && !target.IsDead && !target.IsZombie)
-                    {
-                        if (R.IsReady())
-                        {
-                            var rPred = R.GetPrediction(target);
-
-                            if (rPred.Hitchance >= HitChance.VeryHigh)
-                            {
-                                if (R.Cast(rPred.CastPosition))
-                                {
-                                    E.Cast(Me.Position.Extend(target.Position, E.Range));
-                                }
-                            }
-                        }
-                    }
-                }
-
                 if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
                     var target = Args.Target as Obj_AI_Hero;
