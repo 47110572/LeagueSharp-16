@@ -86,11 +86,10 @@
         protected static bool CanCastDelayR(Obj_AI_Hero target)
         {
             //copy from valvesharp
-            var buff = target.Buffs.FirstOrDefault(i => i.Type == BuffType.Knockback || i.Type == BuffType.Knockup);
+            var buff = target.Buffs.FirstOrDefault(i => i.Type == BuffType.Knockup);
 
-            return buff != null &&
-                   buff.EndTime - Game.Time <=
-                   (buff.EndTime - buff.StartTime) / (buff.EndTime - buff.StartTime <= 0.5 ? 1.5 : 3);
+            return target.HasBuffOfType(BuffType.Knockback) ||
+                   (buff != null && (Game.Time - buff.StartTime >= 0.89*(buff.EndTime - buff.StartTime)));
         }
 
         public static bool UnderTower(Vector3 pos)
