@@ -27,7 +27,7 @@
         public static AttackableUnit QTarget;
         public static Obj_AI_Hero BurstTarget;
         public static int SkinID;
-        public static HpBarDraw DrawHpBar = new HpBarDraw();
+        public static readonly HpBarDraw DrawHpBar = new HpBarDraw();
 
         private static void Main(string[] args)
         {
@@ -110,6 +110,8 @@
                 MiscMenu.AddItem(new MenuItem("Q1Delay", "Q1 Delay: ", true).SetValue(new Slider(262, 200, 300)));
                 MiscMenu.AddItem(new MenuItem("Q2Delay", "Q2 Delay: ", true).SetValue(new Slider(262, 200, 300)));
                 MiscMenu.AddItem(new MenuItem("Q3Delay", "Q3 Delay: ", true).SetValue(new Slider(362, 300, 400)));
+                MiscMenu.AddItem(new MenuItem("AutoSetDelay", "Auto Set Q Delay?", true).SetValue(true)).ValueChanged +=
+                    DelayChanged;
                 MiscMenu.AddItem(new MenuItem("KeepQALive", "Keep Q alive", true).SetValue(true));
                 MiscMenu.AddItem(new MenuItem("Dance", "Dance Emote in QA", true).SetValue(false));
                 MiscMenu.AddItem(new MenuItem("W Setting", "W Setting"));
@@ -149,6 +151,13 @@
 
             Menu.AddToMainMenu();
 
+            if (!Menu.Item("AutoSetDelay", true).GetValue<bool>())
+            {
+                Menu.Item("Q1Delay", true).SetValue(new Slider(262, 200, 300));
+                Menu.Item("Q2Delay", true).SetValue(new Slider(262, 200, 300));
+                Menu.Item("Q3Delay", true).SetValue(new Slider(362, 300, 400));
+            }
+
             Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
             Obj_AI_Base.OnPlayAnimation += OnPlayAnimation;
             AntiGapcloser.OnEnemyGapcloser += OnEnemyGapcloser;
@@ -156,6 +165,16 @@
             Obj_AI_Base.OnDoCast += OnDoCast;
             Game.OnUpdate += OnUpdate;
             Drawing.OnDraw += OnDraw;
+        }
+
+        private static void DelayChanged(object obj, OnValueChangeEventArgs Args)
+        {
+            if (!Args.GetNewValue<bool>())
+            {
+                Menu.Item("Q1Delay", true).SetValue(new Slider(262, 200, 300));
+                Menu.Item("Q2Delay", true).SetValue(new Slider(262, 200, 300));
+                Menu.Item("Q3Delay", true).SetValue(new Slider(362, 300, 400));
+            }
         }
 
         private static void OnEnemyGapcloser(ActiveGapcloser gapcloser)
@@ -605,6 +624,8 @@
 
         private static void OnUpdate(EventArgs args)
         {
+            QADelaySet();
+        
             if (Me.IsDead)
             {
                 return;
@@ -643,6 +664,31 @@
                 case Orbwalking.OrbwalkingMode.WallJump:
                     WallJump();
                     break;
+            }
+        }
+
+        private static void QADelaySet()
+        {//inspiration from Nechrito
+            if (Menu.Item("AutoSetDelay", true).GetValue<bool>())
+            {
+                var delay = 0;
+
+                if (Game.Ping <= 20)
+                {
+                    delay = Game.Ping;
+                }
+                else if (Game.Ping <= 50)
+                {
+                    delay = Game.Ping/2 + 5;
+                }
+                else
+                {
+                    delay = Game.Ping/2 - 5;
+                }
+
+                Menu.Item("Q1Delay", true).SetValue(new Slider(220 + delay, 200, 300));
+                Menu.Item("Q2Delay", true).SetValue(new Slider(220 + delay, 200, 300));
+                Menu.Item("Q3Delay", true).SetValue(new Slider(320 + delay, 300, 400));
             }
         }
 
