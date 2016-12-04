@@ -25,6 +25,7 @@
             var ComboMenu = Menu.AddSubMenu(new Menu("Combo", "Combo"));
             {
                 ComboMenu.AddItem(new MenuItem("ComboQ", "Use Q", true).SetValue(true));
+                ComboMenu.AddItem(new MenuItem("AQALogic", "Use AA-Q-AA Logic", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));
                 ComboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(true));
                 ComboMenu.AddItem(
@@ -63,7 +64,6 @@
             {
                 var QMenu = MiscMenu.AddSubMenu(new Menu("Q Settings", "Q Settings"));
                 {
-                    QMenu.AddItem(new MenuItem("AQALogic", "Use AA-Q-AA Logic", true).SetValue(true));
                     QMenu.AddItem(new MenuItem("QCheck", "Use Q|Safe Check?", true).SetValue(true));
                     QMenu.AddItem(new MenuItem("QTurret", "Use Q|Dont Cast To Turret", true).SetValue(true));
                     QMenu.AddItem(new MenuItem("QMelee", "Use Q|Anti Melee", true).SetValue(true));
@@ -366,7 +366,7 @@
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
-                if (Menu.Item("ComboQ", true).GetValue<bool>() && Menu.Item("AQALogic", true).GetValue<bool>())
+                if (Menu.Item("AQALogic", true).GetValue<bool>())
                 {
                     var target = t as Obj_AI_Hero;
 
