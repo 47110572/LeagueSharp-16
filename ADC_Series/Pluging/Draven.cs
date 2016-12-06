@@ -221,7 +221,7 @@
 
         private void OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs Args)
         {
-            if (Menu.Item("Interrupt").GetValue<bool>() && E.IsReady())
+            if (Menu.Item("Interrupt", true).GetValue<bool>() && E.IsReady())
             {
                 if (Args.DangerLevel >= Interrupter2.DangerLevel.Medium && sender.IsValidTarget(E.Range))
                 {
@@ -304,6 +304,7 @@
         {
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Flee)
             {
+                Orbwalker.SetOrbwalkingPoint(Game.CursorPos);
                 return;
             }
 
@@ -311,6 +312,7 @@
                 (Menu.Item("CatchMode", true).GetValue<StringList>().SelectedIndex == 1 &&
                  Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo))
             {
+                Orbwalker.SetOrbwalkingPoint(Game.CursorPos);
                 return;
             }
 
