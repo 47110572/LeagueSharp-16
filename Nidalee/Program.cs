@@ -30,7 +30,7 @@
         public static Orbwalking.Orbwalker Orbwalker;
         public static HpBarDraw HpbarDraw = new HpBarDraw();
 
-        public static void Main(string[] Args)
+        private static void Main(string[] Args)
         {
             CustomEvents.Game.OnGameLoad += OnGameLoad;
         }
@@ -100,7 +100,8 @@
                 JungleClearMenu.AddItem(new MenuItem("JungleClearHumanizer", "-- Humanizer"));
                 JungleClearMenu.AddItem(new MenuItem("JungleClearQHumanizer", "Use Q", true).SetValue(true));
                 JungleClearMenu.AddItem(new MenuItem("JungleClearWHumanizer", "Use W", true).SetValue(true));
-                JungleClearMenu.AddItem(new MenuItem("JungleClearQMana", "When Player ManaPercent >= x%", true).SetValue(new Slider(30)));
+                JungleClearMenu.AddItem(
+                    new MenuItem("JungleClearQMana", "When Player ManaPercent >= x%", true).SetValue(new Slider(30)));
                 JungleClearMenu.AddItem(new MenuItem("JungleClearCougar", "-- Cougar"));
                 JungleClearMenu.AddItem(new MenuItem("JungleClearQCougar", "Use Q", true).SetValue(true));
                 JungleClearMenu.AddItem(new MenuItem("JungleClearWCougar", "Use W", true).SetValue(true));
@@ -128,7 +129,9 @@
                 HealMenu.AddItem(new MenuItem("HealAllyHp", " When Ally HealthPercent <= x%", true).SetValue(new Slider(40)));
                 foreach (var ally in HeroManager.Allies.Where(x => !x.IsMe))
                 {
-                    HealMenu.AddItem(new MenuItem("HealAllyName" + ally.ChampionName.ToLower(), ally.ChampionName, true).SetValue(true));
+                    HealMenu.AddItem(
+                        new MenuItem("HealAllyName" + ally.ChampionName.ToLower(), ally.ChampionName, true).SetValue(
+                            true));
                 }
             }
 
@@ -156,7 +159,9 @@
                 DrawMenu.AddItem(new MenuItem("DrawE", "Draw E Range", true).SetValue(false));
                 DrawMenu.AddItem(new MenuItem("DrawCD", "Draw CoolDown", true).SetValue(true));
                 DrawMenu.AddItem(new MenuItem("DrawTarget", "Draw Have Passive Target", true).SetValue(true));
-                DrawMenu.AddItem(new MenuItem("DrawDamage", "Draw ComboDamage", true).SetValue(new StringList(new [] {"Only Humanizer", "Only Cougar", "Now Status", "Both", "Off" }, 3)));
+                DrawMenu.AddItem(
+                    new MenuItem("DrawDamage", "Draw ComboDamage", true).SetValue(
+                        new StringList(new[] {"Only Humanizer", "Only Cougar", "Now Status", "Both", "Off"}, 3)));
             }
 
             Menu.AddItem(new MenuItem("Credit", "Credit: NightMoon", true));
@@ -187,11 +192,13 @@
 
                         if (hero != null)
                         {
-                            if (Menu.Item("ComboECougar", true).GetValue<bool>() && E.Level > 0 && E1Cd == 0 && hero.IsValidTarget(E1.Range))
+                            if (Menu.Item("ComboECougar", true).GetValue<bool>() && E.Level > 0 && E1Cd == 0 &&
+                                hero.IsValidTarget(E1.Range) && Me.IsFacing(hero))
                             {
                                 E1.Cast(hero.Position, true);
                             }
-                            else if (Menu.Item("ComboQCougar", true).GetValue<bool>() && Q.Level > 0 && Q1Cd == 0 && hero.IsValidTarget(Q1.Range))
+                            else if (Menu.Item("ComboQCougar", true).GetValue<bool>() && Q.Level > 0 && Q1Cd == 0 &&
+                                     hero.IsValidTarget(Q1.Range))
                             {
                                 Q1.Cast(hero);
                             }
@@ -199,15 +206,18 @@
                         break;
                     case Orbwalking.OrbwalkingMode.LaneClear:
                         var mob = (Obj_AI_Base)Args.Target;
-                        var mobs = MinionManager.GetMinions(Me.Position, Q1.Range, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
+                        var mobs = MinionManager.GetMinions(Me.Position, Q1.Range, MinionTypes.All, MinionTeam.Neutral,
+                            MinionOrderTypes.MaxHealth);
 
                         if (mob != null && mobs.Contains(mob))
                         {
-                            if (Menu.Item("JungleClearECougar", true).GetValue<bool>() && E1Cd == 0 && mob.IsValidTarget(E1.Range))
+                            if (Menu.Item("JungleClearECougar", true).GetValue<bool>() && E1Cd == 0 &&
+                                mob.IsValidTarget(E1.Range) && Me.IsFacing(mob))
                             {
                                 E1.Cast(mob.Position, true);
                             }
-                            else if (Menu.Item("JungleClearQCougar", true).GetValue<bool>() && Q.Level > 0 && Q1Cd == 0 && mob.IsValidTarget(Q1.Range))
+                            else if (Menu.Item("JungleClearQCougar", true).GetValue<bool>() && Q.Level > 0 && Q1Cd == 0 &&
+                                     mob.IsValidTarget(Q1.Range))
                             {
                                 Q1.Cast(mob);
                             }
@@ -331,7 +341,8 @@
 
                     if (target.IsValidTarget() && !target.IsDead && !target.IsZombie && target.IsValidTarget(W.Range))
                     {
-                        if (target.IsMelee && target.IsFacing(Me) && target.DistanceToPlayer() < 275 && Utils.TickCount - UseWTime > 1500)
+                        if (target.IsMelee && target.IsFacing(Me) && target.DistanceToPlayer() < 275 &&
+                            Utils.TickCount - UseWTime > 1500)
                         {
                             W.Cast(Me.ServerPosition);
                         }
@@ -357,7 +368,10 @@
                         return;
                     }
 
-                    if (!HavePassive(target) && target.IsValidTarget(W.Range) && Qcd > 2 && (!Menu.Item("ComboWHumanizer", true).GetValue<bool>() || Menu.Item("ComboWHumanizer", true).GetValue<bool>() && Wcd > 2 && Q1Cd == 0 && W1Cd == 0 && E1Cd == 0))
+                    if (!HavePassive(target) && target.IsValidTarget(W.Range) && Qcd > 2 &&
+                        (!Menu.Item("ComboWHumanizer", true).GetValue<bool>() ||
+                         Menu.Item("ComboWHumanizer", true).GetValue<bool>() && Wcd > 2 && Q1Cd == 0 && W1Cd == 0 &&
+                         E1Cd == 0))
                     {
                         R.Cast();
                     }
@@ -369,7 +383,8 @@
                 {
                     var target = TargetSelector.GetTarget(E1.Range, TargetSelector.DamageType.Magical);
 
-                    if (target.IsValidTarget() && !target.IsDead && !target.IsZombie && target.IsValidTarget(E1.Range))
+                    if (target.IsValidTarget() && !target.IsDead && !target.IsZombie && target.IsValidTarget(E1.Range) &&
+                        Me.IsFacing(target))
                     {
                         E1.Cast(target.Position, true);
                     }
@@ -418,7 +433,10 @@
                             return;
                         }
 
-                        if (Ecd == 0 && Q1Cd > 0 && W1Cd > 0 && E1Cd > 0 && Menu.Item("EnableHeal", true).GetValue<bool>() && Me.HealthPercent <= Menu.Item("HealHp", true).GetValue<Slider>().Value && Me.ManaPercent >= Menu.Item("HealMana", true).GetValue<Slider>().Value)
+                        if (Ecd == 0 && Q1Cd > 0 && W1Cd > 0 && E1Cd > 0 &&
+                            Menu.Item("EnableHeal", true).GetValue<bool>() &&
+                            Me.HealthPercent <= Menu.Item("HealHp", true).GetValue<Slider>().Value &&
+                            Me.ManaPercent >= Menu.Item("HealMana", true).GetValue<Slider>().Value)
                         {
                             R.Cast();
                             return;
@@ -471,7 +489,8 @@
 
                 var minion = minions.Find(x => x.Health < GetQ1Damage(x));
 
-                if (Menu.Item("LaneClearQCougar", true).GetValue<bool>() && Q1Cd == 0 && minion != null && minion.IsValidTarget(Q1.Range))
+                if (Menu.Item("LaneClearQCougar", true).GetValue<bool>() && Q1Cd == 0 && minion != null &&
+                    minion.IsValidTarget(Q1.Range))
                 {
                     Q1.Cast(minion);
                 }
@@ -509,7 +528,7 @@
 
             var bigmobs = mobs.Where(x => !x.CharData.BaseSkinName.ToLower().Contains("mini"));
             var mob = mobs.FirstOrDefault();
-            var canChangeHumanizer = Menu.Item("JungleClearQHumanizer", true).GetValue<bool>() && Qcd == 0 && 
+            var canChangeHumanizer = Menu.Item("JungleClearQHumanizer", true).GetValue<bool>() && Qcd <= 1 && 
                 Me.ManaPercent >= Menu.Item("JungleClearQMana", true).GetValue<Slider>().Value;
 
             if (IsHumanizer && Me.ManaPercent >= Menu.Item("JungleClearQMana", true).GetValue<Slider>().Value)
@@ -555,7 +574,8 @@
                     }
                 }
 
-                if (Menu.Item("JungleClearECougar", true).GetValue<bool>() && E1Cd == 0 && mob.IsValidTarget(E1.Range))
+                if (Menu.Item("JungleClearECougar", true).GetValue<bool>() && E1Cd == 0 && mob.IsValidTarget(E1.Range) &&
+                    Me.IsFacing(mob))
                 {
                     if (mob != null)
                     {
@@ -570,7 +590,7 @@
 
                 if (Me.Level >= 3)
                 {
-                    if (canChangeHumanizer && bigmobs.Any() && W1Cd > 0 && (E1Cd > 0 || Q1Cd > 0))
+                    if (canChangeHumanizer && bigmobs.Any() && W1Cd > 0 && E1Cd > 0 && Q1Cd > 0)
                     {
                         R.Cast();
                     }
