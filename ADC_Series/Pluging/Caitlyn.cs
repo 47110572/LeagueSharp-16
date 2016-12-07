@@ -150,7 +150,7 @@
             {
                 if (sender.Name == "Rengar_LeapSound.troy" && sender.Position.Distance(Me.Position) < E.Range)
                 {
-                    E.CastOnUnit(Rengar);
+                    E.Cast(Rengar.Position, true);
                 }
             }
 
@@ -158,7 +158,7 @@
             {
                 if (sender.Name == "Khazix_Base_E_Tar.troy" && sender.Position.Distance(Me.Position) <= 300)
                 {
-                    E.CastOnUnit(Khazix);
+                    E.Cast(Khazix.Position, true);
                 }
             }
         }
@@ -171,7 +171,7 @@
                 if (Menu.Item("AntiAlistar", true).GetValue<bool>() && Args.Sender.ChampionName == "Alistar" &&
                     Args.SkillType == GapcloserType.Targeted)
                 {
-                    E.CastOnUnit(Args.Sender, true);
+                    E.Cast(Args.Sender.Position, true);
                 }
 
                 if (Menu.Item("Gapcloser", true).GetValue<bool>() &&
@@ -179,7 +179,7 @@
                 {
                     if (Args.Sender.DistanceToPlayer() <= 200 && Args.Sender.IsValid)
                     {
-                        E.CastOnUnit(Args.Sender, true);
+                        E.Cast(Args.Sender.Position, true);
                     }
                 }
             }
