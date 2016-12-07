@@ -81,7 +81,7 @@
     <Compile Include="Evade\SpellData\SpellData.cs" />
     <Compile Include="Evade\SpellData\SpellDatabase.cs" />
     <Compile Include="Logic.cs" />
-    <Compile Include="Manager\Attack\AfterAttackManager.cs" />
+    <Compile Include="Manager\Events\Attack\AfterAttackManager.cs" />
     <Compile Include="Manager\Events\Animation\AnimationManager.cs" />
     <Compile Include="Manager\Events\Drawings\DrawManager.cs" />
     <Compile Include="Manager\Events\EventManager.cs" />
