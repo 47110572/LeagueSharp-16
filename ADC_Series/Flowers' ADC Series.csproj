@@ -65,17 +65,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\SebbyLibCache.cs" />
-    <Compile Include="Common\Common.cs" />
-    <Compile Include="Common\HpBarDraw.cs" />
-    <Compile Include="Prediction\OktwPrediction.cs" />
+    <Compile Include="myCommon\CheckStatus.cs" />
+    <Compile Include="myCommon\CleaneseManager.cs" />
+    <Compile Include="myCommon\DamageCalculate.cs" />
+    <Compile Include="myCommon\DamageIndicator.cs" />
+    <Compile Include="myCommon\Distance.cs" />
+    <Compile Include="myCommon\HumanizerManager.cs" />
+    <Compile Include="myCommon\LevelsManager.cs" />
+    <Compile Include="myCommon\ManaManager.cs" />
+    <Compile Include="myCommon\MenuManager.cs" />
+    <Compile Include="myCommon\MinionCache.cs" />
+    <Compile Include="myCommon\Orbwalking.cs" />
+    <Compile Include="myCommon\SkinManager.cs" />
+    <Compile Include="myCommon\SpellManager.cs" />
+    <Compile Include="myCommon\StackManager.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Utility\Humanizer.cs" />
     <Compile Include="Pluging\Draven.cs" />
     <Compile Include="Pluging\Kindred.cs" />
-    <Compile Include="Utility\AutoWard.cs" />
-    <Compile Include="Utility\TurnAround.cs" />
-    <Compile Include="Orbwalking\Orbwalking.cs" />
     <Compile Include="Pluging\Ashe.cs" />
     <Compile Include="Pluging\Caitlyn.cs" />
     <Compile Include="Pluging\Corki.cs" />
@@ -94,19 +100,14 @@
     <Compile Include="Pluging\Urgot.cs" />
     <Compile Include="Pluging\Varus.cs" />
     <Compile Include="Pluging\Vayne.cs" />
-    <Compile Include="Prediction\CPrediction.cs" />
     <Compile Include="Logic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Prediction\SDKPrediction.cs" />
-    <Compile Include="Common\YasuoWindWall.cs" />
-    <Compile Include="Utility\AutoLevels.cs" />
-    <Compile Include="Utility\Cleaness.cs" />
-    <Compile Include="Utility\Items.cs" />
-    <Compile Include="Utility\SkinChange.cs" />
+    <Compile Include="myCommon\ItemsManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

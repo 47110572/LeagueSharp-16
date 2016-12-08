@@ -1,4 +1,4 @@
-﻿namespace Flowers_ADC_Series
+﻿namespace myCommon
 {
     using System;
     using LeagueSharp;
@@ -18,7 +18,7 @@
             "gangplankqwrapper", "poppypassiveattack", "powerfist", "renektonpreexecute", "rengarq",
             "shyvanadoubleattack", "sivirw", "takedown", "talonnoxiandiplomacy", "trundletrollsmash", "vaynetumble",
             "vie", "volibearq", "xenzhaocombotarget", "yorickspectral", "reksaiq", "itemtitanichydracleave", "masochism",
-            "illaoiw", "elisespiderw", "fiorae", "meditate", "sejuaninorthernwinds","asheq"
+            "illaoiw", "elisespiderw", "fiorae", "meditate", "sejuaninorthernwinds", "asheq"
         };
 
         private static readonly string[] NoAttacks =
@@ -42,40 +42,34 @@
         };
 
         private static int _autoattackCounter;
+        private static int Delay;
         private static int LastAATick;
         public static int DelayOnFire;
         public static int DelayOnFireId;
         public static int BrainFarmInt = -100;
         private static int LastAttackCommandT;
         private static int LastMoveCommandT;
-
         private static bool _missileLaunched;
         private static bool DisableNextAttack;
+        private static bool DisableAttackIfCastSpell = true;
         private static bool Attack = true;
-        private static bool Move = true;
-
+        public static bool Move = true;
+        public static bool isNone = false;
+        public static bool isCombo = false;
+        public static bool isHarass = false;
+        public static bool isLaneClear = false;
+        public static bool isLastHit = false;
+        public static bool isFreeze = false;
         private static float _minDistance = 400;
-
         private static AttackableUnit _lastTarget;
-
         private static Vector3 LastMoveCommandPosition = Vector3.Zero;
-
         private static List<Obj_AI_Base> MinionListAA = new List<Obj_AI_Base>();
-
-        private static readonly Obj_AI_Hero Player;
-
-        private static readonly string _championName;
-
         private static readonly Random _random = new Random(DateTime.Now.Millisecond);
-
-        private static int Delay { get; set; }
-
         public delegate void AfterAttackEvenH(AttackableUnit unit, AttackableUnit target);
         public delegate void BeforeAttackEvenH(BeforeAttackEventArgs args);
         public delegate void OnAttackEvenH(AttackableUnit unit, AttackableUnit target);
         public delegate void OnNonKillableMinionH(AttackableUnit minion);
         public delegate void OnTargetChangeH(AttackableUnit oldTarget, AttackableUnit newTarget);
-
         public static event AfterAttackEvenH AfterAttack;
         public static event BeforeAttackEvenH BeforeAttack;
         public static event OnAttackEvenH OnAttack;
@@ -84,11 +78,30 @@
 
         static Orbwalking()
         {
-            Player = ObjectManager.Player;
-            _championName = Player.ChampionName;
+            Obj_AI_Base.OnPlayAnimation += OnPlayAnimation;
             Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
             Obj_AI_Base.OnDoCast += OnDoCast;
             Spellbook.OnStopCast += OnStopCast;
+        }
+
+        private static void OnPlayAnimation(Obj_AI_Base sender, GameObjectPlayAnimationEventArgs Args)
+        {
+            if (ObjectManager.Player.ChampionName != "Rengar")
+            {
+                return;
+            }
+
+            if (sender.IsMe && Args.Animation == "Spell5")
+            {
+                var t = 0;
+
+                if (_lastTarget != null && _lastTarget.IsValid)
+                {
+                    t += (int)Math.Min(ObjectManager.Player.Distance(_lastTarget) / 1.5f, 0.6f);
+                }
+
+                LastAATick = Utils.GameTimeTickCount - Game.Ping / 2 + t;
+            }
         }
 
         private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
@@ -138,7 +151,7 @@
 
                 if (ping <= 30)
                 {
-                    LeagueSharp.Common.Utility.DelayAction.Add(30 - ping, () => OnDoCast_Delayed(sender, Args));
+                    Utility.DelayAction.Add(30 - ping, () => OnDoCast_Delayed(sender, Args));
                     return;
                 }
 
@@ -208,46 +221,62 @@
 
         public static bool CanAttack()
         {
-            switch (Player.ChampionName)
+            switch (ObjectManager.Player.ChampionName)
             {
                 case "Graves":
-                    var attackDelay = 1.0740296828d * 1000 * Player.AttackDelay - 716.2381256175d;
+                    var attackDelay = 1.0740296828d * 1000 * ObjectManager.Player.AttackDelay - 716.2381256175d;
 
                     return Utils.GameTimeTickCount + Game.Ping / 2 + 25 >= LastAATick + attackDelay
-                           && Player.HasBuff("GravesBasicAttackAmmo1");
+                           && ObjectManager.Player.HasBuff("GravesBasicAttackAmmo1");
 
                 case "Jhin":
-                    if (Player.HasBuff("JhinPassiveReload"))
+                    if (ObjectManager.Player.HasBuff("JhinPassiveReload"))
                     {
                         return false;
                     }
                     break;
             }
 
-            return Utils.GameTimeTickCount + Game.Ping / 2 + 25 >= LastAATick + Player.AttackDelay * 1000;
+            if (ObjectManager.Player.IsCastingInterruptableSpell() && DisableAttackIfCastSpell)
+            {
+                return false;
+            }
+
+            return Utils.GameTimeTickCount + Game.Ping / 2 + 25 >= LastAATick + ObjectManager.Player.AttackDelay * 1000;
         }
 
-        private static bool CanMove(float extraWindup, bool disableMissileCheck = false)
+        public static bool CanMove(float extraWindup, bool disableMissileCheck = false)
         {
             if (_missileLaunched && Orbwalker.MissileCheck && !disableMissileCheck)
             {
                 return true;
             }
 
-            return _championName == "Kalista"
-                   || (Utils.GameTimeTickCount + Game.Ping / 2
-                       >= LastAATick + Player.AttackCastDelay * 1000 + extraWindup);
+            if (ObjectManager.Player.ChampionName == "Kalista")
+            {
+                return true;
+            }
+
+            if (ObjectManager.Player.ChampionName == "Rengar" &&
+                (ObjectManager.Player.HasBuff("rengarqbase") || ObjectManager.Player.HasBuff("rengarqemp")))
+            {
+                return Utils.GameTimeTickCount + Game.Ping/2
+                       >= LastAATick + ObjectManager.Player.AttackCastDelay*1000 + extraWindup + 200;
+            }
+
+            return Utils.GameTimeTickCount + Game.Ping / 2
+                   >= LastAATick + ObjectManager.Player.AttackCastDelay * 1000 + extraWindup;
         }
 
         public static void MoveTo(Vector3 position, float holdAreaRadius = 0, bool overrideTimer = false, bool randomizeMinDistance = true)
         {
-            var playerPosition = Player.ServerPosition;
+            var playerPosition = ObjectManager.Player.ServerPosition;
 
             if (playerPosition.Distance(position, true) < holdAreaRadius * holdAreaRadius)
             {
-                if (Player.Path.Length > 0)
+                if (ObjectManager.Player.Path.Length > 0)
                 {
-                    Player.IssueOrder(GameObjectOrder.Stop, playerPosition);
+                    ObjectManager.Player.IssueOrder(GameObjectOrder.Stop, playerPosition);
                     LastMoveCommandPosition = playerPosition;
                     LastMoveCommandT = Utils.GameTimeTickCount - 70;
                 }
@@ -257,7 +286,7 @@
 
             var point = position;
 
-            if (Player.Distance(point, true) < 150 * 150)
+            if (ObjectManager.Player.Distance(point, true) < 150 * 150)
             {
                 point = playerPosition.Extend(
                     position,
@@ -265,11 +294,11 @@
             }
 
             var angle = 0f;
-            var currentPath = Player.GetWaypoints();
+            var currentPath = ObjectManager.Player.GetWaypoints();
 
             if (currentPath.Count > 1 && currentPath.PathLength() > 100)
             {
-                var movePath = Player.GetPath(point);
+                var movePath = ObjectManager.Player.GetPath(point);
 
                 if (movePath.Length > 1)
                 {
@@ -282,7 +311,7 @@
 
                     if ((angle < 10 && distance < 500 * 500) || distance < 50 * 50)
                     {
-                        return;
+
                     }
                 }
             }
@@ -298,7 +327,7 @@
                 return;
             }
 
-            Player.IssueOrder(GameObjectOrder.MoveTo, point);
+            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, point);
             LastMoveCommandPosition = point;
             LastMoveCommandT = Utils.GameTimeTickCount;
         }
@@ -318,12 +347,12 @@
 
                 if (!DisableNextAttack)
                 {
-                    if (_championName != "Kalista")
+                    if (ObjectManager.Player.ChampionName != "Kalista")
                     {
                         _missileLaunched = false;
                     }
 
-                    if (Player.IssueOrder(GameObjectOrder.AttackUnit, target))
+                    if (ObjectManager.Player.IssueOrder(GameObjectOrder.AttackUnit, target))
                     {
                         LastAttackCommandT = Utils.GameTimeTickCount;
                         _lastTarget = target;
@@ -335,8 +364,8 @@
 
             if (CanMove(extraWindup) && Move)
             {
-                if (Orbwalker.LimitAttackSpeed && (Player.AttackDelay < 1 / 2.6f) && _autoattackCounter % 3 != 0
-                    && !CanMove(500, true))
+                if (Orbwalker.LimitAttackSpeed && (ObjectManager.Player.AttackDelay < 1/2.6f)
+                    && _autoattackCounter%3 != 0 && !CanMove(500, true))
                 {
                     return;
                 }
@@ -347,9 +376,7 @@
 
         public static float GetAttackRange(Obj_AI_Hero target)
         {
-            var result = target.AttackRange + target.BoundingRadius;
-
-            return result;
+            return target.AttackRange + target.BoundingRadius;
         }
 
         public static Vector3 GetLastMovePosition()
@@ -362,20 +389,40 @@
             return LastMoveCommandT;
         }
 
-        private static float GetMyProjectileSpeed()
+        public static float GetMyProjectileSpeed()
         {
-            return Player.BasicAttack.MissileSpeed;
+            if (ObjectManager.Player.IsMelee)
+            {
+                return float.MaxValue;
+            }
+
+            if (ObjectManager.Player.ChampionName == "Azir")
+            {
+                return float.MaxValue;
+            }
+
+            if (ObjectManager.Player.ChampionName == "Velkoz")
+            {
+                return float.MaxValue;
+            }
+
+            if (ObjectManager.Player.ChampionName == "Viktor"
+                && ObjectManager.Player.HasBuff("ViktorPowerTransferReturn"))
+            {
+                return float.MaxValue;
+            }
+            return ObjectManager.Player.BasicAttack.MissileSpeed;
         }
 
         public static float GetRealAutoAttackRange(AttackableUnit target)
         {
-            var result = Player.AttackRange + Player.BoundingRadius;
+            var result = ObjectManager.Player.AttackRange + ObjectManager.Player.BoundingRadius;
 
             if (target.IsValidTarget())
             {
                 var aiBase = target as Obj_AI_Base;
 
-                if (aiBase != null && Player.ChampionName == "Caitlyn")
+                if (aiBase != null && ObjectManager.Player.ChampionName == "Caitlyn")
                 {
                     if (aiBase.HasBuff("caitlynyordletrapinternal"))
                     {
@@ -402,17 +449,16 @@
             if (hero != null)
             {
                 return
-                    Vector2.DistanceSquared(
-                        LeagueSharp.Common.Prediction.GetPrediction(hero, 0).CastPosition.To2D(), Player.Position.To2D()) <=
-                    myRange*myRange;
+                    Vector2.DistanceSquared(Prediction.GetPrediction(hero, 0).CastPosition.To2D(),
+                        ObjectManager.Player.Position.To2D()) <= myRange*myRange;
             }
 
-            var @base = target as Obj_AI_Base;
+            var basetarget = target as Obj_AI_Base;
 
             return
                 Vector2.DistanceSquared(
-                    @base?.ServerPosition.To2D() ?? target.Position.To2D(),
-                    Player.ServerPosition.To2D()) <= myRange * myRange;
+                    basetarget?.ServerPosition.To2D() ?? target.Position.To2D(),
+                    ObjectManager.Player.ServerPosition.To2D()) <= myRange*myRange;
         }
 
         public static bool IsAutoAttack(string name)
@@ -421,14 +467,9 @@
                    || Attacks.Contains(name.ToLower());
         }
 
-        private static bool IsAutoAttackReset(string name)
+        public static bool IsAutoAttackReset(string name)
         {
             return AttackResets.Contains(name.ToLower());
-        }
-
-        public static bool IsMelee(this Obj_AI_Base unit)
-        {
-            return unit.CombatType == GameObjectCombatType.Melee;
         }
 
         public static void ResetAutoAttackTimer()
@@ -453,8 +494,6 @@
             LaneClear,
             LastHit,
             Freeze,
-            Flee,
-            CustomMode,
             Burst,
             None
         }
@@ -462,7 +501,7 @@
         public class BeforeAttackEventArgs : EventArgs
         {
             public AttackableUnit Target;
-            public readonly Obj_AI_Base Unit = ObjectManager.Player;
+            public Obj_AI_Base Unit = ObjectManager.Player;
             private bool _process = true;
 
             public bool Process
@@ -488,8 +527,6 @@
             private OrbwalkingMode _mode = OrbwalkingMode.None;
             private Vector3 _orbwalkingPoint;
             private Obj_AI_Minion _prevMinion;
-            private string CustomModeName;
-
             private static readonly List<Orbwalker> Instances = new List<Orbwalker>();
 
             public Orbwalker(Menu attachToMenu)
@@ -531,6 +568,9 @@
                     miscMenu.AddItem(
                         new MenuItem("ExtraWindup", "Extra windup time").SetValue(new Slider(80, 0, 200)));
                     miscMenu.AddItem(new MenuItem("FarmDelay", "Farm delay").SetValue(new Slider(0, 0, 200)));
+                    miscMenu.AddItem(
+                        new MenuItem("DisableAttackIfCastSpell", "When Casting Interrupt Spell Auto Disable Attack")
+                            .SetValue(true)).ValueChanged += DisableAttackIfCastSpellValueChanged;
                 }
 
                 var keyMenu = _config.AddSubMenu(new Menu("Keys", "Keys"));
@@ -551,14 +591,14 @@
                         new MenuItem("LastHit", "Last hit").SetValue(new KeyBind('X', KeyBindType.Press)));
                     keyMenu.AddItem(
                         new MenuItem("Freeze", "Freeze").SetValue(new KeyBind('N', KeyBindType.Press)));
-                    keyMenu.AddItem(
-                        new MenuItem("Flee", "Flee").SetValue(new KeyBind('Z', KeyBindType.Press)));
                 }
 
                 _config.AddItem(new MenuItem("  cerdit", "    "));
-                _config.AddItem(new MenuItem("Bysebby", "Credit: Sebby & PlaySharp"));
+                _config.AddItem(new MenuItem("Bysebby", "Credit: NightMoon & Sebby & PlaySharp"));
 
                 _config.Item("StillCombo").ValueChanged += MoveChanged;
+
+                DisableAttackIfCastSpell = _config.Item("DisableAttackIfCastSpell").GetValue<bool>();
 
                 Player = ObjectManager.Player;
                 Game.OnUpdate += OnUpdate;
@@ -566,7 +606,12 @@
                 Instances.Add(this);
             }
 
-            private int FarmDelay => _config.Item("FarmDelay").GetValue<Slider>().Value;
+            private void DisableAttackIfCastSpellValueChanged(object obj, OnValueChangeEventArgs Args)
+            {
+                DisableAttackIfCastSpell = Args.GetNewValue<bool>();
+            }
+
+            internal int FarmDelay => _config.Item("FarmDelay").GetValue<Slider>().Value;
 
             internal static bool MissileCheck => _config.Item("MissileCheck").GetValue<bool>();
 
@@ -616,21 +661,9 @@
                         return OrbwalkingMode.LastHit;
                     }
 
-                    if (_config.Item("Flee").GetValue<KeyBind>().Active)
-                    {
-                        return OrbwalkingMode.Flee;
-                    }
-
-                    if (ObjectManager.Player.ChampionName == "Graves" && _config.Item("Burst") != null &&
-                        _config.Item("Burst").GetValue<KeyBind>().Active)
+                    if (_config.Item("Burst") != null && _config.Item("Burst").GetValue<KeyBind>().Active)
                     {
                         return OrbwalkingMode.Burst;
-                    }
-
-                    if (_config.Item(CustomModeName) != null
-                        && _config.Item(CustomModeName).GetValue<KeyBind>().Active)
-                    {
-                        return OrbwalkingMode.CustomMode;
                     }
 
                     return OrbwalkingMode.None;
@@ -644,22 +677,6 @@
             public void ForceTarget(Obj_AI_Base target)
             {
                 _forcedTarget = target;
-            }
-
-            public bool InAutoAttackRange(AttackableUnit target)
-            {
-                return Orbwalking.InAutoAttackRange(target);
-            }
-
-            public void RegisterCustomMode(string name, string displayname, uint key)
-            {
-                CustomModeName = name;
-
-                if (_config.Item(name) == null)
-                {
-                    _config.AddItem(
-                        new MenuItem(name, displayname).SetValue(new KeyBind(key, KeyBindType.Press)));
-                }
             }
 
             public void SetAttack(bool b)
@@ -679,6 +696,8 @@
 
             private void OnUpdate(EventArgs args)
             {
+                orbwalkerMode();
+
                 if (ActiveMode == OrbwalkingMode.None)
                 {
                     return;
@@ -689,7 +708,7 @@
                     return;
                 }
 
-                MinionListAA = Common.SebbyLibCache.GetMinions(Player.Position, 0);
+                MinionListAA = MinionCache.GetMinions(Player.Position, 0);
 
                 var target = GetTarget();
 
@@ -699,15 +718,20 @@
                     Math.Max(_config.Item("HoldPosRadius").GetValue<Slider>().Value, 30));
             }
 
+            private void orbwalkerMode()
+            {
+                isNone = ActiveMode == OrbwalkingMode.None;
+                isCombo = ActiveMode == OrbwalkingMode.Combo;
+                isHarass = ActiveMode == OrbwalkingMode.Mixed;
+                isLaneClear = ActiveMode == OrbwalkingMode.LaneClear;
+                isLastHit = ActiveMode == OrbwalkingMode.LastHit;
+                isFreeze = ActiveMode == OrbwalkingMode.Freeze;
+            }
+
             public AttackableUnit GetTarget()
             {
                 AttackableUnit result = null;
                 var mode = ActiveMode;
-
-                if (mode == OrbwalkingMode.Flee)
-                {
-                    return null;
-                }
 
                 if (_forcedTarget.IsValidTarget() && InAutoAttackRange(_forcedTarget))
                 {
@@ -1138,7 +1162,7 @@
                                 && InAutoAttackRange(minion) && MinionManager.IsMinion(minion)
                                 && HealthPrediction.LaneClearHealthPrediction(
                                     minion,
-                                    (int)(Player.AttackDelay * 1000 * LaneClearWaitTimeMod),
+                                    (int) (Player.AttackDelay*1000*LaneClearWaitTimeMod),
                                     FarmDelay) <= Player.GetAutoAttackDamage(minion));
             }
 
@@ -1154,10 +1178,10 @@
                                 && HealthPrediction.LaneClearHealthPrediction(
                                     minion,
                                     (int)
-                                    (Player.AttackDelay * 1000
-                                     + (Player.AttackCastDelay * 1000
-                                        + 1000 * (Player.AttackRange + 2 * Player.BoundingRadius)
-                                        / Player.BasicAttack.MissileSpeed)),
+                                    (Player.AttackDelay*1000
+                                     + (Player.AttackCastDelay*1000
+                                        + 1000*(Player.AttackRange + 2*Player.BoundingRadius)
+                                        /Player.BasicAttack.MissileSpeed)),
                                     FarmDelay) <= Player.GetAutoAttackDamage(minion));
             }
 
@@ -1216,7 +1240,7 @@
                 if (_config.Item("LastHitHelper").GetValue<bool>())
                 {
                     foreach (var minion in
-                        Common.SebbyLibCache.MinionsListEnemy
+                        MinionCache.MinionsListEnemy
                             .Where(
                                 x => x.Name.ToLower().Contains("minion") && x.IsHPBarRendered && x.IsValidTarget(1000)))
                     {
