@@ -398,13 +398,14 @@
                 {
                     if (Menu.Item("LaneClearW", true).GetValue<bool>() && W.IsReady())
                     {
-                        var wFarm =
-                            MinionManager.GetBestCircularFarmLocation(minions.Select(x => x.Position.To2D()).ToList(),
-                                75f, W.Range);
-
-                        if (wFarm.MinionsHit >= Menu.Item("LaneClearWCount", true).GetValue<Slider>().Value)
+                        if (minions.Count >= Menu.Item("LaneClearWCount", true).GetValue<Slider>().Value)
                         {
-                            W.Cast(wFarm.Position);
+                            var min = minions.MaxOrDefault(x => x.DistanceToPlayer());
+
+                            if (min != null)
+                            {
+                                W.Cast(min.Position);
+                            }
                         }
                     }
 
