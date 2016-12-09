@@ -85,7 +85,7 @@
 
                     var interruptMenu = eMenu.AddSubMenu(new Menu("Interrupt Settings", "Interrupt Settings"));
                     {
-                        interruptMenu.AddItem(new MenuItem("Interrupt", "Interrupt Danger Spells", true).SetValue(true));
+                        interruptMenu.AddItem(new MenuItem("Interrupt", "Interrupt Danger Spells", true).SetValue(false));
                         interruptMenu.AddItem(new MenuItem("AntiAlistar", "Interrupt Alistar W", true).SetValue(true));
                         interruptMenu.AddItem(new MenuItem("AntiRengar", "Interrupt Rengar Jump", true).SetValue(true));
                         interruptMenu.AddItem(new MenuItem("AntiKhazix", "Interrupt Khazix R", true).SetValue(true));
@@ -421,12 +421,12 @@
                         if (Menu.GetBool("JungleClearQ") && Q.IsReady())
                         {
                             var mobs =
-                                MinionManager.GetMinions(Me.Position, 700, MinionTypes.All, MinionTeam.Neutral,
+                                MinionManager.GetMinions(Me.Position, 800, MinionTypes.All, MinionTeam.Neutral,
                                     MinionOrderTypes.MaxHealth);
 
                             if (mobs.Any())
                             {
-                                Q.Cast(mobs.FirstOrDefault());
+                                Q.Cast(Game.CursorPos, true);
                             }
                         }
                     }
