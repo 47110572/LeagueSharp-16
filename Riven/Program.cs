@@ -1,40 +1,30 @@
 ﻿namespace Flowers_Riven
 {
-    using Common;
+    using myCommon;
     using LeagueSharp;
     using LeagueSharp.Common;
-    using SharpDX;
     using System;
     using System.Linq;
     using Color = System.Drawing.Color;
+    using Orbwalking = myCommon.Orbwalking;
 
     internal class Program
     {
-        public static Spell Q;
-        public static Spell W;
-        public static Spell E;
-        public static Spell R;
-        public static SpellSlot Ignite = SpellSlot.Unknown;
-        public static SpellSlot Flash = SpellSlot.Unknown;
-        public static Menu Menu;
-        public static Obj_AI_Hero Me;
-        public static bool CanQ;
-        public static bool CanFlash;
-        public static Vector3 FleePosition = Vector3.Zero;
-        public static Vector3 TargetPosition = Vector3.Zero;
-        public static int QStack;
-        public static Orbwalking.Orbwalker Orbwalker;
-        public static AttackableUnit QTarget;
-        public static Obj_AI_Hero BurstTarget;
-        public static int SkinID;
-        public static readonly HpBarDraw DrawHpBar = new HpBarDraw();
+        private static Spell Q, W, E, R;
+        private static SpellSlot Ignite = SpellSlot.Unknown, Flash = SpellSlot.Unknown;
+        private static Menu Menu;
+        private static Obj_AI_Hero Me;
+        private static bool CanQ;
+        private static int QStack;
+        private static Orbwalking.Orbwalker Orbwalker;
+        private static Obj_AI_Base QTarget;
 
-        private static void Main(string[] args)
+        private static void Main(string[] Args)
         {
             CustomEvents.Game.OnGameLoad += OnLoad;
         }
 
-        private static void OnLoad(EventArgs args)
+        private static void OnLoad(EventArgs Args)
         {
             if (ObjectManager.Player.ChampionName != "Riven")
             {
@@ -44,110 +34,123 @@
             Me = ObjectManager.Player;
 
             Q = new Spell(SpellSlot.Q, 325f);
-            W = new Spell(SpellSlot.W, 270f);
+            W = new Spell(SpellSlot.W, 260f);
             E = new Spell(SpellSlot.E, 312f);
-            R = new Spell(SpellSlot.R, 900f) { MinHitChance = HitChance.High };
+            R = new Spell(SpellSlot.R, 900f);
             R.SetSkillshot(0.25f, 45f, 1600f, false, SkillshotType.SkillshotCone);
 
             Ignite = Me.GetSpellSlot("SummonerDot");
             Flash = Me.GetSpellSlot("SummonerFlash");
 
-            SkinID = Me.BaseSkinId;
-
             Menu = new Menu("Flowers' Riven", "Flowers' Riven", true);
 
-            Menu.AddSubMenu(new Menu("Orbwalking", "Orbwalker.Menu"));
+            var targetMenu = Menu.AddSubMenu(new Menu("Target Selector", "Target Selector"));
             {
-                Orbwalker = new Orbwalking.Orbwalker(Menu.SubMenu("Orbwalker.Menu"));
+                TargetSelector.AddToMenu(targetMenu);
             }
 
-            var ComboMenu = Menu.AddSubMenu(new Menu("Combo", "Combo"));
+            var orbMenu = Menu.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
             {
-                ComboMenu.AddItem(new MenuItem("ComboW", "Use W", true).SetValue(true));
-                ComboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));
-                ComboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(true));
-                ComboMenu.AddItem(
-                    new MenuItem("R1Combo", "Use R1", true).SetValue(new KeyBind('L', KeyBindType.Toggle, true)));
-                ComboMenu.AddItem(
+                Orbwalker = new Orbwalking.Orbwalker(orbMenu);
+            }
+
+            var comboMenu = Menu.AddSubMenu(new Menu("Combo", "Combo"));
+            {
+                comboMenu.AddItem(new MenuItem("ComboW", "Use W", true).SetValue(true));
+                comboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));
+                comboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(true));
+                comboMenu.AddItem(
+                    new MenuItem("R1Combo", "Use R1", true).SetValue(new KeyBind('L', KeyBindType.Toggle, true))).Permashow();
+                comboMenu.AddItem(
                     new MenuItem("R2Mode", "Use R2 Mode: ", true).SetValue(
                         new StringList(new[] { "Killable", "Max Damage", "First Cast", "Off" }, 1)));
-                ComboMenu.AddItem(new MenuItem("ComboIgnite", "Use Ignite", true).SetValue(true));
-                ComboMenu.AddItem(new MenuItem("Brust Setting", "Brust Setting"));
-                ComboMenu.AddItem(new MenuItem("BurstFlash", "Use Flash", true).SetValue(true));
-                ComboMenu.AddItem(new MenuItem("BurstIgnite", "Use Ignite", true).SetValue(true));
+                comboMenu.AddItem(new MenuItem("ComboIgnite", "Use Ignite", true).SetValue(true));
             }
 
-            var HarassMenu = Menu.AddSubMenu(new Menu("Harass", "Harass"));
+            var burstMenu = Menu.AddSubMenu(new Menu("Burst", "Burst"));
             {
-                HarassMenu.AddItem(new MenuItem("HarassQ", "Use Q", true).SetValue(true));
-                HarassMenu.AddItem(new MenuItem("HarassW", "Use W", true).SetValue(true));
-                HarassMenu.AddItem(new MenuItem("HarassE", "Use E", true).SetValue(true));
+                burstMenu.AddItem(new MenuItem("BurstFlash", "Use Flash", true).SetValue(true));
+                burstMenu.AddItem(new MenuItem("BurstIgnite", "Use Ignite", true).SetValue(true));
+                burstMenu.AddItem(new MenuItem("Note...", "Note: ", true));
+                burstMenu.AddItem(new MenuItem("target...", "Left Cilck the Target", true));
+                burstMenu.AddItem(new MenuItem("range...", "And Target in Burst Range", true));
+                burstMenu.AddItem(new MenuItem("press...", "And then Press the Burst Key", true));
             }
 
-            var LaneClearMenu = Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
+            var harassMenu = Menu.AddSubMenu(new Menu("Harass", "Harass"));
             {
-                LaneClearMenu.AddItem(new MenuItem("LaneClearQ", "Use Q", true).SetValue(true));
-                LaneClearMenu.AddItem(new MenuItem("LaneClearW", "Use W", true).SetValue(true));
+                harassMenu.AddItem(new MenuItem("HarassQ", "Use Q", true).SetValue(true));
+                harassMenu.AddItem(new MenuItem("HarassW", "Use W", true).SetValue(true));
+                harassMenu.AddItem(new MenuItem("HarassE", "Use E", true).SetValue(true));
+                //harassMenu.AddItem(
+                //    new MenuItem("HarassMode", "Harass Mode", true).SetValue(new StringList(new[] {"Smart", "Burst"})));
             }
 
-            var JungleClearMenu = Menu.AddSubMenu(new Menu("JungleClear", "JungleClear"));
+            var clearMenu = Menu.AddSubMenu(new Menu("Clear", "Clear"));
             {
-                JungleClearMenu.AddItem(new MenuItem("JungleClearQ", "Use Q", true).SetValue(true));
-                JungleClearMenu.AddItem(new MenuItem("JungleClearW", "Use W", true).SetValue(true));
-                JungleClearMenu.AddItem(new MenuItem("JungleClearE", "Use E", true).SetValue(true));
+                var laneClearMenu = clearMenu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
+                {
+                    laneClearMenu.AddItem(new MenuItem("LaneClearQ", "Use Q", true).SetValue(true));
+                    laneClearMenu.AddItem(new MenuItem("LaneClearW", "Use W", true).SetValue(true));
+                }
+
+                var jungleClearMenu = clearMenu.AddSubMenu(new Menu("JungleClear", "JungleClear"));
+                {
+                    jungleClearMenu.AddItem(new MenuItem("JungleClearQ", "Use Q", true).SetValue(true));
+                    jungleClearMenu.AddItem(new MenuItem("JungleClearW", "Use W", true).SetValue(true));
+                    jungleClearMenu.AddItem(new MenuItem("JungleClearWLogic", "Use W| Smart", true).SetValue(true));
+                    jungleClearMenu.AddItem(new MenuItem("JungleClearE", "Use E", true).SetValue(true));
+                }
             }
 
-            var KillStealMenu = Menu.AddSubMenu(new Menu("KillSteal", "KillSteal"));
+            var killStealMenu = Menu.AddSubMenu(new Menu("KillSteal", "KillSteal"));
             {
-                KillStealMenu.AddItem(new MenuItem("KillStealW", "Use W", true).SetValue(true));
-                KillStealMenu.AddItem(new MenuItem("KillStealE", "Use E", true).SetValue(true));
-                KillStealMenu.AddItem(new MenuItem("KillStealR", "Use R", true).SetValue(true));
+                killStealMenu.AddItem(new MenuItem("KillStealW", "Use W", true).SetValue(true));
+                killStealMenu.AddItem(
+                    new MenuItem("KillStealE", "Use E", true).SetValue(true).SetTooltip("E Gapcloser and R2 Kill"));
+                killStealMenu.AddItem(new MenuItem("KillStealR", "Use R", true).SetValue(true));
             }
 
-            var MiscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
+            var miscMenu = Menu.AddSubMenu(new Menu("Misc", "Misc"));
             {
-                MiscMenu.AddItem(new MenuItem("Q Setting", "Q Setting"));
-                MiscMenu.AddItem(new MenuItem("Q1Delay", "Q1 Delay: ", true).SetValue(new Slider(242, 200, 300)));
-                MiscMenu.AddItem(new MenuItem("Q2Delay", "Q2 Delay: ", true).SetValue(new Slider(242, 200, 300)));
-                MiscMenu.AddItem(new MenuItem("Q3Delay", "Q3 Delay: ", true).SetValue(new Slider(342, 300, 400)));
-                MiscMenu.AddItem(new MenuItem("AutoSetDelay", "Auto Set Q Delay?", true).SetValue(true)).ValueChanged +=
-                    DelayChanged;
-                MiscMenu.AddItem(new MenuItem("KeepQALive", "Keep Q alive", true).SetValue(true));
-                MiscMenu.AddItem(new MenuItem("Dance", "Dance Emote in QA", true).SetValue(false));
-                MiscMenu.AddItem(new MenuItem("W Setting", "W Setting"));
-                MiscMenu.AddItem(new MenuItem("AntiGapCloserW", "AntiGapCloser", true).SetValue(true));
-                MiscMenu.AddItem(new MenuItem("InterruptTargetW", "Interrupt Danger Spell", true).SetValue(true));
+                var qMenu = miscMenu.AddSubMenu(new Menu("Q Setting", "Q Setting"));
+                {
+                    var qDelayMenu = qMenu.AddSubMenu(new Menu("Delay Settings", "Delay Settings"));
+                    {
+                        qDelayMenu.AddItem(new MenuItem("Q1Delay", "Q1 Delay: ", true).SetValue(new Slider(242, 200, 300)));
+                        qDelayMenu.AddItem(new MenuItem("Q2Delay", "Q2 Delay: ", true).SetValue(new Slider(242, 200, 300)));
+                        qDelayMenu.AddItem(new MenuItem("Q3Delay", "Q3 Delay: ", true).SetValue(new Slider(342, 300, 400)));
+                        qDelayMenu.AddItem(new MenuItem("AutoSetDelay", "Auto Set Q Delay?", true).SetValue(false)).ValueChanged +=
+                            DelayChanged;
+                    }
+
+                    qMenu.AddItem(new MenuItem("KeepQALive", "Keep Q alive", true).SetValue(true));
+                    qMenu.AddItem(new MenuItem("Dance", "Dance Emote in QA", true).SetValue(false));
+                }
+
+                var wMenu = miscMenu.AddSubMenu(new Menu("W Setting", "W Setting"));
+                {
+                    wMenu.AddItem(new MenuItem("AntiGapCloserW", "AntiGapCloser", true).SetValue(true));
+                    wMenu.AddItem(new MenuItem("InterruptTargetW", "Interrupt Danger Spell", true).SetValue(true));
+                }
+
+                var skinMenu = miscMenu.AddSubMenu(new Menu("SkinChance", "SkinChance"));
+                {
+                    SkinManager.AddToMenu(skinMenu, 7);
+                }
             }
 
-            var EvadeMenu = Menu.AddSubMenu(new Menu("Evade", "Evade"));
+            var drawMenu = Menu.AddSubMenu(new Menu("Draw", "Drawings"));
             {
-                Evade.Program.InjectEvade();
+                drawMenu.AddItem(new MenuItem("DrawW", "Draw W Range", true).SetValue(false));
+                drawMenu.AddItem(new MenuItem("DrawBurst", "Draw Burst Range", true).SetValue(true));
+                drawMenu.AddItem(new MenuItem("DrawRStatus", "Draw R Status", true).SetValue(true));
+                DamageIndicator.AddToMenu(drawMenu, GetComboDamage);
             }
 
-            var SkinMenu = Menu.AddSubMenu(new Menu("SkinChance", "SkinChance"));
-            {
-                SkinMenu.AddItem(new MenuItem("EnableSkin", "Enabled", true).SetValue(false)).ValueChanged += EnbaleSkin;
-                SkinMenu.AddItem(
-                    new MenuItem("SelectSkin", "Select Skin: ", true).SetValue(
-                        new StringList(new[]
-                        {
-                            "Classic", "Redeemed Riven", "Crimson Elite Riven", "Battle Bunny Riven",
-                            "Championship Riven", "Dragonblade Riven", "Arcade Riven"
-                        })));
-            }
-
-            var DrawMenu = Menu.AddSubMenu(new Menu("Draw", "Drawings"));
-            {
-                DrawMenu.AddItem(new MenuItem("drawingW", "W Range", true).SetValue(false));
-                DrawMenu.AddItem(new MenuItem("BrustMinRange", "Burst Min Range", true).SetValue(true));
-                DrawMenu.AddItem(new MenuItem("BrustMaxRange", "Burst Max Range", true).SetValue(true));
-                DrawMenu.AddItem(new MenuItem("QuickHarassRange", "Quick Harass Range", true).SetValue(true));
-                DrawMenu.AddItem(new MenuItem("DrawDamage", "Draw Combo Damage", true).SetValue(true));
-                DrawMenu.AddItem(new MenuItem("ShowR1", "Show R1 Status", true).SetValue(true));
-                DrawMenu.AddItem(new MenuItem("ShowBurst", "Show Burst Status", true).SetValue(true));
-            }
-
+            Menu.AddItem(new MenuItem("asdvre1w56", "  "));
             Menu.AddItem(new MenuItem("Credit", "Credit : NightMoon"));
+            Menu.AddItem(new MenuItem("Version", "Version : 1.0.0.5"));
 
             Menu.AddToMainMenu();
 
@@ -177,25 +180,21 @@
             }
         }
 
-        private static void OnEnemyGapcloser(ActiveGapcloser gapcloser)
+        private static void OnEnemyGapcloser(ActiveGapcloser Args)
         {
-            if (Menu.Item("AntiGapCloserW", true).GetValue<bool>() && W.IsReady())
+            if (Menu.GetBool("AntiGapCloserW") && W.IsReady() && Args.Sender.IsValidTarget(W.Range) && 
+                Me.CountEnemiesInRange(1000) < 3)
             {
-                if (gapcloser.Sender.IsValidTarget(W.Range) && Me.CountEnemiesInRange(1500) < 3)
-                {
-                    W.Cast();
-                }
+                W.Cast(true);
             }
         }
 
         private static void OnInterruptableTarget(Obj_AI_Hero sender, Interrupter2.InterruptableTargetEventArgs Args)
         {
-            if (Menu.Item("InterruptTargetW", true).GetValue<bool>() && W.IsReady())
+            if (Menu.GetBool("InterruptTargetW")&& W.IsReady() && sender.IsValidTarget(W.Range) && 
+                !sender.ServerPosition.UnderTurret(true))
             {
-                if (sender.IsValidTarget(W.Range) && !sender.ServerPosition.UnderTurret(true))
-                {
-                    W.Cast();
-                }
+                W.Cast(true);
             }
         }
 
@@ -209,30 +208,24 @@
             switch (Args.SData.Name)
             {
                 case "ItemTiamatCleave":
+                    if (!HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= W.Range))
+                    {
+                        return;
+                    }
+
                     switch (Orbwalker.ActiveMode)
                     {
                         case Orbwalking.OrbwalkingMode.Combo:
-                            if (Menu.Item("ComboW", true).GetValue<bool>() && W.IsReady() &&
-                                Me.CountEnemiesInRange(W.Range - 50) > 0)
+                            if (Menu.GetBool("ComboW") && W.IsReady())
                             {
                                 W.Cast();
                             }
                             break;
                         case Orbwalking.OrbwalkingMode.Burst:
-                            if (Me.CountEnemiesInRange(W.Range - 50) > 0)
-                            {
-                                W.Cast();
-                            }
+                            W.Cast();
                             break;
                         case Orbwalking.OrbwalkingMode.Mixed:
-                            if (Menu.Item("HarassW", true).GetValue<bool>() && W.IsReady() &&
-                                Me.CountEnemiesInRange(W.Range - 50) > 0)
-                            {
-                                W.Cast();
-                            }
-                            break;
-                        case Orbwalking.OrbwalkingMode.QuickHarass:
-                            if (Me.CountEnemiesInRange(W.Range - 50) > 0)
+                            if (Menu.GetBool("HarassW") && W.IsReady())
                             {
                                 W.Cast();
                             }
@@ -242,7 +235,7 @@
                 case "RivenTriCleave":
                     CanQ = false;
 
-                    if (Me.CountEnemiesInRange(400) == 0)
+                    if (!HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 400))
                     {
                         return;
                     }
@@ -252,7 +245,7 @@
                         case Orbwalking.OrbwalkingMode.Combo:
                             CastItem(true);
 
-                            if (Menu.Item("ComboR", true).GetValue<bool>() && R.IsReady())
+                            if (Menu.GetBool("ComboR") && R.IsReady())
                             {
                                 var target = TargetSelector.GetSelectedTarget() ??
                                              TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
@@ -268,13 +261,13 @@
 
                             if (R.IsReady())
                             {
-                                if (BurstTarget != null && BurstTarget.IsValidTarget(R.Range))
+                                if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
                                 {
-                                    var rPred = R.GetPrediction(BurstTarget);
+                                    var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
 
                                     if (rPred.Hitchance >= HitChance.High)
                                     {
-                                        R.Cast(rPred.CastPosition);
+                                        R.Cast(rPred.CastPosition, true);
                                     }
                                 }
                             }
@@ -285,7 +278,7 @@
                     switch (Orbwalker.ActiveMode)
                     {
                         case Orbwalking.OrbwalkingMode.Combo:
-                            if (Menu.Item("ComboR", true).GetValue<bool>() && R.IsReady())
+                            if (Menu.GetBool("ComboR") && R.IsReady())
                             {
                                 var target = TargetSelector.GetSelectedTarget() ??
                                              TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
@@ -299,13 +292,13 @@
                         case Orbwalking.OrbwalkingMode.Burst:
                             if (R.IsReady())
                             {
-                                if (BurstTarget != null && BurstTarget.IsValidTarget(R.Range))
+                                if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
                                 {
-                                    var rPred = R.GetPrediction(BurstTarget);
+                                    var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
 
                                     if (rPred.Hitchance >= HitChance.High)
                                     {
-                                        R.Cast(rPred.CastPosition);
+                                        R.Cast(rPred.CastPosition, true);
                                     }
                                 }
                             }
@@ -313,9 +306,7 @@
                     }
                     break;
                 case "RivenMartyr":
-                    if ((Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo ||
-                        Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst) &&
-                        Me.CountEnemiesInRange(400) > 0)
+                    if ((Orbwalking.isCombo || Orbwalking.isBurst) && HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 400))
                     {
                         CastItem(true);
                     }
@@ -337,14 +328,12 @@
                                 switch (R.Instance.Name)
                                 {
                                     case "RivenFengShuiEngine":
-                                        if (Menu.Item("R1Combo", true).GetValue<KeyBind>().Active)
+                                        if (Menu.GetKey("R1Combo"))
                                         {
-                                            if (target.Distance(Me.ServerPosition) <
-                                                E.Range + Me.AttackRange &&
-                                                Me.CountEnemiesInRange(500) >= 1 &&
-                                                !target.IsDead)
+                                            if (target.DistanceToPlayer() <= 500 &&
+                                                HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 500))
                                             {
-                                                R.Cast();
+                                                R.Cast(true);
                                             }
                                         }
                                         break;
@@ -355,7 +344,7 @@
                             }
                             break;
                         case Orbwalking.OrbwalkingMode.Burst:
-                            if (BurstTarget != null && BurstTarget.IsValidTarget(R.Range))
+                            if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
                             {
                                 switch (R.Instance.Name)
                                 {
@@ -363,11 +352,11 @@
                                         R.Cast();
                                         break;
                                     case "RivenIzunaBlade":
-                                        var rPred = R.GetPrediction(BurstTarget);
+                                        var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
 
                                         if (rPred.Hitchance >= HitChance.High)
                                         {
-                                            R.Cast(rPred.CastPosition);
+                                            R.Cast(rPred.CastPosition, true);
                                         }
                                         break;
                                 }
@@ -395,13 +384,13 @@
                             }
                             break;
                         case Orbwalking.OrbwalkingMode.Burst:
-                            if (BurstTarget != null && BurstTarget.IsValidTarget())
+                            if (TargetSelector.GetSelectedTarget().IsValidTarget())
                             {
-                                if (BurstTarget.IsValidTarget(Q.Range))
+                                if (TargetSelector.GetSelectedTarget().IsValidTarget(Q.Range))
                                 {
-                                    CastQ(BurstTarget);
+                                    CastQ(TargetSelector.GetSelectedTarget());
                                 }
-                                else if (BurstTarget.IsValidTarget(W.Range) && W.IsReady())
+                                else if (TargetSelector.GetSelectedTarget().IsValidTarget(W.Range) && W.IsReady())
                                 {
                                     W.Cast();
                                 }
@@ -419,9 +408,7 @@
                 return;
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.None ||
-                Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.WallJump ||
-                Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Flee)
+            if (Orbwalking.isNone || Orbwalking.isFlee)
             {
                 return;
             }
@@ -441,6 +428,10 @@
                 QStack = 0;
                 ResetQA(Menu.Item("Q3Delay", true).GetValue<Slider>().Value);
             }
+            else
+            {
+                QStack = 0;
+            }
         }
 
         private static void ResetQA(int time)
@@ -457,14 +448,6 @@
             });
         }
 
-        private static void EnbaleSkin(object obj, OnValueChangeEventArgs Args)
-        {
-            if (!Args.GetNewValue<bool>())
-            {
-                ObjectManager.Player.SetSkin(ObjectManager.Player.ChampionName, SkinID);
-            }
-        }
-
         private static void OnDoCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
         {
             if (!sender.IsMe || !Orbwalking.IsAutoAttack(Args.SData.Name))
@@ -476,8 +459,6 @@
             {
                 return;
             }
-
-            QTarget = (Obj_AI_Base)Args.Target;
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
             {
@@ -502,7 +483,7 @@
 
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst)
             {
-                var target = Args.Target as Obj_AI_Hero;
+                var target = TargetSelector.GetSelectedTarget();
 
                 if (target != null && !target.IsDead && !target.IsZombie)
                 {
@@ -519,22 +500,6 @@
                 }
             }
 
-            if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.QuickHarass)
-            {
-                var target = Args.Target as Obj_AI_Hero;
-
-                if (target != null && !target.IsDead && !target.IsZombie)
-                {
-                    CastItem(true);
-
-                    if (Q.IsReady() && QStack != 2 &&
-                        Menu.Item("HarassQ", true).GetValue<bool>())
-                    {
-                        CastQ(target);
-                    }
-                }
-            }
-
             if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
             {
                 var target = Args.Target as Obj_AI_Hero;
@@ -543,9 +508,21 @@
                 {
                     CastItem(true);
 
-                    if (Q.IsReady() && Menu.Item("HarassQ", true).GetValue<bool>())
+                    if (Menu.GetBool("HarassQ") && Q.IsReady())
                     {
-                        CastQ(target);
+                        //if (Menu.GetList("HarassMode") == 0)
+                        //{
+                        //    if (QStack == 2)
+                        //    {
+                        //        return;
+                        //    }
+
+                        //    CastQ(target);
+                        //}
+                        //else
+                        {
+                            CastQ(target);
+                        }
                     }
                 }
             }
@@ -559,7 +536,7 @@
 
         private static void LaneClear(GameObjectProcessSpellCastEventArgs Args)
         {
-            if (Menu.Item("LaneClearQ", true).GetValue<bool>() && Q.IsReady())
+            if (Menu.GetBool("LaneClearQ") && Q.IsReady())
             {
                 if (Args.Target.Type == GameObjectType.obj_AI_Turret || Args.Target.Type == GameObjectType.obj_Turret)
                 {
@@ -571,7 +548,7 @@
                 else
                 {
                     var minion = Args.Target as Obj_AI_Minion;
-                    var minions = MinionManager.GetMinions(E.Range + Me.AttackRange);
+                    var minions = MinionManager.GetMinions(Me.Position, 500f);
 
                     if (minion != null)
                     {
@@ -598,25 +575,18 @@
                 {
                     CastItem(true);
 
-                    if (Menu.Item("JungleClearQ", true).GetValue<bool>() && Q.IsReady())
+                    if (Menu.GetBool("JungleClearE") && E.IsReady())
+                    {
+                        E.Cast(mob.Position, true);
+                    }
+                    else if (Menu.GetBool("JungleClearQ") && Q.IsReady())
                     {
                         CastQ(mob);
                     }
-                    else if (Menu.Item("JungleClearW", true).GetValue<bool>() && W.IsReady() &&
+                    else if (Menu.GetBool("JungleClearW") && W.IsReady() &&
                              mob.IsValidTarget(W.Range))
                     {
-                        W.Cast();
-                    }
-                    else if (Menu.Item("JungleClearE", true).GetValue<bool>() && E.IsReady())
-                    {
-                        if (mob.HasBuffOfType(BuffType.Stun) && !W.IsReady())
-                        {
-                            E.Cast(mob.Position);
-                        }
-                        else if (!mob.HasBuffOfType(BuffType.Stun))
-                        {
-                            E.Cast(mob.Position);
-                        }
+                        W.Cast(true);
                     }
                 }
             }
@@ -625,8 +595,13 @@
         private static void OnUpdate(EventArgs args)
         {
             QADelaySet();
-        
-            if (Me.IsDead)
+
+            if (W.Level > 0)
+            {
+                W.Range = Me.HasBuff("RivenFengShuiEngine") ? 330 : 260;
+            }
+
+            if (Me.IsDead || Me.IsRecalling())
             {
                 return;
             }
@@ -634,12 +609,6 @@
             Autobool();
             KeelQLogic();
             KillStealLogic();
-
-            if (Menu.Item("EnableSkin", true).GetValue<bool>())
-            {
-                ObjectManager.Player.SetSkin(ObjectManager.Player.ChampionName,
-                    Menu.Item("SelectSkin", true).GetValue<StringList>().SelectedIndex);
-            }
 
             switch (Orbwalker.ActiveMode)
             {
@@ -652,17 +621,12 @@
                 case Orbwalking.OrbwalkingMode.Mixed:
                     Harass();
                     break;
-                case Orbwalking.OrbwalkingMode.QuickHarass:
-                    QuickHarass();
-                    break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     LaneClear();
+                    JungleClear();
                     break;
                 case Orbwalking.OrbwalkingMode.Flee:
                     FleeLogic();
-                    break;
-                case Orbwalking.OrbwalkingMode.WallJump:
-                    WallJump();
                     break;
             }
         }
@@ -694,71 +658,56 @@
 
         private static void Autobool()
         {
-            if (QTarget != null)
+            if (QTarget != null && CanQ)
             {
-                if (CanQ)
-                {
-                    Q.Cast(((Obj_AI_Base)QTarget).Position);
-                }
+                Q.Cast(QTarget.Position, true);
             }
         }
 
         private static void KeelQLogic()
         {
-            if (Menu.Item("KeepQALive", true).GetValue<bool>() && !Me.UnderTurret(true) &&
-                !Me.IsRecalling() && Me.HasBuff("RivenTriCleave"))
+            if (Menu.GetBool("KeepQALive") && !Me.UnderTurret(true) && Me.HasBuff("RivenTriCleave"))
             {
                 if (Me.GetBuff("RivenTriCleave").EndTime - Game.Time < 0.3)
                 {
-                    Q.Cast(Game.CursorPos);
+                    Q.Cast(Me.Position.Extend(Game.CursorPos, 350f), true);
                 }
             }
         }
 
         private static void KillStealLogic()
         {
-            foreach (var e in HeroManager.Enemies.Where(e => !e.IsZombie && !e.HasBuff("KindredrNoDeathBuff") &&
-                                                             !e.HasBuff("Undying Rage") &&
-                                                             !e.HasBuff("JudicatorIntervention") && e.IsValidTarget()))
+            foreach (var target in HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range)))
             {
-                if (W.IsReady() && Menu.Item("KillStealW", true).GetValue<bool>())
+                if (target.Check(R.Range + E.Range - 100))
                 {
-                    if (e.IsValidTarget(W.Range) &&
-                        Me.GetSpellDamage(e, SpellSlot.W) > e.Health + e.HPRegenRate)
+                    if (W.IsReady() && Menu.GetBool("KillStealW") && target.IsValidTarget(W.Range) &&
+                        target.Health < GetWDamage(target))
                     {
-                        W.Cast();
+                        W.Cast(true);
                     }
-                }
 
-                if (R.IsReady() && Menu.Item("KillStealR", true).GetValue<bool>())
-                {
-                    if (Me.HasBuff("RivenWindScarReady"))
+                    if (R.IsReady() && Menu.GetBool("KillStealR") && R.Instance.Name == "RivenIzunaBlade" &&
+                        GetRDamage(target) > target.Health + target.HPRegenRate)
                     {
-                        if (E.IsReady() && Menu.Item("KillStealE", true).GetValue<bool>())
+                        if (E.IsReady() && Menu.GetBool("KillStealE"))
                         {
                             if (Me.ServerPosition.CountEnemiesInRange(R.Range + E.Range) < 3 &&
-                                Me.HealthPercent > 50)
+                                Me.HealthPercent > 50 && target.IsValidTarget(R.Range + E.Range - 100))
                             {
-                                if (Me.GetSpellDamage(e, SpellSlot.R) > e.Health + e.HPRegenRate &&
-                                    e.IsValidTarget(R.Range + E.Range - 100))
+                                if (E.IsReady())
                                 {
-                                    if (E.IsReady())
-                                    {
-                                        E.Cast(e.Position);
-                                    }
-                                    else if (!E.IsReady())
-                                    {
-                                        R.CastIfHitchanceEquals(e, HitChance.High, true);
-                                    }
+                                    E.Cast(target.Position, true);
+                                    Utility.DelayAction.Add(100,
+                                        () => R.CastIfHitchanceEquals(target, HitChance.High, true));
                                 }
                             }
                         }
                         else
                         {
-                            if (Me.GetSpellDamage(e, SpellSlot.R) > e.Health + e.HPRegenRate &&
-                                e.IsValidTarget(R.Range - 50))
+                            if (target.IsValidTarget(R.Range - 50))
                             {
-                                R.CastIfHitchanceEquals(e, HitChance.High, true);
+                                R.CastIfHitchanceEquals(target, HitChance.High, true);
                             }
                         }
                     }
@@ -768,24 +717,25 @@
 
         private static void Combo()
         {
-            var target = TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
+            var target = TargetSelector.GetSelectedTarget() ?? 
+                TargetSelector.GetTarget(900, TargetSelector.DamageType.Physical);
 
-            if (target.IsValidTarget())
+            if (target.Check(900f))
             {
-                if (Menu.Item("ComboIgnite", true).GetValue<bool>() && Ignite != SpellSlot.Unknown && 
-                    Ignite.IsReady() && target.HealthPercent < 20)
+                if (Menu.GetBool("ComboIgnite") && Ignite != SpellSlot.Unknown && Ignite.IsReady() &&
+                    GetComboDamage(target) > target.Health)
                 {
                     Me.Spellbook.CastSpell(Ignite, target);
                 }
 
-                if (Menu.Item("ComboW", true).GetValue<bool>() && W.IsReady() &&
+                if (Menu.GetBool("ComboW") && W.IsReady() &&
                     target.IsValidTarget(W.Range) && !target.HasBuffOfType(BuffType.SpellShield) && 
                     (target.IsMelee || target.IsFacing(Me) || !Q.IsReady() || Me.HasBuff("RivenFeint") || QStack != 0))
                 {
                     W.Cast();
                 }
 
-                if (Menu.Item("ComboE", true).GetValue<bool>() && E.IsReady())
+                if (Menu.GetBool("ComboE") && E.IsReady())
                 {
                     if (target.DistanceToPlayer() <= W.Range + E.Range &&
                         target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) + 100)
@@ -794,63 +744,69 @@
                     }
                 }
 
-                if (Menu.Item("ComboR", true).GetValue<bool>() && R.IsReady())
+                if (Menu.GetBool("ComboR") && R.IsReady())
                 {
-                    switch (R.Instance.Name)
+                    if (Menu.GetKey("R1Combo") && R.Instance.Name == "RivenFengShuiEngine" && !E.IsReady())
                     {
-                        case "RivenFengShuiEngine":
-                            if (Menu.Item("R1Combo", true).GetValue<KeyBind>().Active)
-                            {
-                                if (target.Distance(Me.ServerPosition) < E.Range + Me.AttackRange && 
-                                    Me.CountEnemiesInRange(500) >= 1 && !target.IsDead)
-                                {
-                                    R.Cast();
-                                }
-                            }
-                            break;
-                        case "RivenIzunaBlade":
-                            R2Logic(target);
-                            break;
+                        if (target.DistanceToPlayer() < 500 && Me.CountEnemiesInRange(500) >= 1)
+                        {
+                            R.Cast();
+                        }
+                    }
+
+                    if (R.Instance.Name == "RivenIzunaBlade")
+                    {
+                        R2Logic(target);
                     }
                 }
             }
         }
 
-        private static void R2Logic(Obj_AI_Hero target)
+        private static void R2Logic(Obj_AI_Base target)
         {
-            if (target == null)
+            if (target == null || R.Instance.Name == "RivenFengShuiEngine")
             {
                 return; 
             }
 
-            if (R.Instance.Name != "RivenIzunaBlade")
+            if (target.Check(850))
             {
-                return;
-            }
-
-            if (target.IsValidTarget(850) && !target.IsDead)
-            {
-                switch (Menu.Item("R2Mode", true).GetValue<StringList>().SelectedIndex)
+                switch (Menu.GetList("R2Mode"))
                 {
                     case 0:
-                        if (R.GetDamage(target) > target.Health && target.IsValidTarget(R.Range) &&
-                            target.Distance(Me.ServerPosition) < 600)
+                        if (GetRDamage(target) > target.Health && target.DistanceToPlayer() < 600)
                         {
-                            R.Cast(target);
+                            var pred = R.GetPrediction(target, true);
+
+                            if (pred.Hitchance >= HitChance.VeryHigh)
+                            {
+                                R.Cast(pred.CastPosition, true);
+                            }
                         }
                         break;
                     case 1:
-                        if (target.HealthPercent < 30 &&
-                            target.Health > R.GetDamage(target) + Me.GetAutoAttackDamage(target) * 2)
+                        if (target.HealthPercent < 20 ||
+                            (target.Health > GetRDamage(target) + Me.GetAutoAttackDamage(target)*2 &&
+                             target.HealthPercent < 40) ||
+                            (target.Health <= GetRDamage(target)))
                         {
-                            R.Cast(target);
+                            var pred = R.GetPrediction(target, true);
+
+                            if (pred.Hitchance >= HitChance.VeryHigh)
+                            {
+                                R.Cast(pred.CastPosition, true);
+                            }
                         }
                         break;
                     case 2:
-                        if (target.IsValidTarget(R.Range) &&
-                            target.Distance(Me.ServerPosition) < 600)
+                        if (target.DistanceToPlayer() < 600)
                         {
-                            R.Cast(target);
+                            var pred = R.GetPrediction(target, true);
+
+                            if (pred.Hitchance >= HitChance.VeryHigh)
+                            {
+                                R.Cast(pred.CastPosition, true);
+                            }
                         }
                         break;
                 }
@@ -863,8 +819,6 @@
 
             if (target != null && !target.IsDead && target.IsValidTarget() && !target.IsZombie)
             {
-                BurstTarget = target;
-
                 if (R.IsReady() && R.Instance.Name == "RivenFengShuiEngine")
                 {
                     if (Q.IsReady() && E.IsReady() &&
@@ -914,60 +868,60 @@
                     }
                 }
             }
-            else
-            {
-                BurstTarget = null;
-            }
         }
 
         private static void Harass()
         {
-            if (Menu.Item("HarassW", true).GetValue<bool>() && W.IsReady())
+            var target = TargetSelector.GetSelectedTarget() ??  
+                TargetSelector.GetTarget(E.Range + Me.BoundingRadius, TargetSelector.DamageType.Physical);
+
+            if (target.Check())
             {
-                if (HeroManager.Enemies.Find(
-                        x => x.IsValidTarget(W.Range) && !x.HasBuffOfType(BuffType.SpellShield)) != null)
-                {
-                    W.Cast();
-                }
-            }
-        }
+                //if (Menu.GetList("HarassMode") == 0)
+                //{
+                //    if (QStack == 2)
+                //    {
+                //        if (E.IsReady() && Menu.GetBool("HarassE"))
+                //        {
+                //            var pos = Me.ServerPosition +
+                //                      (Me.ServerPosition - target.ServerPosition).Normalized()*E.Range;
+                //            E.Cast(pos);
 
-        private static void QuickHarass()
-        {
-            var target = TargetSelector.GetSelectedTarget();
+                //            if (Menu.GetBool("HarassQ"))
+                //            {
+                //                Utility.DelayAction.Add(100, () => Q.Cast(pos, true));
+                //            }
+                //        }
+                //    }
+                //    else
+                //    {
+                //        if (W.IsReady() && Menu.GetBool("HarassW"))
+                //        {
+                //            if (target.IsValidTarget(W.Range) && QStack == 1)
+                //            {
+                //                W.Cast(true);
+                //            }
+                //        }
 
-            if (target != null && target.IsValidTarget())
-            {
-                if (QStack == 2)
+                //        if (Q.IsReady() && Menu.GetBool("HarassQ"))
+                //        {
+                //            if (target.IsValidTarget(Me.AttackRange + Me.BoundingRadius + 150))
+                //            {
+                //                CastQ(target);
+                //            }
+                //        }
+                //    }
+                //}
+                //else
                 {
-                    if (E.IsReady())
+                    if (E.IsReady() && Menu.GetBool("HarassE") && target.IsValidTarget(500f))
                     {
-                        E.Cast(Me.ServerPosition +
-                                       (Me.ServerPosition - target.ServerPosition).Normalized() * E.Range);
+                        E.Cast(target.Position, true);
                     }
-                    else
-                    {
-                        Q.Cast(Me.ServerPosition +
-                                       (Me.ServerPosition - target.ServerPosition).Normalized() * E.Range);
-                    }
-                }
 
-                if (W.IsReady())
-                {
-                    if (target.IsValidTarget(W.Range) && QStack == 1)
+                    if (W.IsReady() && Menu.GetBool("HarassW") && target.IsValidTarget(W.Range))
                     {
-                        W.Cast();
-                    }
-                }
-
-                if (Q.IsReady())
-                {
-                    if (QStack == 0)
-                    {
-                        if (target.IsValidTarget(Me.AttackRange + Me.BoundingRadius + 150))
-                        {
-                            CastQ(target);
-                        }
+                        W.Cast(true);
                     }
                 }
             }
@@ -975,205 +929,195 @@
 
         private static void LaneClear()
         {
-            if (Menu.Item("LaneClearW", true).GetValue<bool>())
+            if (!Me.UnderTurret(true) && Menu.GetBool("LaneClearW") && W.IsReady())
             {
                 var minions = MinionManager.GetMinions(Me.ServerPosition, W.Range);
 
-                if (W.IsReady() && minions.Count >= 3 && (!Q.IsReady() || QStack == 0))
+                if (minions.Count >= 3)
                 {
-                    W.Cast();
+                    W.Cast(true);
+                }
+            }
+        }
+
+        private static void JungleClear()
+        {
+            if (Menu.GetBool("JungleClearE") && E.IsReady())
+            {
+                var mobs = MinionManager.GetMinions(Me.Position, 500f, MinionTypes.All, MinionTeam.Neutral);
+
+                if (!mobs.Any(x => x.DistanceToPlayer() < E.Range) && mobs.Any(x => x.DistanceToPlayer() <= 500f))
+                {
+                    var mob = mobs.FirstOrDefault();
+
+                    if (mob != null)
+                    {
+                        E.Cast(mob.Position, true);
+                    }
+                }
+            }
+
+            if (Menu.GetBool("JungleClearWLogic") && W.IsReady())
+            {
+                var mobs = MinionManager.GetMinions(Me.Position, W.Range, MinionTypes.All, MinionTeam.Neutral);
+
+                if (mobs.Any())
+                {
+                    if ((!Q.IsReady() && QStack == 0) || ((QStack == 1 || QStack == 2) && Q.IsReady()))
+                    {
+                        W.Cast(true);
+                    }
                 }
             }
         }
 
         private static void FleeLogic()
         {
-            var target =
-                HeroManager.Enemies.FirstOrDefault(
-                    enemy => enemy.IsValidTarget(W.Range) && !enemy.HasBuffOfType(BuffType.SpellShield));
-
-            if (W.IsReady() && target != null && target.IsValidTarget(W.Range))
+            if (
+                HeroManager.Enemies.Any(
+                    x => x.DistanceToPlayer() <= W.Range && !x.HasBuffOfType(BuffType.SpellShield)) && W.IsReady())
             {
-                W.Cast();
+                W.Cast(true);
             }
 
-            if (E.IsReady() && !Me.IsDashing())
+            if (E.IsReady() && !Me.IsDashing() && ((!Q.IsReady() && QStack == 0) || (Q.IsReady() && QStack == 2)))
             {
-                E.Cast(Me.Position.Extend(Game.CursorPos, 300));
+                E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
             }
-            else if (Q.IsReady() && !Me.IsDashing())
-            {
-                Q.Cast(Game.CursorPos);
-            }
-        }
 
-        private static void WallJump()
-        {
-            if (QStack != 2 && Q.IsReady())
+            if (Q.IsReady() && !Me.IsDashing())
             {
-                Q.Cast(Game.CursorPos);
-            }
-            else
-            {
-                var dashEndPos = Me.Position.Extend(Game.CursorPos, Q.Range);
-
-                if (Common.Common.CanWallJump(dashEndPos, E.Range))
-                {
-                    Q.Cast(dashEndPos);
-                }
+                Q.Cast(Me.Position.Extend(Game.CursorPos, 350f), true);
             }
         }
 
         private static void OnDraw(EventArgs Args)
         {
-            if (Menu.Item("drawingW", true).GetValue<bool>() && W.IsReady())
+            if (Menu.GetBool("DrawW") && W.IsReady())
             {
-                Render.Circle.DrawCircle(Me.Position, W.Range, Color.FromArgb(3, 136, 253));
+                Render.Circle.DrawCircle(Me.Position, W.Range, Color.FromArgb(3, 136, 253), 3);
             }
 
-            if (Menu.Item("BrustMaxRange", true).GetValue<bool>() && Me.Level >= 6 && R.IsReady())
+            if (Menu.GetBool("DrawBurst") && R.Level > 0 && R.IsReady())
             {
                 if (E.IsReady() && Flash != SpellSlot.Unknown && Flash.IsReady())
                 {
-                    Render.Circle.DrawCircle(Me.Position, 465 + E.Range, Color.FromArgb(253, 3, 3));
+                    Render.Circle.DrawCircle(Me.Position, 465 + E.Range, Color.FromArgb(3, 136, 253), 3);
                 }
             }
 
-            if (Menu.Item("BrustMinRange", true).GetValue<bool>() && Me.Level >= 6 && R.IsReady())
+            if (Menu.GetBool("DrawRStatus") && R.Level > 0)
             {
-                if (E.IsReady() && Flash != SpellSlot.Unknown && Flash.IsReady())
-                {
-                    Render.Circle.DrawCircle(Me.Position, E.Range + Me.BoundingRadius, Color.FromArgb(243, 253, 3));
-                }
-            }
+                var useRCombo = Menu.Item("R1Combo", true).GetValue<KeyBind>();
+                var MePos = Drawing.WorldToScreen(Me.Position);
 
-            if (Menu.Item("DrawDamage", true).GetValue<bool>())
-            {
-                foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(e => e.IsValidTarget() && !e.IsZombie))
-                {
-                    DrawHpBar.Unit = target;
-                    DrawHpBar.DrawDmg((float)GetComboDamage(target), new ColorBGRA(255, 204, 0, 170));
-                }
-            }
-
-            if (Menu.Item("QuickHarassRange", true).GetValue<bool>())
-            {
-                Render.Circle.DrawCircle(Me.Position, E.Range + Me.BoundingRadius, Color.FromArgb(237, 7, 246));
-            }
-
-            if (Menu.Item("ShowR1", true).GetValue<bool>())
-            {
-                var text = "";
-
-                text = Menu.Item("R1Combo", true).GetValue<KeyBind>().Active ? "Enable" : "Off";
-
-                Drawing.DrawText(Me.HPBarPosition.X + 30, Me.HPBarPosition.Y - 40, Color.Red, "Use R1: ");
-                Drawing.DrawText(Me.HPBarPosition.X + 90, Me.HPBarPosition.Y - 40, Color.FromArgb(238, 242, 7), text);
-
-                Menu.Item("R1Combo", true).Permashow();
-            }
-
-            if (Menu.Item("ShowBurst", true).GetValue<bool>())
-            {
-                foreach (var e in HeroManager.Enemies.Where(e => e.IsValidTarget()))
-                {
-                    var text = "";
-                    var text2 = "";
-                    var Mepos = Drawing.WorldToScreen(Me.Position);
-                    var target = TargetSelector.GetSelectedTarget();
-
-                    if (target == null)
-                    {
-                        text = "Lock Target Is Null!";
-                    }
-                    else
-                    {
-                        text = "Lock Target is : " + target.ChampionName;
-                        text2 = "Can Flash : " + CanFlash;
-                    }
-
-                    if (Menu.Item("BurstFlash", true).GetValue<bool>() && Flash != SpellSlot.Unknown &&
-                        Flash.IsReady() && e.Distance(Me.ServerPosition) <= 800 &&
-                        e.Distance(Me.ServerPosition) >= E.Range + Me.AttackRange + 85)
-                    {
-                        CanFlash = true;
-                    }
-                    else
-                    {
-                        CanFlash = false;
-                    }
-
-                    Drawing.DrawText(Mepos[0] - 20, Mepos[1], Color.Red, text);
-                    Drawing.DrawText(Mepos[0] - 20, Mepos[1] + 14, Color.GreenYellow, text2);
-                }
+                Drawing.DrawText(MePos[0] - 40, MePos[1] + 25, Color.MediumSlateBlue,
+                    "Use R(" + new string(System.Text.Encoding.Default.GetChars(BitConverter.GetBytes(useRCombo.Key))));
+                Drawing.DrawText(MePos[0] + 18, MePos[1] + 25, Color.MediumSlateBlue, "): " + (useRCombo.Active ? "On" : "Off"));
             }
         }
 
-        private static double GetComboDamage(Obj_AI_Hero target)
+        private static float GetComboDamage(Obj_AI_Hero target)
         {
             if (target == null)
             {
                 return 0;
             }
 
-            //Thanks Asuvril
-            double passive = 0;
-
-            if (Me.Level == 18)
-            {
-                passive = 0.5;
-            }
-            else if (Me.Level >= 15)
-            {
-                passive = 0.45;
-            }
-            else if (Me.Level >= 12)
-            {
-                passive = 0.4;
-            }
-            else if (Me.Level >= 9)
-            {
-                passive = 0.35;
-            }
-            else if (Me.Level >= 6)
-            {
-                passive = 0.3;
-            }
-            else if (Me.Level >= 3)
-            {
-                passive = 0.25;
-            }
-            else
-            {
-                passive = 0.2;
-            }
-
-            double damage = 0;
+            var damage = 0f;
 
             if (Q.IsReady())
             {
-                var qhan = 3 - QStack;
-
-                damage += Q.GetDamage(target) * qhan + Me.GetAutoAttackDamage(target) * qhan * (1 + passive);
+                damage += GetQDamage(target);
             }
 
             if (W.IsReady())
             {
-                damage += W.GetDamage(target);
+                damage += GetWDamage(target);
             }
 
-            if (R.IsReady() && Me.HasBuff("RivenFengShuiEngine"))
+            if (R.IsReady())
             {
-                damage += Me.CalcDamage(target, Damage.DamageType.Physical,
-                    (new double[] { 80, 120, 160 }[R.Level - 1] +
-                     0.6 * Me.FlatPhysicalDamageMod) *
-                    (1 + (target.MaxHealth - target.Health) /
-                     target.MaxHealth > 0.75
-                        ? 0.75
-                        : (target.MaxHealth - target.Health) / target.MaxHealth) * 8 / 3);
+                damage += GetRDamage(target);
             }
 
             return damage;
+        }
+
+        private static double GetPassive
+        {
+            get
+            {
+                if (Me.Level == 18)
+                {
+                    return 0.5;
+                }
+
+                if (Me.Level >= 15)
+                {
+                    return 0.45;
+                }
+
+                if (Me.Level >= 12)
+                {
+                    return 0.4;
+                }
+
+                if (Me.Level >= 9)
+                {
+                    return 0.35;
+                }
+
+                if (Me.Level >= 6)
+                {
+                    return 0.3;
+                }
+
+                if (Me.Level >= 3)
+                {
+                    return 0.25;
+                }
+
+                return 0.2;
+            }
+        }
+
+        private static float GetQDamage(Obj_AI_Base target)
+        {
+            if (target == null)
+            {
+                return 0;
+            }
+
+            var qhan = 3 - QStack;
+
+            return (float) (Q.GetDamage(target)*qhan + Me.GetAutoAttackDamage(target)*qhan*(1 + GetPassive));
+        }
+
+        private static float GetWDamage(Obj_AI_Base target)
+        {
+            if (target == null)
+            {
+                return 0;
+            }
+
+            return W.GetDamage(target);
+        }
+
+        private static float GetRDamage(Obj_AI_Base target)
+        {
+            if (target == null)
+            {
+                return 0;
+            }
+
+            return (float) Me.CalcDamage(target, Damage.DamageType.Physical,
+                (new double[] {80, 120, 160}[R.Level - 1] +
+                 0.6*Me.FlatPhysicalDamageMod)*
+                (1 + (target.MaxHealth - target.Health)/
+                 target.MaxHealth > 0.75
+                    ? 0.75
+                    : (target.MaxHealth - target.Health)/target.MaxHealth)*8/3);
         }
 
         private static void CastItem(bool tiamat = false, bool youmuu = false)
@@ -1205,7 +1149,7 @@
             }
         }
 
-        private static void CastQ(AttackableUnit target)
+        private static void CastQ(Obj_AI_Base target)
         {
             CanQ = true;
             QTarget = target;

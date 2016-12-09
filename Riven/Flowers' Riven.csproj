@@ -59,31 +59,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Common.cs" />
-    <Compile Include="Common\HpBarDraw.cs" />
-    <Compile Include="Evade\Collision.cs" />
-    <Compile Include="Evade\Config.cs" />
-    <Compile Include="Evade\EarlyEvade.cs" />
-    <Compile Include="Evade\Evader.cs" />
-    <Compile Include="Evade\EvadeSpellData.cs" />
-    <Compile Include="Evade\EvadeSpellDatabase.cs" />
-    <Compile Include="Evade\Geometry.cs" />
-    <Compile Include="Evade\Program.cs" />
-    <Compile Include="Evade\Skillshot.cs" />
-    <Compile Include="Evade\SkillshotDetector.cs" />
-    <Compile Include="Evade\SpellBlocker.cs" />
-    <Compile Include="Evade\SpellData.cs" />
-    <Compile Include="Evade\SpellDatabase.cs" />
-    <Compile Include="Evade\Utils.cs" />
-    <Compile Include="Orbwalking\Orbwalking.cs" />
+    <Compile Include="myCommon\CheckStatus.cs" />
+    <Compile Include="myCommon\DamageCalculate.cs" />
+    <Compile Include="myCommon\DamageIndicator.cs" />
+    <Compile Include="myCommon\Distance.cs" />
+    <Compile Include="myCommon\MenuManager.cs" />
+    <Compile Include="myCommon\MinionCache.cs" />
+    <Compile Include="myCommon\Orbwalking.cs" />
+    <Compile Include="myCommon\SkinManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="UpdateLog.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

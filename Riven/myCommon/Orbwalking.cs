@@ -1,4 +1,4 @@
-﻿namespace Flowers_Riven
+﻿namespace myCommon
 {
     using System;
     using LeagueSharp;
@@ -10,7 +10,7 @@
 
     public static class Orbwalking
     {
-        public static readonly string[] AttackResets =
+        private static readonly string[] AttackResets =
         {
             "dariusnoxiantacticsonh", "fioraflurry", "garenq",
             "gravesmove", "hecarimrapidslash", "jaxempowertwo", "jaycehypercharge", "leonashieldofdaybreak", "luciane",
@@ -21,7 +21,7 @@
             "illaoiw", "elisespiderw", "fiorae", "meditate", "sejuaninorthernwinds", "asheq"
         };
 
-        public static readonly string[] NoAttacks =
+        private static readonly string[] NoAttacks =
         {
             "volleyattack", "volleyattackwithsound",
             "jarvanivcataclysmattack", "monkeykingdoubleattack", "shyvanadoubleattack", "shyvanadoubleattackdragon",
@@ -34,31 +34,39 @@
             "kindredwolfbasicattack"
         };
 
-        public static readonly string[] Attacks =
+        private static readonly string[] Attacks =
         {
             "caitlynheadshotmissile", "frostarrow", "garenslash2",
             "kennenmegaproc", "masteryidoublestrike", "quinnwenhanced", "renektonexecute", "renektonsuperexecute",
             "rengarnewpassivebuffdash", "trundleq", "xenzhaothrust", "xenzhaothrust2", "xenzhaothrust3", "viktorqbuff"
         };
 
-        public static int _autoattackCounter;
-        public static int Delay;
-        public static int LastAATick;
+        private static int _autoattackCounter;
+        private static int Delay;
+        private static int LastAATick;
         public static int DelayOnFire;
         public static int DelayOnFireId;
         public static int BrainFarmInt = -100;
-        public static int LastAttackCommandT;
-        public static int LastMoveCommandT;
-        public static bool _missileLaunched;
-        public static bool DisableNextAttack;
-        public static bool DisableAttackIfCastSpell = true;
-        public static bool Attack = true;
+        private static int LastAttackCommandT;
+        private static int LastMoveCommandT;
+        private static bool _missileLaunched;
+        private static bool DisableNextAttack;
+        private static bool DisableAttackIfCastSpell = true;
+        private static bool Attack = true;
         public static bool Move = true;
-        public static float _minDistance = 400;
-        public static AttackableUnit _lastTarget;
-        public static Vector3 LastMoveCommandPosition = Vector3.Zero;
-        public static List<Obj_AI_Base> MinionListAA = new List<Obj_AI_Base>();
-        public static readonly Random _random = new Random(DateTime.Now.Millisecond);
+        public static bool isNone = false;
+        public static bool isCombo = false;
+        public static bool isBurst = false;
+        public static bool isHarass = false;
+        public static bool isLaneClear = false;
+        public static bool isLastHit = false;
+        public static bool isFreeze = false;
+        public static bool isFlee = false;
+        private static float _minDistance = 400;
+        private static AttackableUnit _lastTarget;
+        private static Vector3 LastMoveCommandPosition = Vector3.Zero;
+        private static List<Obj_AI_Base> MinionListAA = new List<Obj_AI_Base>();
+        private static readonly Random _random = new Random(DateTime.Now.Millisecond);
         public delegate void AfterAttackEvenH(AttackableUnit unit, AttackableUnit target);
         public delegate void BeforeAttackEvenH(BeforeAttackEventArgs args);
         public delegate void OnAttackEvenH(AttackableUnit unit, AttackableUnit target);
@@ -262,8 +270,7 @@
                    >= LastAATick + ObjectManager.Player.AttackCastDelay * 1000 + extraWindup;
         }
 
-        public static void MoveTo(Vector3 position, float holdAreaRadius = 0, bool overrideTimer = false,
-            bool useFixedDistance = true, bool randomizeMinDistance = true)
+        public static void MoveTo(Vector3 position, float holdAreaRadius = 0, bool overrideTimer = false, bool randomizeMinDistance = true)
         {
             var playerPosition = ObjectManager.Player.ServerPosition;
 
@@ -306,7 +313,7 @@
 
                     if ((angle < 10 && distance < 500 * 500) || distance < 50 * 50)
                     {
-                        return;
+
                     }
                 }
             }
@@ -328,7 +335,7 @@
         }
 
         public static void Orbwalk(AttackableUnit target, Vector3 position, float extraWindup = 90,
-            float holdAreaRadius = 0, bool useFixedDistance = true, bool randomizeMinDistance = true)
+            float holdAreaRadius = 0, bool randomizeMinDistance = true)
         {
             if (Utils.GameTimeTickCount - LastAttackCommandT < 70 + Math.Min(60, Game.Ping))
             {
@@ -365,7 +372,7 @@
                     return;
                 }
 
-                MoveTo(position, Math.Max(holdAreaRadius, 30), false, useFixedDistance, randomizeMinDistance);
+                MoveTo(position, Math.Max(holdAreaRadius, 30), false, randomizeMinDistance);
             }
         }
 
@@ -484,15 +491,13 @@
 
         public enum OrbwalkingMode
         {
-            Burst,
             Combo,
             Mixed,
-            QuickHarass,
             LaneClear,
             LastHit,
             Freeze,
+            Burst,
             Flee,
-            WallJump,
             None
         }
 
@@ -516,7 +521,7 @@
             }
         }
 
-        public class Orbwalker
+        public sealed class Orbwalker
         {
             private const float LaneClearWaitTimeMod = 2f;
             private static Menu _config;
@@ -525,7 +530,7 @@
             private OrbwalkingMode _mode = OrbwalkingMode.None;
             private Vector3 _orbwalkingPoint;
             private Obj_AI_Minion _prevMinion;
-            public static List<Orbwalker> Instances = new List<Orbwalker>();
+            private static readonly List<Orbwalker> Instances = new List<Orbwalker>();
 
             public Orbwalker(Menu attachToMenu)
             {
@@ -573,14 +578,11 @@
 
                 var keyMenu = _config.AddSubMenu(new Menu("Keys", "Keys"));
                 {
-                    keyMenu.AddItem(new MenuItem("Burst", "Burst").SetValue(new KeyBind('T', KeyBindType.Press)));
+                    keyMenu.AddItem(
+                        new MenuItem("Burst", "Burst").SetValue(new KeyBind('T', KeyBindType.Press)));
                     keyMenu.AddItem(
                         new MenuItem("Orbwalk", "Combo").SetValue(new KeyBind(32, KeyBindType.Press)));
-                    keyMenu.AddItem(
-                        new MenuItem("StillCombo", "Combo without moving").SetValue(new KeyBind('N', KeyBindType.Press)));
                     keyMenu.AddItem(new MenuItem("Farm", "Mixed").SetValue(new KeyBind('C', KeyBindType.Press)));
-                    keyMenu.AddItem(
-                        new MenuItem("QuickHarass", "Fast Harass").SetValue(new KeyBind('G', KeyBindType.Press)));
                     keyMenu.AddItem(
                         new MenuItem("LaneClear", "LaneClear").SetValue(new KeyBind('V', KeyBindType.Press)));
                     keyMenu.AddItem(
@@ -589,17 +591,13 @@
                         new MenuItem("Freeze", "Freeze").SetValue(new KeyBind('N', KeyBindType.Press)));
                     keyMenu.AddItem(
                         new MenuItem("Flee", "Flee").SetValue(new KeyBind('Z', KeyBindType.Press)));
-                    keyMenu.AddItem(
-                        new MenuItem("WallJump", "WallJump").SetValue(new KeyBind('A', KeyBindType.Press)));
                 }
 
                 _config.AddItem(new MenuItem("  cerdit", "    "));
-                _config.AddItem(new MenuItem("Bysebby", "Credit: Sebby & PlaySharp"));
-
-                _config.Item("StillCombo").ValueChanged += MoveChanged;
+                _config.AddItem(new MenuItem("Bysebby", "Credit: NightMoon & Sebby & PlaySharp"));
 
                 DisableAttackIfCastSpell = _config.Item("DisableAttackIfCastSpell").GetValue<bool>();
-
+                Move = true;
                 Player = ObjectManager.Player;
                 Game.OnUpdate += OnUpdate;
                 Drawing.OnDraw += OnDraw;
@@ -617,11 +615,6 @@
 
             internal static bool LimitAttackSpeed => _config.Item("LimitAttackSpeed").GetValue<bool>();
 
-            private void MoveChanged(object obj, OnValueChangeEventArgs Args)
-            {
-                Move = !Args.GetNewValue<KeyBind>().Active;
-            }
-
             public OrbwalkingMode ActiveMode
             {
                 get
@@ -632,11 +625,6 @@
                     }
 
                     if (_config.Item("Orbwalk").GetValue<KeyBind>().Active)
-                    {
-                        return OrbwalkingMode.Combo;
-                    }
-
-                    if (_config.Item("StillCombo").GetValue<KeyBind>().Active)
                     {
                         return OrbwalkingMode.Combo;
                     }
@@ -661,24 +649,14 @@
                         return OrbwalkingMode.LastHit;
                     }
 
-                    if (_config.Item("Flee").GetValue<KeyBind>().Active)
-                    {
-                        return OrbwalkingMode.Flee;
-                    }
-
-                    if (_config.Item("WallJump").GetValue<KeyBind>().Active)
-                    {
-                        return OrbwalkingMode.WallJump;
-                    }
-
-                    if (_config.Item("QuickHarass").GetValue<KeyBind>().Active)
-                    {
-                        return OrbwalkingMode.QuickHarass;
-                    }
-
                     if (_config.Item("Burst").GetValue<KeyBind>().Active)
                     {
                         return OrbwalkingMode.Burst;
+                    }
+
+                    if (_config.Item("Flee").GetValue<KeyBind>().Active)
+                    {
+                        return OrbwalkingMode.Flee;
                     }
 
                     return OrbwalkingMode.None;
@@ -711,6 +689,8 @@
 
             private void OnUpdate(EventArgs args)
             {
+                orbwalkerMode();
+
                 if (ActiveMode == OrbwalkingMode.None)
                 {
                     return;
@@ -731,15 +711,22 @@
                     Math.Max(_config.Item("HoldPosRadius").GetValue<Slider>().Value, 30));
             }
 
-            public virtual AttackableUnit GetTarget()
+            private void orbwalkerMode()
+            {
+                isNone = ActiveMode == OrbwalkingMode.None;
+                isCombo = ActiveMode == OrbwalkingMode.Combo;
+                isBurst = ActiveMode == OrbwalkingMode.Burst;
+                isHarass = ActiveMode == OrbwalkingMode.Mixed;
+                isLaneClear = ActiveMode == OrbwalkingMode.LaneClear;
+                isLastHit = ActiveMode == OrbwalkingMode.LastHit;
+                isFreeze = ActiveMode == OrbwalkingMode.Freeze;
+                isFlee = ActiveMode == OrbwalkingMode.Flee;
+            }
+
+            public AttackableUnit GetTarget()
             {
                 AttackableUnit result = null;
                 var mode = ActiveMode;
-
-                if (mode == OrbwalkingMode.Flee || mode == OrbwalkingMode.WallJump)
-                {
-                    return null;
-                }
 
                 if (_forcedTarget.IsValidTarget() && InAutoAttackRange(_forcedTarget))
                 {
@@ -1160,7 +1147,7 @@
                 return result;
             }
 
-            public bool ShouldWait()
+            private bool ShouldWait()
             {
                 return
                     ObjectManager.Get<Obj_AI_Minion>()
@@ -1259,137 +1246,6 @@
                     }
                 }
             }
-        }
-    }
-
-    public class MinionCache
-    {
-        public static List<Obj_AI_Base> AllMinionsObj = new List<Obj_AI_Base>();
-        public static List<Obj_AI_Base> MinionsListEnemy = new List<Obj_AI_Base>();
-        public static List<Obj_AI_Base> MinionsListAlly = new List<Obj_AI_Base>();
-        public static List<Obj_AI_Base> MinionsListNeutral = new List<Obj_AI_Base>();
-        public static List<Obj_AI_Turret> TurretList = ObjectManager.Get<Obj_AI_Turret>().ToList();
-        public static List<Obj_HQ> NexusList = ObjectManager.Get<Obj_HQ>().ToList();
-        public static List<Obj_BarracksDampener> InhiList = ObjectManager.Get<Obj_BarracksDampener>().ToList();
-
-        static MinionCache()
-        {
-            foreach (var minion in ObjectManager.Get<Obj_AI_Minion>().Where(minion => minion.IsValid))
-            {
-                AddMinionObject(minion);
-
-                if (!minion.IsAlly)
-                {
-                    AllMinionsObj.Add(minion);
-                }
-            }
-
-            GameObject.OnCreate += OnCreate;
-            Game.OnUpdate += OnUpdate;
-        }
-
-        private static void OnUpdate(EventArgs args)
-        {
-            MinionsListEnemy.RemoveAll(minion => !IsValidMinion(minion));
-            MinionsListNeutral.RemoveAll(minion => !IsValidMinion(minion));
-            MinionsListAlly.RemoveAll(minion => !IsValidMinion(minion));
-            AllMinionsObj.RemoveAll(minion => !IsValidMinion(minion));
-        }
-
-        private static void OnCreate(GameObject sender, EventArgs args)
-        {
-            var minion = sender as Obj_AI_Minion;
-
-            if (minion != null)
-            {
-                AddMinionObject(minion);
-
-                if (!minion.IsAlly)
-                {
-                    AllMinionsObj.Add(minion);
-                }
-            }
-        }
-
-        private static void AddMinionObject(Obj_AI_Minion minion)
-        {
-            if (minion.MaxHealth >= 225)
-            {
-                if (minion.Team == GameObjectTeam.Neutral)
-                {
-                    MinionsListNeutral.Add(minion);
-                }
-                else if (minion.MaxMana == 0 && minion.MaxHealth >= 300)
-                {
-                    if (minion.Team == GameObjectTeam.Unknown)
-                    {
-                        return;
-                    }
-
-                    if (minion.Team != ObjectManager.Player.Team)
-                    {
-                        MinionsListEnemy.Add(minion);
-                    }
-                    else if (minion.Team == ObjectManager.Player.Team)
-                    {
-                        MinionsListAlly.Add(minion);
-                    }
-                }
-            }
-        }
-
-        public static List<Obj_AI_Base> GetMinions(Vector3 from, float range = float.MaxValue,
-            MinionTeam team = MinionTeam.Enemy)
-        {
-            switch (team)
-            {
-                case MinionTeam.Enemy:
-                    {
-                        return MinionsListEnemy.FindAll(minion => CanReturn(minion, from, range));
-                    }
-                case MinionTeam.Ally:
-                    {
-                        return MinionsListAlly.FindAll(minion => CanReturn(minion, from, range));
-                    }
-                case MinionTeam.Neutral:
-                    {
-                        return
-                            MinionsListNeutral.Where(minion => CanReturn(minion, from, range))
-                                .OrderByDescending(minion => minion.MaxHealth)
-                                .ToList();
-                    }
-                case MinionTeam.NotAlly:
-                    {
-                        return AllMinionsObj.FindAll(minion => CanReturn(minion, from, range));
-                    }
-                default:
-                    {
-                        return AllMinionsObj.FindAll(minion => CanReturn(minion, from, range));
-                    }
-            }
-        }
-
-        private static bool IsValidMinion(Obj_AI_Base minion)
-        {
-            return minion != null && minion.IsValid && !minion.IsDead;
-        }
-
-        private static bool CanReturn(Obj_AI_Base minion, Vector3 from, float range)
-        {
-            if (minion != null && minion.IsValid && !minion.IsDead && minion.IsVisible && minion.IsTargetable)
-            {
-                if (range == float.MaxValue)
-                    return true;
-
-                if (range == 0)
-                {
-                    return Orbwalking.InAutoAttackRange(minion);
-                }
-
-                return Vector2.DistanceSquared(from.To2D(), minion.Position.To2D()) < range * range;
-            }
-
-            return false;
         }
     }
 }
