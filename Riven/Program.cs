@@ -109,7 +109,7 @@
                 MiscMenu.AddItem(new MenuItem("Q Setting", "Q Setting"));
                 MiscMenu.AddItem(new MenuItem("Q1Delay", "Q1 Delay: ", true).SetValue(new Slider(242, 200, 300)));
                 MiscMenu.AddItem(new MenuItem("Q2Delay", "Q2 Delay: ", true).SetValue(new Slider(242, 200, 300)));
-                MiscMenu.AddItem(new MenuItem("Q3Delay", "Q3 Delay: ", true).SetValue(new Slider(242, 300, 400)));
+                MiscMenu.AddItem(new MenuItem("Q3Delay", "Q3 Delay: ", true).SetValue(new Slider(342, 300, 400)));
                 MiscMenu.AddItem(new MenuItem("AutoSetDelay", "Auto Set Q Delay?", true).SetValue(true)).ValueChanged +=
                     DelayChanged;
                 MiscMenu.AddItem(new MenuItem("KeepQALive", "Keep Q alive", true).SetValue(true));
@@ -155,7 +155,7 @@
             {
                 Menu.Item("Q1Delay", true).SetValue(new Slider(242, 200, 300));
                 Menu.Item("Q2Delay", true).SetValue(new Slider(242, 200, 300));
-                Menu.Item("Q3Delay", true).SetValue(new Slider(242, 300, 400));
+                Menu.Item("Q3Delay", true).SetValue(new Slider(342, 300, 400));
             }
 
             Obj_AI_Base.OnProcessSpellCast += OnProcessSpellCast;
@@ -173,7 +173,7 @@
             {
                 Menu.Item("Q1Delay", true).SetValue(new Slider(242, 200, 300));
                 Menu.Item("Q2Delay", true).SetValue(new Slider(242, 200, 300));
-                Menu.Item("Q3Delay", true).SetValue(new Slider(242, 300, 400));
+                Menu.Item("Q3Delay", true).SetValue(new Slider(342, 300, 400));
             }
         }
 
