@@ -253,7 +253,7 @@
                         ShouldRTime = Utils.TickCount;
                         break;
                     case "AspectOfTheCougar":
-                        Orbwalking.ResetAutoAttackTimer();
+                        //Orbwalking.ResetAutoAttackTimer();
                         break;
                 }
             }
