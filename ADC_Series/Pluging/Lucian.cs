@@ -403,13 +403,11 @@
                         {
                             Cast_E(target, false);
                         }
-
-                        if (Menu.GetBool("ComboQ") && Q.IsReady())
+                        else if (Menu.GetBool("ComboQ") && Q.IsReady())
                         {
                             Q.Cast(target, true);
                         }
-
-                        if (Menu.GetBool("ComboW") && W.IsReady())
+                        else if (Menu.GetBool("ComboW") && W.IsReady())
                         {
                             W.Cast(target.Position, true);
                         }
@@ -433,13 +431,11 @@
 
                                 E.Cast(ex, true);
                             }
-
-                            if (Menu.GetBool("JungleClearQ") && Q.IsReady())
+                            else if (Menu.GetBool("JungleClearQ") && Q.IsReady())
                             {
                                 Q.Cast(mob, true);
                             }
-
-                            if (Menu.GetBool("JungleClearW") && W.IsReady())
+                            else if (Menu.GetBool("JungleClearW") && W.IsReady())
                             {
                                 W.Cast(mob, true);
                             }

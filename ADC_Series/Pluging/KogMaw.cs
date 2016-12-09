@@ -151,19 +151,16 @@
                     {
                         W.Cast();
                     }
-
-                    if (Menu.GetBool("ComboR") && R.IsReady() && Menu.GetSlider("ComboRLimit") >= GetRCount &&
+                    else if (Menu.GetBool("ComboR") && R.IsReady() && Menu.GetSlider("ComboRLimit") >= GetRCount &&
                         target.IsValidTarget(R.Range))
                     {
                         SpellManager.PredCast(R, target, true);
                     }
-
-                    if (Menu.GetBool("ComboQ") && Q.IsReady() && target.IsValidTarget(Q.Range))
+                    else if (Menu.GetBool("ComboQ") && Q.IsReady() && target.IsValidTarget(Q.Range))
                     {
                         SpellManager.PredCast(Q, target);
                     }
-
-                    if (Menu.GetBool("ComboE") && E.IsReady() && target.IsValidTarget(E.Range))
+                    else if (Menu.GetBool("ComboE") && E.IsReady() && target.IsValidTarget(E.Range))
                     {
                         SpellManager.PredCast(E, target, true);
                     }
@@ -186,14 +183,12 @@
                         {
                             W.Cast();
                         }
-
-                        if (Menu.GetBool("JungleClearR") && R.IsReady() && Menu.GetSlider("JungleClearRLimit") >= GetRCount && 
+                        else if (Menu.GetBool("JungleClearR") && R.IsReady() && Menu.GetSlider("JungleClearRLimit") >= GetRCount && 
                             bigmob != null)
                         {
                             R.Cast(bigmob);
                         }
-
-                        if (Menu.GetBool("JungleClearE") && E.IsReady())
+                        else if (Menu.GetBool("JungleClearE") && E.IsReady())
                         {
                             if (bigmob != null && bigmob.IsValidTarget(E.Range))
                             {
@@ -211,8 +206,7 @@
                                 }
                             }
                         }
-
-                        if (Menu.GetBool("JungleClearQ") && Q.IsReady() && mob != null && mob.IsValidTarget(Q.Range))
+                        else if (Menu.GetBool("JungleClearQ") && Q.IsReady() && mob != null && mob.IsValidTarget(Q.Range))
                         {
                             Q.Cast(mob);
                         }

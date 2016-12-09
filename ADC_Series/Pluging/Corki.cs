@@ -142,13 +142,11 @@
                         {
                             SpellManager.PredCast(R, target, true);
                         }
-
-                        if (Menu.GetBool("ComboQ") && Q.IsReady())
+                        else if (Menu.GetBool("ComboQ") && Q.IsReady())
                         {
                             SpellManager.PredCast(Q, target, true);
                         }
-
-                        if (Menu.GetBool("ComboE") && E.IsReady())
+                        else if (Menu.GetBool("ComboE") && E.IsReady())
                         {
                             E.Cast();
                         }
@@ -170,13 +168,11 @@
                             {
                                 R.Cast(mob, true);
                             }
-
-                            if (Menu.GetBool("JungleClearQ") && Q.IsReady())
+                            else if (Menu.GetBool("JungleClearQ") && Q.IsReady())
                             {
                                 Q.Cast(mob, true);
                             }
-
-                            if (Menu.GetBool("JungleClearE") && E.IsReady())
+                            else if (Menu.GetBool("JungleClearE") && E.IsReady())
                             {
                                 E.Cast();
                             }

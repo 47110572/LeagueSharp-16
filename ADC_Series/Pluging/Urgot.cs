@@ -164,8 +164,7 @@
                             W.Cast();
                         }
                     }
-
-                    if (Menu.GetBool("ComboQ") && Q.IsReady() && target.IsValidTarget(QExtend.Range))
+                    else if (Menu.GetBool("ComboQ") && Q.IsReady() && target.IsValidTarget(QExtend.Range))
                     {
                         if (!HaveEBuff(target) && target.IsValidTarget(Q.Range))
                         {
@@ -204,8 +203,7 @@
                         {
                             W.Cast();
                         }
-
-                        if (Menu.Item("JungleClearQ", true).GetValue<bool>() && Q.IsReady() && mob != null &&
+                        else if (Menu.Item("JungleClearQ", true).GetValue<bool>() && Q.IsReady() && mob != null &&
                             mob.IsValidTarget(Q.Range))
                         {
                             Q.Cast(mob);

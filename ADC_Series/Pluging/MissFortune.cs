@@ -125,8 +125,7 @@
                         {
                             Q.Cast(target, true);
                         }
-
-                        if (Menu.GetBool("ComboW") && W.IsReady())
+                        else if (Menu.GetBool("ComboW") && W.IsReady())
                         {
                             W.Cast();
                         }
@@ -150,8 +149,7 @@
                                 {
                                     Q.Cast(mob, true);
                                 }
-
-                                if (Menu.GetBool("JungleClearW") && W.IsReady())
+                                else if (Menu.GetBool("JungleClearW") && W.IsReady())
                                 {
                                     W.Cast();
                                 }

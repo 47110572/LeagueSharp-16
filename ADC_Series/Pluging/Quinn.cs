@@ -179,8 +179,7 @@
                         {
                             E.CastOnUnit(target, true);
                         }
-
-                        if (Menu.GetBool("ComboQ") && Q.IsReady() && !Me.HasBuff("QuinnR"))
+                        else if (Menu.GetBool("ComboQ") && Q.IsReady() && !Me.HasBuff("QuinnR"))
                         {
                             SpellManager.PredCast(Q, target, true);
                         }
@@ -202,8 +201,8 @@
                             {
                                 E.CastOnUnit(mob, true);
                             }
-
-                            if (Menu.GetBool("JungleClearQ") && Q.IsReady() && mob.IsValidTarget(Q.Range))
+                            else if (Menu.GetBool("JungleClearQ") && Q.IsReady() && mob.IsValidTarget(Q.Range) &&
+                                !Me.HasBuff("QuinnR"))
                             {
                                 Q.Cast(mob, true);
                             }

@@ -232,8 +232,7 @@
                             {
                                 Q.CastOnUnit(target, true);
                             }
-
-                            if (Menu.GetBool("ComboW") && Menu.GetBool("ComboWAA") && W.IsReady() &&
+                            else if (Menu.GetBool("ComboW") && Menu.GetBool("ComboWAA") && W.IsReady() &&
                                 target.IsValidTarget(W.Range) && target.HasBuff("jhinespotteddebuff"))
                             {
                                 SpellManager.PredCast(W, target, true);
@@ -255,8 +254,7 @@
                                 {
                                     Q.CastOnUnit(target, true);
                                 }
-
-                                if (Menu.GetBool("HarassW") && W.IsReady() && target.IsValidTarget(W.Range) &&
+                                else if (Menu.GetBool("HarassW") && W.IsReady() && target.IsValidTarget(W.Range) &&
                                     target.HasBuff("jhinespotteddebuff"))
                                 {
                                     SpellManager.PredCast(W, target, true);
