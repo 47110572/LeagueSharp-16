@@ -47,7 +47,7 @@
 
             var clearMenu = Menu.AddSubMenu(new Menu("Clear", "Clear"));
             {
-                var laneClearMenu = Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
+                var laneClearMenu = clearMenu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
                 {
                     laneClearMenu.AddItem(new MenuItem("LaneClearQ", "Use Q", true).SetValue(true));
                     laneClearMenu.AddItem(new MenuItem("LaneClearE", "Use E", true).SetValue(true));
@@ -57,7 +57,7 @@
                         new MenuItem("LaneClearMana", "If Player ManaPercent >= %", true).SetValue(new Slider(60)));
                 }
 
-                var jungleClearMenu = Menu.AddSubMenu(new Menu("JungleClear", "JungleClear"));
+                var jungleClearMenu = clearMenu.AddSubMenu(new Menu("JungleClear", "JungleClear"));
                 {
                     jungleClearMenu.AddItem(new MenuItem("JungleClearQ", "Use Q", true).SetValue(true));
                     jungleClearMenu.AddItem(new MenuItem("JungleClearW", "Use W", true).SetValue(true));

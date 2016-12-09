@@ -43,7 +43,7 @@
 
             var clearMenu = Menu.AddSubMenu(new Menu("Clear", "Clear"));
             {
-                var laneClearMenu = Menu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
+                var laneClearMenu = clearMenu.AddSubMenu(new Menu("LaneClear", "LaneClear"));
                 {
                     laneClearMenu.AddItem(new MenuItem("LaneClearQ", "Use Q", true).SetValue(true));
                     laneClearMenu.AddItem(new MenuItem("LaneClearQTurret", "Use Q|Attack Tower", true).SetValue(true));
@@ -51,7 +51,7 @@
                         new MenuItem("LaneClearMana", "When Player ManaPercent >= %", true).SetValue(new Slider(60)));
                 }
 
-                var jungleClearMenu = Menu.AddSubMenu(new Menu("JungleClear", "JungleClear"));
+                var jungleClearMenu = clearMenu.AddSubMenu(new Menu("JungleClear", "JungleClear"));
                 {
                     jungleClearMenu.AddItem(new MenuItem("JungleClearQ", "Use Q", true).SetValue(true));
                     jungleClearMenu.AddItem(new MenuItem("JungleClearE", "Use E", true).SetValue(true));
@@ -130,7 +130,7 @@
             {
                 var skinMenu = utilityMenu.AddSubMenu(new Menu("Skin Change", "Skin Change"));
                 {
-                    SkinManager.AddToMenu(skinMenu);
+                    SkinManager.AddToMenu(skinMenu, 10);
                 }
 
                 var autoLevelMenu = utilityMenu.AddSubMenu(new Menu("Auto Levels", "Auto Levels"));
