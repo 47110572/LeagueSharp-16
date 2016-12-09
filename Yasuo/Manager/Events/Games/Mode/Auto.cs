@@ -14,9 +14,9 @@
             {
                 var Enemies =
                     HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range))
-                        .Where(x => x.HasBuffOfType(BuffType.Knockup) || x.HasBuffOfType(BuffType.Knockback));
+                        .Count(x => x.HasBuffOfType(BuffType.Knockup) || x.HasBuffOfType(BuffType.Knockback));
 
-                if (Enemies.Count() >= Menu.Item("AutoRCount", true).GetValue<Slider>().Value &&
+                if (Enemies >= Menu.Item("AutoRCount", true).GetValue<Slider>().Value &&
                     Me.HealthPercent >= Menu.Item("AutoRMyHp", true).GetValue<Slider>().Value &&
                     Me.CountEnemiesInRange(1500) <= Menu.Item("AutoRRangeCount", true).GetValue<Slider>().Value)
                 {
