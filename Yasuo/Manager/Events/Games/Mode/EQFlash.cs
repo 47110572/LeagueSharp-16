@@ -75,7 +75,7 @@
             }
             else
             {
-                Orbwalker.ActiveMode = Orbwalking.OrbwalkingMode.Combo;
+                Combo.Init();
             }
         }
     }
