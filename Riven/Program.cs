@@ -140,7 +140,7 @@
                 }
             }
 
-            var drawMenu = Menu.AddSubMenu(new Menu("Draw", "Drawings"));
+            var drawMenu = Menu.AddSubMenu(new Menu("Drawings", "Drawings"));
             {
                 drawMenu.AddItem(new MenuItem("DrawW", "Draw W Range", true).SetValue(false));
                 drawMenu.AddItem(new MenuItem("DrawBurst", "Draw Burst Range", true).SetValue(true));
@@ -538,7 +538,8 @@
         {
             if (Menu.GetBool("LaneClearQ") && Q.IsReady())
             {
-                if (Args.Target.Type == GameObjectType.obj_AI_Turret || Args.Target.Type == GameObjectType.obj_Turret)
+                if (Args.Target.Type == GameObjectType.obj_AI_Turret || Args.Target.Type == GameObjectType.obj_Turret ||
+                    Args.Target.Type == GameObjectType.obj_LampBulb)
                 {
                     if (Q.IsReady() && !Args.Target.IsDead)
                     {
