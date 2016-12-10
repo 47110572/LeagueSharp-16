@@ -331,23 +331,47 @@
                     return;
                 }
 
-                switch (Orbwalker.ActiveMode)
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
-                    case Orbwalking.OrbwalkingMode.Combo:
-                        if (Menu.GetBool("ComboW") && W.IsReady())
-                        {
-                            W.Cast();
-                        }
-                        break;
-                    case Orbwalking.OrbwalkingMode.Burst:
+                    if (Menu.GetBool("ComboW") && W.IsReady())
+                    {
                         W.Cast();
-                        break;
-                    case Orbwalking.OrbwalkingMode.Mixed:
-                        if (Menu.GetBool("HarassW") && W.IsReady())
+                    }
+
+                    if (Menu.GetBool("ComboR") && R.IsReady())
+                    {
+                        var target = TargetSelector.GetSelectedTarget() ??
+                                     TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
+
+                        if (target.IsValidTarget(R.Range))
                         {
-                            W.Cast();
+                            R2Logic(target);
                         }
-                        break;
+                    }
+                }
+                else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst)
+                {
+                    W.Cast();
+
+                    if (R.IsReady())
+                    {
+                        if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
+                        {
+                            var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
+
+                            if (rPred.Hitchance >= HitChance.High)
+                            {
+                                R.Cast(rPred.CastPosition, true);
+                            }
+                        }
+                    }
+                }
+                else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Mixed)
+                {
+                    if (Menu.GetBool("HarassW") && W.IsReady())
+                    {
+                        W.Cast();
+                    }
                 }
             }
             else if (Args.SData.Name == "RivenTriCleave")
@@ -359,70 +383,68 @@
                     return;
                 }
 
-                switch (Orbwalker.ActiveMode)
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
-                    case Orbwalking.OrbwalkingMode.Combo:
-                        CastItem(true);
+                    CastItem(true);
 
-                        if (Menu.GetBool("ComboR") && R.IsReady())
+                    if (Menu.GetBool("ComboR") && R.IsReady())
+                    {
+                        var target = TargetSelector.GetSelectedTarget() ??
+                                     TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
+
+                        if (target.IsValidTarget(R.Range))
                         {
-                            var target = TargetSelector.GetSelectedTarget() ??
-                                         TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
+                            R2Logic(target);
+                        }
+                    }
+                }
+                else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst)
+                {
+                    CastItem(true);
 
-                            if (target.IsValidTarget(R.Range))
+                    if (R.IsReady())
+                    {
+                        if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
+                        {
+                            var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
+
+                            if (rPred.Hitchance >= HitChance.High)
                             {
-                                R2Logic(target);
+                                R.Cast(rPred.CastPosition, true);
                             }
                         }
-                        break;
-                    case Orbwalking.OrbwalkingMode.Burst:
-                        CastItem(true);
-
-                        if (R.IsReady())
-                        {
-                            if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
-                            {
-                                var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
-
-                                if (rPred.Hitchance >= HitChance.High)
-                                {
-                                    R.Cast(rPred.CastPosition, true);
-                                }
-                            }
-                        }
-                        break;
+                    }
                 }
             }
             else if (Args.SData.Name == "RivenTriCleaveBuffer")
             {
-                switch (Orbwalker.ActiveMode)
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
-                    case Orbwalking.OrbwalkingMode.Combo:
-                        if (Menu.GetBool("ComboR") && R.IsReady())
-                        {
-                            var target = TargetSelector.GetSelectedTarget() ??
-                                         TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
+                    if (Menu.GetBool("ComboR") && R.IsReady())
+                    {
+                        var target = TargetSelector.GetSelectedTarget() ??
+                                     TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-                            if (target.IsValidTarget(R.Range))
+                        if (target.IsValidTarget(R.Range))
+                        {
+                            R2Logic(target);
+                        }
+                    }
+                }
+                else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst)
+                {
+                    if (R.IsReady())
+                    {
+                        if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
+                        {
+                            var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
+
+                            if (rPred.Hitchance >= HitChance.High)
                             {
-                                R2Logic(target);
+                                R.Cast(rPred.CastPosition, true);
                             }
                         }
-                        break;
-                    case Orbwalking.OrbwalkingMode.Burst:
-                        if (R.IsReady())
-                        {
-                            if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
-                            {
-                                var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
-
-                                if (rPred.Hitchance >= HitChance.High)
-                                {
-                                    R.Cast(rPred.CastPosition, true);
-                                }
-                            }
-                        }
-                        break;
+                    }
                 }
             }
             else if (Args.SData.Name == "RivenMartyr")
@@ -440,86 +462,82 @@
                     return;
                 }
 
-                switch (Orbwalker.ActiveMode)
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
-                    case Orbwalking.OrbwalkingMode.Combo:
-                        var target = TargetSelector.GetSelectedTarget() ??
-                                     TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
+                    var target = TargetSelector.GetSelectedTarget() ??
+                                 TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-                        if (target.IsValidTarget(R.Range))
+                    if (target.IsValidTarget(R.Range))
+                    {
+                        if (R.Instance.Name == "RivenFengShuiEngine")
                         {
-                            switch (R.Instance.Name)
+                            if (Menu.GetKey("R1Combo"))
                             {
-                                case "RivenFengShuiEngine":
-                                    if (Menu.GetKey("R1Combo"))
-                                    {
-                                        if (target.DistanceToPlayer() <= 500 &&
-                                            HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 500))
-                                        {
-                                            R.Cast(true);
-                                        }
-                                    }
-                                    break;
-                                case "RivenIzunaBlade":
-                                    R2Logic(target);
-                                    break;
+                                if (target.DistanceToPlayer() <= 500 &&
+                                    HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 500))
+                                {
+                                    R.Cast(true);
+                                }
                             }
                         }
-                        break;
-                    case Orbwalking.OrbwalkingMode.Burst:
-                        if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
+                        else if (R.Instance.Name == "RivenIzunaBlade")
                         {
-                            switch (R.Instance.Name)
-                            {
-                                case "RivenFengShuiEngine":
-                                    R.Cast();
-                                    break;
-                                case "RivenIzunaBlade":
-                                    var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
+                            R2Logic(target);
+                        }
+                    }
+                }
+                else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst)
+                {
+                    if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
+                    {
+                        if (R.Instance.Name == "RivenFengShuiEngine")
+                        {
+                            R.Cast();
+                        }
+                        else if (R.Instance.Name == "RivenIzunaBlade")
+                        {
+                            var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
 
-                                    if (rPred.Hitchance >= HitChance.High)
-                                    {
-                                        R.Cast(rPred.CastPosition, true);
-                                    }
-                                    break;
+                            if (rPred.Hitchance >= HitChance.High)
+                            {
+                                R.Cast(rPred.CastPosition, true);
                             }
                         }
-                        break;
+                    }
                 }
             }
             else if (Args.SData.Name == "RivenIzunaBlade")
             {
-                switch (Orbwalker.ActiveMode)
+                if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Combo)
                 {
-                    case Orbwalking.OrbwalkingMode.Combo:
-                        var target = TargetSelector.GetSelectedTarget() ??
-                                     TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
+                    var target = TargetSelector.GetSelectedTarget() ??
+                                 TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-                        if (target != null && target.IsValidTarget())
+                    if (target != null && target.IsValidTarget())
+                    {
+                        if (Q.IsReady() && target.IsValidTarget(Q.Range))
                         {
-                            if (Q.IsReady() && target.IsValidTarget(Q.Range))
-                            {
-                                CastQ(target);
-                            }
-                            else if (W.IsReady() && target.IsValidTarget(W.Range))
-                            {
-                                W.Cast();
-                            }
+                            CastQ(target);
                         }
-                        break;
-                    case Orbwalking.OrbwalkingMode.Burst:
-                        if (TargetSelector.GetSelectedTarget().IsValidTarget())
+                        else if (W.IsReady() && target.IsValidTarget(W.Range))
                         {
-                            if (TargetSelector.GetSelectedTarget().IsValidTarget(Q.Range))
-                            {
-                                CastQ(TargetSelector.GetSelectedTarget());
-                            }
-                            else if (TargetSelector.GetSelectedTarget().IsValidTarget(W.Range) && W.IsReady())
-                            {
-                                W.Cast();
-                            }
+                            W.Cast();
                         }
-                        break;
+                    }
+                }
+                else if (Orbwalker.ActiveMode == Orbwalking.OrbwalkingMode.Burst)
+                {
+                    if (TargetSelector.GetSelectedTarget().IsValidTarget())
+                    {
+                        if (TargetSelector.GetSelectedTarget().IsValidTarget(Q.Range))
+                        {
+                            CastQ(TargetSelector.GetSelectedTarget());
+                        }
+                        else if (TargetSelector.GetSelectedTarget().IsValidTarget(W.Range) && W.IsReady())
+                        {
+                            W.Cast();
+                        }
+                    }
                 }
             }
         }
