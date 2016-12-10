@@ -126,12 +126,120 @@
 
                     qMenu.AddItem(new MenuItem("KeepQALive", "Keep Q alive", true).SetValue(true));
                     qMenu.AddItem(new MenuItem("Dance", "Dance Emote in QA", true).SetValue(false));
+                    qMenu.AddItem(
+                        new MenuItem("QMode", "Q Mode : ", true).SetValue(
+                            new StringList(new[] {"Target Position", "Mouse", "Max Q"})));
                 }
 
                 var wMenu = miscMenu.AddSubMenu(new Menu("W Setting", "W Setting"));
                 {
                     wMenu.AddItem(new MenuItem("AntiGapCloserW", "AntiGapCloser", true).SetValue(true));
                     wMenu.AddItem(new MenuItem("InterruptTargetW", "Interrupt Danger Spell", true).SetValue(true));
+                }
+
+                var eMenu = miscMenu.AddSubMenu(new Menu("E Settings", "E Settings"));
+                {
+                    foreach (var target in HeroManager.Enemies)
+                    {
+                        if (target.ChampionName == "Darius")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("Darius", "Darius Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgeDariusR", "Shield R", true).SetValue(true));
+                            }
+                        }
+
+                        if (target.ChampionName == "Garen")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("Garen", "Garen Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgeGarenQ", "Shield Q", true).SetValue(true));
+                                spellMenu.AddItem(new MenuItem("EDodgeGarenR", "Shield R", true).SetValue(true));
+                            }
+                        }
+
+                        if (target.ChampionName == "Irelia")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("Irelia", "Irelia Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgeIreliaE", "Shield E", true).SetValue(true));
+                            }
+                        }
+
+                        if (target.ChampionName == "LeeSin")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("LeeSin", "LeeSin Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgeLeeSinR", "Shield R", true).SetValue(true));
+                            }
+                        }
+
+                        if (target.ChampionName == "Olaf")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("Olaf", "Olaf Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgeOlafE", "Shield E", true).SetValue(true));
+                            }
+                        }
+
+                        if (target.ChampionName == "Pantheon")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("Pantheon", "Pantheon Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgePantheonW", "Shield W", true).SetValue(true));
+                            }
+                        }
+
+                        if (target.ChampionName == "Renekton")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("Renekton", "RenektonW Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgeRenektonW", "Shield W", true).SetValue(true));
+                            }
+                        }
+
+                        if (target.ChampionName == "Rengar")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("Rengar", "Rengar Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgeRengarQ", "Shield Q", true).SetValue(true));
+                            }
+                        }
+
+                        if (target.ChampionName == "Veigar")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("Veigar", "Veigar Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgeVeigarR", "Shield R", true).SetValue(true));
+                            }
+                        }
+
+                        if (target.ChampionName == "Volibear")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("Volibear", "Volibear Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgeVolibearW", "Shield W", true).SetValue(true));
+                            }
+                        }
+
+                        if (target.ChampionName == "XenZhao")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("XenZhao", "XenZhao Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgeXenZhaoQ3", "Shield Q3", true).SetValue(true));
+                            }
+                        }
+
+                        if (target.ChampionName == "TwistedFate")
+                        {
+                            var spellMenu = eMenu.AddSubMenu(new Menu("Twisted Fate", "TwistedFate Spell"));
+                            {
+                                spellMenu.AddItem(new MenuItem("EDodgeTwistedFateW", "Shield W", true).SetValue(true));
+                            }
+                        }
+                    }
+
+                    eMenu.AddItem(new MenuItem("EShielddogde", "Use E Shield Spell", true).SetValue(true));
                 }
 
                 var skinMenu = miscMenu.AddSubMenu(new Menu("SkinChance", "SkinChance"));
@@ -200,204 +308,333 @@
 
         private static void OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
         {
-            if (!sender.IsMe)
+            if (sender.IsMe)
             {
-                return;
+                LogicSpellCast(Args);
             }
 
-            switch (Args.SData.Name)
+            if (sender.IsEnemy && sender.Type == GameObjectType.obj_AI_Hero)
             {
-                case "ItemTiamatCleave":
-                    if (!HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= W.Range))
-                    {
-                        return;
-                    }
+                if (Menu.GetBool("EShielddogde") && E.IsReady())
+                {
+                    LogicSpellShield(sender, Args);
+                }
+            }
+        }
 
-                    switch (Orbwalker.ActiveMode)
-                    {
-                        case Orbwalking.OrbwalkingMode.Combo:
-                            if (Menu.GetBool("ComboW") && W.IsReady())
-                            {
-                                W.Cast();
-                            }
-                            break;
-                        case Orbwalking.OrbwalkingMode.Burst:
+        private static void LogicSpellCast(GameObjectProcessSpellCastEventArgs Args)
+        {
+            if (Args.SData.Name == "ItemTiamatCleave")
+            {
+                if (!HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= W.Range))
+                {
+                    return;
+                }
+
+                switch (Orbwalker.ActiveMode)
+                {
+                    case Orbwalking.OrbwalkingMode.Combo:
+                        if (Menu.GetBool("ComboW") && W.IsReady())
+                        {
                             W.Cast();
-                            break;
-                        case Orbwalking.OrbwalkingMode.Mixed:
-                            if (Menu.GetBool("HarassW") && W.IsReady())
-                            {
-                                W.Cast();
-                            }
-                            break;
-                    }
-                    break;
-                case "RivenTriCleave":
-                    CanQ = false;
+                        }
+                        break;
+                    case Orbwalking.OrbwalkingMode.Burst:
+                        W.Cast();
+                        break;
+                    case Orbwalking.OrbwalkingMode.Mixed:
+                        if (Menu.GetBool("HarassW") && W.IsReady())
+                        {
+                            W.Cast();
+                        }
+                        break;
+                }
+            }
+            else if (Args.SData.Name == "RivenTriCleave")
+            {
+                CanQ = false;
 
-                    if (!HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 400))
-                    {
-                        return;
-                    }
+                if (!HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 400))
+                {
+                    return;
+                }
 
-                    switch (Orbwalker.ActiveMode)
-                    {
-                        case Orbwalking.OrbwalkingMode.Combo:
-                            CastItem(true);
-
-                            if (Menu.GetBool("ComboR") && R.IsReady())
-                            {
-                                var target = TargetSelector.GetSelectedTarget() ??
-                                             TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
-
-                                if (target.IsValidTarget(R.Range))
-                                {
-                                    R2Logic(target);
-                                }
-                            }
-                            break;
-                        case Orbwalking.OrbwalkingMode.Burst:
-                            CastItem(true);
-
-                            if (R.IsReady())
-                            {
-                                if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
-                                {
-                                    var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
-
-                                    if (rPred.Hitchance >= HitChance.High)
-                                    {
-                                        R.Cast(rPred.CastPosition, true);
-                                    }
-                                }
-                            }
-                            break;
-                    }
-                    break;
-                case "RivenTriCleaveBuffer":
-                    switch (Orbwalker.ActiveMode)
-                    {
-                        case Orbwalking.OrbwalkingMode.Combo:
-                            if (Menu.GetBool("ComboR") && R.IsReady())
-                            {
-                                var target = TargetSelector.GetSelectedTarget() ??
-                                             TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
-
-                                if (target.IsValidTarget(R.Range))
-                                {
-                                    R2Logic(target);
-                                }
-                            }
-                            break;
-                        case Orbwalking.OrbwalkingMode.Burst:
-                            if (R.IsReady())
-                            {
-                                if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
-                                {
-                                    var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
-
-                                    if (rPred.Hitchance >= HitChance.High)
-                                    {
-                                        R.Cast(rPred.CastPosition, true);
-                                    }
-                                }
-                            }
-                            break;
-                    }
-                    break;
-                case "RivenMartyr":
-                    if ((Orbwalking.isCombo || Orbwalking.isBurst) && HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 400))
-                    {
+                switch (Orbwalker.ActiveMode)
+                {
+                    case Orbwalking.OrbwalkingMode.Combo:
                         CastItem(true);
-                    }
-                    break;
-                case "RivenFeint":
-                    if (!R.IsReady())
-                    {
-                        return;
-                    }
 
-                    switch (Orbwalker.ActiveMode)
-                    {
-                        case Orbwalking.OrbwalkingMode.Combo:
+                        if (Menu.GetBool("ComboR") && R.IsReady())
+                        {
                             var target = TargetSelector.GetSelectedTarget() ??
                                          TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
                             if (target.IsValidTarget(R.Range))
                             {
-                                switch (R.Instance.Name)
-                                {
-                                    case "RivenFengShuiEngine":
-                                        if (Menu.GetKey("R1Combo"))
-                                        {
-                                            if (target.DistanceToPlayer() <= 500 &&
-                                                HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 500))
-                                            {
-                                                R.Cast(true);
-                                            }
-                                        }
-                                        break;
-                                    case "RivenIzunaBlade":
-                                        R2Logic(target);
-                                        break;
-                                }
+                                R2Logic(target);
                             }
-                            break;
-                        case Orbwalking.OrbwalkingMode.Burst:
+                        }
+                        break;
+                    case Orbwalking.OrbwalkingMode.Burst:
+                        CastItem(true);
+
+                        if (R.IsReady())
+                        {
                             if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
                             {
-                                switch (R.Instance.Name)
-                                {
-                                    case "RivenFengShuiEngine":
-                                        R.Cast();
-                                        break;
-                                    case "RivenIzunaBlade":
-                                        var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
+                                var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
 
-                                        if (rPred.Hitchance >= HitChance.High)
-                                        {
-                                            R.Cast(rPred.CastPosition, true);
-                                        }
-                                        break;
+                                if (rPred.Hitchance >= HitChance.High)
+                                {
+                                    R.Cast(rPred.CastPosition, true);
                                 }
                             }
-                            break;
-                    }
-                    break;
-                case "RivenIzunaBlade":
-                    switch (Orbwalker.ActiveMode)
-                    {
-                        case Orbwalking.OrbwalkingMode.Combo:
+                        }
+                        break;
+                }
+            }
+            else if (Args.SData.Name == "RivenTriCleaveBuffer")
+            {
+                switch (Orbwalker.ActiveMode)
+                {
+                    case Orbwalking.OrbwalkingMode.Combo:
+                        if (Menu.GetBool("ComboR") && R.IsReady())
+                        {
                             var target = TargetSelector.GetSelectedTarget() ??
                                          TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
 
-                            if (target != null && target.IsValidTarget())
+                            if (target.IsValidTarget(R.Range))
                             {
-                                if (Q.IsReady() && target.IsValidTarget(Q.Range))
+                                R2Logic(target);
+                            }
+                        }
+                        break;
+                    case Orbwalking.OrbwalkingMode.Burst:
+                        if (R.IsReady())
+                        {
+                            if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
+                            {
+                                var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
+
+                                if (rPred.Hitchance >= HitChance.High)
                                 {
-                                    CastQ(target);
-                                }
-                                else if (W.IsReady() && target.IsValidTarget(W.Range))
-                                {
-                                    W.Cast();
+                                    R.Cast(rPred.CastPosition, true);
                                 }
                             }
-                            break;
-                        case Orbwalking.OrbwalkingMode.Burst:
-                            if (TargetSelector.GetSelectedTarget().IsValidTarget())
+                        }
+                        break;
+                }
+            }
+            else if (Args.SData.Name == "RivenMartyr")
+            {
+                if ((Orbwalking.isCombo || Orbwalking.isBurst) &&
+                    HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 400))
+                {
+                    CastItem(true);
+                }
+            }
+            else if (Args.SData.Name == "RivenFeint")
+            {
+                if (!R.IsReady())
+                {
+                    return;
+                }
+
+                switch (Orbwalker.ActiveMode)
+                {
+                    case Orbwalking.OrbwalkingMode.Combo:
+                        var target = TargetSelector.GetSelectedTarget() ??
+                                     TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
+
+                        if (target.IsValidTarget(R.Range))
+                        {
+                            switch (R.Instance.Name)
                             {
-                                if (TargetSelector.GetSelectedTarget().IsValidTarget(Q.Range))
-                                {
-                                    CastQ(TargetSelector.GetSelectedTarget());
-                                }
-                                else if (TargetSelector.GetSelectedTarget().IsValidTarget(W.Range) && W.IsReady())
-                                {
-                                    W.Cast();
-                                }
+                                case "RivenFengShuiEngine":
+                                    if (Menu.GetKey("R1Combo"))
+                                    {
+                                        if (target.DistanceToPlayer() <= 500 &&
+                                            HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 500))
+                                        {
+                                            R.Cast(true);
+                                        }
+                                    }
+                                    break;
+                                case "RivenIzunaBlade":
+                                    R2Logic(target);
+                                    break;
                             }
-                            break;
+                        }
+                        break;
+                    case Orbwalking.OrbwalkingMode.Burst:
+                        if (TargetSelector.GetSelectedTarget().IsValidTarget(R.Range))
+                        {
+                            switch (R.Instance.Name)
+                            {
+                                case "RivenFengShuiEngine":
+                                    R.Cast();
+                                    break;
+                                case "RivenIzunaBlade":
+                                    var rPred = R.GetPrediction(TargetSelector.GetSelectedTarget(), true);
+
+                                    if (rPred.Hitchance >= HitChance.High)
+                                    {
+                                        R.Cast(rPred.CastPosition, true);
+                                    }
+                                    break;
+                            }
+                        }
+                        break;
+                }
+            }
+            else if (Args.SData.Name == "RivenIzunaBlade")
+            {
+                switch (Orbwalker.ActiveMode)
+                {
+                    case Orbwalking.OrbwalkingMode.Combo:
+                        var target = TargetSelector.GetSelectedTarget() ??
+                                     TargetSelector.GetTarget(R.Range, TargetSelector.DamageType.Physical);
+
+                        if (target != null && target.IsValidTarget())
+                        {
+                            if (Q.IsReady() && target.IsValidTarget(Q.Range))
+                            {
+                                CastQ(target);
+                            }
+                            else if (W.IsReady() && target.IsValidTarget(W.Range))
+                            {
+                                W.Cast();
+                            }
+                        }
+                        break;
+                    case Orbwalking.OrbwalkingMode.Burst:
+                        if (TargetSelector.GetSelectedTarget().IsValidTarget())
+                        {
+                            if (TargetSelector.GetSelectedTarget().IsValidTarget(Q.Range))
+                            {
+                                CastQ(TargetSelector.GetSelectedTarget());
+                            }
+                            else if (TargetSelector.GetSelectedTarget().IsValidTarget(W.Range) && W.IsReady())
+                            {
+                                W.Cast();
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+
+        private static void LogicSpellShield(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
+        {
+            if (Args.Target.IsMe)
+            {
+                if (Args.SData.Name.Contains("DariusR"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeDariusR"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
                     }
-                    break;
+                }
+
+                if (Args.SData.Name.Contains("GarenQ"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeGarenQ"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
+
+                if (Args.SData.Name.Contains("GarenR"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeGarenR"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
+
+                if (Args.SData.Name.Contains("IreliaE"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeIreliaE"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
+
+                if (Args.SData.Name.Contains("LeeSinR"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeLeeSinR"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
+
+                if (Args.SData.Name.Contains("OlafE"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeOlafE"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
+
+                if (Args.SData.Name.Contains("PantheonW"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgePantheonW"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
+
+                if (Args.SData.Name.Contains("RenektonW"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeRenektonW"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
+
+                if (Args.SData.Name.Contains("RengarQ"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeRengarQ"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
+
+                if (Args.SData.Name.Contains("VeigarR"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeVeigarR"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
+
+                if (Args.SData.Name.Contains("VolibearW"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeVolibearW"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
+
+                if (Args.SData.Name.Contains("XenZhaoThrust3"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeXenZhaoQ3"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
+
+                if (Args.SData.Name.Contains("attack") && Args.Target.IsMe &&
+                    sender.Buffs.Any(
+                        buff =>
+                            buff.Name == "BlueCardAttack" || buff.Name == "GoldCardAttack" ||
+                            buff.Name == "RedCardAttack"))
+                {
+                    if (E.IsReady() && Menu.GetBool("EDodgeTwistedFateW"))
+                    {
+                        E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
+                    }
+                }
             }
         }
 
@@ -659,7 +896,18 @@
         {
             if (QTarget != null && CanQ)
             {
-                Q.Cast(QTarget.Position, true);
+                if (Menu.GetList("QMode") == 0)
+                {
+                    Q.Cast(QTarget.Position, true);
+                }
+                else if (Menu.GetList("QMode") == 1)
+                {
+                    Q.Cast(Me.Position.Extend(Game.CursorPos, Q.Range), true);
+                }
+                else if (Menu.GetList("QMode") == 2)
+                {
+                    Q.Cast(Me.Position.Extend(QTarget.Position, Q.Range), true);
+                }
             }
         }
 
