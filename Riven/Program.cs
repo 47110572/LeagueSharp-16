@@ -82,8 +82,8 @@
                 harassMenu.AddItem(new MenuItem("HarassQ", "Use Q", true).SetValue(true));
                 harassMenu.AddItem(new MenuItem("HarassW", "Use W", true).SetValue(true));
                 harassMenu.AddItem(new MenuItem("HarassE", "Use E", true).SetValue(true));
-                //harassMenu.AddItem(
-                //    new MenuItem("HarassMode", "Harass Mode", true).SetValue(new StringList(new[] {"Smart", "Burst"})));
+                harassMenu.AddItem(
+                    new MenuItem("HarassMode", "Harass Mode", true).SetValue(new StringList(new[] {"Smart", "Burst"})));
             }
 
             var clearMenu = Menu.AddSubMenu(new Menu("Clear", "Clear"));
@@ -510,16 +510,14 @@
 
                     if (Menu.GetBool("HarassQ") && Q.IsReady())
                     {
-                        //if (Menu.GetList("HarassMode") == 0)
-                        //{
-                        //    if (QStack == 2)
-                        //    {
-                        //        return;
-                        //    }
-
-                        //    CastQ(target);
-                        //}
-                        //else
+                        if (Menu.GetList("HarassMode") == 0)
+                        {
+                            if (QStack == 1)
+                            {
+                                CastQ(target);
+                            }
+                        }
+                        else
                         {
                             CastQ(target);
                         }
@@ -878,42 +876,33 @@
 
             if (target.Check())
             {
-                //if (Menu.GetList("HarassMode") == 0)
-                //{
-                //    if (QStack == 2)
-                //    {
-                //        if (E.IsReady() && Menu.GetBool("HarassE"))
-                //        {
-                //            var pos = Me.ServerPosition +
-                //                      (Me.ServerPosition - target.ServerPosition).Normalized()*E.Range;
-                //            E.Cast(pos);
+                if (Menu.GetList("HarassMode") == 0)
+                {
+                    if (E.IsReady() && Menu.GetBool("HarassE") && QStack == 2)
+                    {
+                        var pos = Me.Position + (Me.Position - target.Position).Normalized() * E.Range;
 
-                //            if (Menu.GetBool("HarassQ"))
-                //            {
-                //                Utility.DelayAction.Add(100, () => Q.Cast(pos, true));
-                //            }
-                //        }
-                //    }
-                //    else
-                //    {
-                //        if (W.IsReady() && Menu.GetBool("HarassW"))
-                //        {
-                //            if (target.IsValidTarget(W.Range) && QStack == 1)
-                //            {
-                //                W.Cast(true);
-                //            }
-                //        }
+                        E.Cast(Me.Position.Extend(pos, E.Range), true);
+                    }
 
-                //        if (Q.IsReady() && Menu.GetBool("HarassQ"))
-                //        {
-                //            if (target.IsValidTarget(Me.AttackRange + Me.BoundingRadius + 150))
-                //            {
-                //                CastQ(target);
-                //            }
-                //        }
-                //    }
-                //}
-                //else
+                    if (Q.IsReady() && Menu.GetBool("HarassQ") && QStack == 2)
+                    {
+                        var pos = Me.Position + (Me.Position - target.Position).Normalized() * E.Range;
+
+                        Utility.DelayAction.Add(100, () => Q.Cast(Me.Position.Extend(pos, Q.Range), true));
+                    }
+
+                    if (W.IsReady() && Menu.GetBool("HarassW") && target.IsValidTarget(W.Range) && QStack == 1)
+                    {
+                        W.Cast(true);
+                    }
+
+                    if (Q.IsReady() && Menu.GetBool("HarassQ") && QStack == 0)
+                    {
+                        CastQ(target);
+                    }
+                }
+                else
                 {
                     if (E.IsReady() && Menu.GetBool("HarassE") && target.IsValidTarget(500f))
                     {
