@@ -223,7 +223,7 @@
                 }
             }
 
-            if (Menu.GetBool("ComboQExtended") && Q.IsReady())
+            if (Menu.GetBool("ComboQExtended") && Q.IsReady() && !Me.IsDashing() && !Me.IsWindingUp)
             {
                 var target = TargetSelector.GetTarget(QExtend.Range, TargetSelector.DamageType.Physical);
 
