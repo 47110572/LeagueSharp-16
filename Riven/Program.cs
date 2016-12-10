@@ -14,10 +14,10 @@
         private static SpellSlot Ignite = SpellSlot.Unknown, Flash = SpellSlot.Unknown;
         private static Menu Menu;
         private static Obj_AI_Hero Me;
-        private static bool CanQ;
-        private static int QStack;
+        private static bool canQ;
+        private static int qStack;
         private static Orbwalking.Orbwalker Orbwalker;
-        private static Obj_AI_Base QTarget;
+        private static Obj_AI_Base qTarget;
 
         private static void Main(string[] Args)
         {
@@ -376,7 +376,7 @@
             }
             else if (Args.SData.Name == "RivenTriCleave")
             {
-                CanQ = false;
+                canQ = false;
 
                 if (!HeroManager.Enemies.Any(x => x.DistanceToPlayer() <= 400))
                 {
@@ -670,28 +670,24 @@
 
             if (Args.Animation.Contains("c29"))
             {
-                QStack = 1;
+                qStack = 1;
                 ResetQA(Menu.Item("Q1Delay", true).GetValue<Slider>().Value);
             }
             else if (Args.Animation.Contains("c39"))
             {
-                QStack = 2;
+                qStack = 2;
                 ResetQA(Menu.Item("Q2Delay", true).GetValue<Slider>().Value);
             }
             else if (Args.Animation.Contains("c49"))
             {
-                QStack = 0;
+                qStack = 0;
                 ResetQA(Menu.Item("Q3Delay", true).GetValue<Slider>().Value);
-            }
-            else
-            {
-                QStack = 0;
             }
         }
 
         private static void ResetQA(int time)
         {
-            if (Menu.Item("Dance", true).GetValue<bool>())
+            if (Menu.GetBool("Dance"))
             {
                 Game.SendEmote(Emote.Dance);
             }
@@ -729,7 +725,7 @@
                     }
                     else if (W.IsReady() && target.IsValidTarget(W.Range) && !target.HasBuffOfType(BuffType.SpellShield) &&
                              (target.IsMelee || target.IsFacing(Me) || !Q.IsReady() || Me.HasBuff("RivenFeint") ||
-                              QStack != 0))
+                              qStack != 0))
                     {
                         W.Cast();
                     }
@@ -767,7 +763,7 @@
                     {
                         if (Menu.GetList("HarassMode") == 0)
                         {
-                            if (QStack == 1)
+                            if (qStack == 1)
                             {
                                 CastQ(target);
                             }
@@ -855,7 +851,13 @@
                 W.Range = Me.HasBuff("RivenFengShuiEngine") ? 330 : 260;
             }
 
-            if (Me.IsDead || Me.IsRecalling())
+            if (Me.IsDead)
+            {
+                qStack = 0;
+                return;
+            }
+
+            if (Me.IsRecalling())
             {
                 return;
             }
@@ -912,11 +914,11 @@
 
         private static void Autobool()
         {
-            if (QTarget != null && CanQ)
+            if (qTarget != null && canQ)
             {
                 if (Menu.GetList("QMode") == 0)
                 {
-                    Q.Cast(QTarget.Position, true);
+                    Q.Cast(qTarget.Position, true);
                 }
                 else if (Menu.GetList("QMode") == 1)
                 {
@@ -924,7 +926,7 @@
                 }
                 else if (Menu.GetList("QMode") == 2)
                 {
-                    Q.Cast(Me.Position.Extend(QTarget.Position, Q.Range), true);
+                    Q.Cast(Me.Position.Extend(qTarget.Position, Q.Range), true);
                 }
             }
         }
@@ -995,7 +997,7 @@
 
                 if (Menu.GetBool("ComboW") && W.IsReady() &&
                     target.IsValidTarget(W.Range) && !target.HasBuffOfType(BuffType.SpellShield) && 
-                    (target.IsMelee || target.IsFacing(Me) || !Q.IsReady() || Me.HasBuff("RivenFeint") || QStack != 0))
+                    (target.IsMelee || target.IsFacing(Me) || !Q.IsReady() || Me.HasBuff("RivenFeint") || qStack != 0))
                 {
                     W.Cast();
                 }
@@ -1106,7 +1108,7 @@
                     W.Cast();
                 }
 
-                if ((QStack == 1 || QStack == 2 || target.HealthPercent < 50) && R.Instance.Name == "RivenIzunaBlade")
+                if ((qStack == 1 || qStack == 2 || target.HealthPercent < 50) && R.Instance.Name == "RivenIzunaBlade")
                 {
                     R.Cast(target.ServerPosition);
                 }
@@ -1144,26 +1146,26 @@
             {
                 if (Menu.GetList("HarassMode") == 0)
                 {
-                    if (E.IsReady() && Menu.GetBool("HarassE") && QStack == 2)
+                    if (E.IsReady() && Menu.GetBool("HarassE") && qStack == 2)
                     {
                         var pos = Me.Position + (Me.Position - target.Position).Normalized() * E.Range;
 
                         E.Cast(Me.Position.Extend(pos, E.Range), true);
                     }
 
-                    if (Q.IsReady() && Menu.GetBool("HarassQ") && QStack == 2)
+                    if (Q.IsReady() && Menu.GetBool("HarassQ") && qStack == 2)
                     {
                         var pos = Me.Position + (Me.Position - target.Position).Normalized() * E.Range;
 
                         Utility.DelayAction.Add(100, () => Q.Cast(Me.Position.Extend(pos, Q.Range), true));
                     }
 
-                    if (W.IsReady() && Menu.GetBool("HarassW") && target.IsValidTarget(W.Range) && QStack == 1)
+                    if (W.IsReady() && Menu.GetBool("HarassW") && target.IsValidTarget(W.Range) && qStack == 1)
                     {
                         W.Cast(true);
                     }
 
-                    if (Q.IsReady() && Menu.GetBool("HarassQ") && QStack == 0)
+                    if (Q.IsReady() && Menu.GetBool("HarassQ") && qStack == 0)
                     {
                         CastQ(target);
                     }
@@ -1219,7 +1221,7 @@
 
                 if (mobs.Any())
                 {
-                    if ((!Q.IsReady() && QStack == 0) || ((QStack == 1 || QStack == 2) && Q.IsReady()))
+                    if ((!Q.IsReady() && qStack == 0) || ((qStack == 1 || qStack == 2) && Q.IsReady()))
                     {
                         W.Cast(true);
                     }
@@ -1236,7 +1238,7 @@
                 W.Cast(true);
             }
 
-            if (E.IsReady() && !Me.IsDashing() && ((!Q.IsReady() && QStack == 0) || (Q.IsReady() && QStack == 2)))
+            if (E.IsReady() && !Me.IsDashing() && ((!Q.IsReady() && qStack == 0) || (Q.IsReady() && qStack == 2)))
             {
                 E.Cast(Me.Position.Extend(Game.CursorPos, E.Range), true);
             }
@@ -1345,7 +1347,7 @@
                 return 0;
             }
 
-            var qhan = 3 - QStack;
+            var qhan = 3 - qStack;
 
             return (float) (Q.GetDamage(target)*qhan + Me.GetAutoAttackDamage(target)*qhan*(1 + GetPassive));
         }
@@ -1407,8 +1409,8 @@
 
         private static void CastQ(Obj_AI_Base target)
         {
-            CanQ = true;
-            QTarget = target;
+            canQ = true;
+            qTarget = target;
         }
     }
 }
