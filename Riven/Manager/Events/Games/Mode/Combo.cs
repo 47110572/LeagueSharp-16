@@ -47,9 +47,13 @@
 
                 if (Menu.GetBool("ComboQ") && Q.IsReady() && !Me.IsDashing() && Me.CanMoveMent() &&
                     target.DistanceToPlayer() <= Q.Range + Orbwalking.GetRealAutoAttackRange(Me) &&
-                    !Orbwalking.InAutoAttackRange(target) && Utils.TickCount - lastQTime > 500)
+                    target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) + 50 &&
+                    Utils.TickCount - lastQTime > 500)
                 {
-                    SpellManager.CastQ(target);
+                    if (!Me.IsDashing())
+                    {
+                        SpellManager.CastQ(target);
+                    }
                 }
 
                 if (Menu.GetBool("ComboR") && R.IsReady())
