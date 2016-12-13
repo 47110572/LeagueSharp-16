@@ -25,9 +25,10 @@
                 var useRCombo = Menu.Item("R1Combo", true).GetValue<KeyBind>();
                 var MePos = Drawing.WorldToScreen(Me.Position);
 
-                Drawing.DrawText(MePos[0] - 40, MePos[1] + 25, Color.MediumSlateBlue,
+                Drawing.DrawText(MePos[0] - 40, MePos[1] + 25, Color.FromArgb(0, 168, 255),
                     "Use R(" + new string(System.Text.Encoding.Default.GetChars(BitConverter.GetBytes(useRCombo.Key))));
-                Drawing.DrawText(MePos[0] + 18, MePos[1] + 25, Color.MediumSlateBlue, "): " + (useRCombo.Active ? "On" : "Off"));
+                Drawing.DrawText(MePos[0] + 17, MePos[1] + 25, Color.FromArgb(0, 168, 255),
+                    "): " + (useRCombo.Active ? "On" : "Off"));
             }
         }
     }

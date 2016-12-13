@@ -71,7 +71,7 @@
                 {
                     jungleClearMenu.AddItem(new MenuItem("JungleClearQ", "Use Q", true).SetValue(true));
                     jungleClearMenu.AddItem(new MenuItem("JungleClearW", "Use W", true).SetValue(true));
-                    jungleClearMenu.AddItem(new MenuItem("JungleClearWLogic", "Use W| Smart", true).SetValue(true));
+                    jungleClearMenu.AddItem(new MenuItem("JungleClearWLogic", "Use W| Smart", true).SetValue(false));
                     jungleClearMenu.AddItem(new MenuItem("JungleClearE", "Use E", true).SetValue(true));
                 }
             }

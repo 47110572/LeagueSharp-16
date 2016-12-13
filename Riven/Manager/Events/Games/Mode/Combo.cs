@@ -25,19 +25,29 @@
                     target.IsValidTarget(W.Range) && !target.HasBuffOfType(BuffType.SpellShield) &&
                     (!Q.IsReady() || qStack != 0))
                 {
-                    W.Cast();
+                    W.Cast(true);
                 }
 
-                if (Menu.GetBool("ComboE") && E.IsReady() && Me.CanMoveMent() &&
-                    target.DistanceToPlayer() <= W.Range + E.Range &&
+                if (Menu.GetBool("ComboE") && E.IsReady() && Me.CanMoveMent() && target.DistanceToPlayer() <= 650 &&
                     target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) + 100)
                 {
-                    E.Cast(target.IsMelee ? Game.CursorPos : target.ServerPosition);
+                    if (target.DistanceToPlayer() <= E.Range + (Q.IsReady() && qStack == 0? Q.Range:0))
+                    {
+                        E.Cast(target.Position, true);
+                    }
+                    else if (target.DistanceToPlayer() <= E.Range + (W.IsReady() ? W.Range : 0))
+                    {
+                        E.Cast(target.Position, true);
+                    }
+                    else if (!Q.IsReady() && !W.IsReady() && target.DistanceToPlayer() < E.Range + Me.AttackRange)
+                    {
+                        E.Cast(target.Position, true);
+                    }
                 }
 
-                if (Menu.GetBool("ComboQ") && Q.IsReady() && !Me.IsDashing() &&
+                if (Menu.GetBool("ComboQ") && Q.IsReady() && !Me.IsDashing() && Me.CanMoveMent() &&
                     target.DistanceToPlayer() <= Q.Range + Orbwalking.GetRealAutoAttackRange(Me) &&
-                    !Orbwalking.InAutoAttackRange(target) && Utils.TickCount - lastQTime > 500 && Me.CanMoveMent())
+                    !Orbwalking.InAutoAttackRange(target) && Utils.TickCount - lastQTime > 500)
                 {
                     SpellManager.CastQ(target);
                 }
@@ -48,7 +58,7 @@
                     {
                         if (target.DistanceToPlayer() < 500 && Me.CountEnemiesInRange(500) >= 1)
                         {
-                            R.Cast();
+                            R.Cast(true);
                         }
                     }
                     else if (R.Instance.Name == "RivenIzunaBlade")

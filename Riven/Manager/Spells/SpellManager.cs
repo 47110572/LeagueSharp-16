@@ -12,6 +12,8 @@
             W = new Spell(SpellSlot.W, 260f);
             E = new Spell(SpellSlot.E, 312f);
             R = new Spell(SpellSlot.R, 900f);
+
+            Q.SetSkillshot(0.25f, 100f, 2200f, false, SkillshotType.SkillshotCircle);
             R.SetSkillshot(0.25f, 45f, 1600f, false, SkillshotType.SkillshotCone);
 
             Ignite = Me.GetSpellSlot("SummonerDot");

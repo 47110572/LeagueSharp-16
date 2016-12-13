@@ -18,9 +18,10 @@
         {
             if (ObjectManager.Player.ChampionName != "Riven")
             {
-                Game.PrintChat("Flowers' Riven Not Load!");
                 return;
             }
+
+            Game.PrintChat("<font color='#00a8ff'>Flowers' Riven Reborn Load! by NightMoon</font>");
 
             SpellManager.Init();
             MenuManager.Init();
