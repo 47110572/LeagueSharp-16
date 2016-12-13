@@ -7,8 +7,8 @@
     <ProjectGuid>{2A70FEA9-D5E2-4246-A133-B3FCBB9D4744}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Flowers_Riven</RootNamespace>
-    <AssemblyName>Flowers%27 Riven</AssemblyName>
+    <RootNamespace>Flowers_Riven_Reborn</RootNamespace>
+    <AssemblyName>Flowers%27 Riven Reborn</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -59,6 +59,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logic.cs" />
+    <Compile Include="Manager\Events\Animation\AnimationManager.cs" />
+    <Compile Include="Manager\Events\DoCast\DoCastManager.cs" />
+    <Compile Include="Manager\Events\Drawings\DrawManager.cs" />
+    <Compile Include="Manager\Events\EventManager.cs" />
+    <Compile Include="Manager\Events\Games\Mode\Burst.cs" />
+    <Compile Include="Manager\Events\Games\Mode\CastingQ.cs" />
+    <Compile Include="Manager\Events\Games\Mode\Combo.cs" />
+    <Compile Include="Manager\Events\Games\Mode\Flee.cs" />
+    <Compile Include="Manager\Events\Games\Mode\Harass.cs" />
+    <Compile Include="Manager\Events\Games\Mode\JungleClear.cs" />
+    <Compile Include="Manager\Events\Games\Mode\KeepQ.cs" />
+    <Compile Include="Manager\Events\Games\Mode\KillSteal.cs" />
+    <Compile Include="Manager\Events\Games\Mode\LaneClear.cs" />
+    <Compile Include="Manager\Events\Games\Mode\QADelay.cs" />
+    <Compile Include="Manager\Events\Gapcloser\GapcloserManager.cs" />
+    <Compile Include="Manager\Events\Interrupt\InterruptManager.cs" />
+    <Compile Include="Manager\Events\Games\LoopManager.cs" />
+    <Compile Include="Manager\Events\SpellCast\SpellCastManager.cs" />
+    <Compile Include="Manager\Menu\MenuManager.cs" />
+    <Compile Include="Manager\Spells\SpellManager.cs" />
     <Compile Include="myCommon\CheckStatus.cs" />
     <Compile Include="myCommon\DamageCalculate.cs" />
     <Compile Include="myCommon\DamageIndicator.cs" />
