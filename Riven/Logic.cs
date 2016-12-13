@@ -13,7 +13,6 @@
         internal static bool canQ;
         internal static int qStack;
         internal static int lastQTime;
-        internal static int lastETime;
         internal static Orbwalking.Orbwalker Orbwalker;
         internal static Obj_AI_Base qTarget;
 

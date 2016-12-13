@@ -35,8 +35,7 @@
                     E.Cast(target.IsMelee ? Game.CursorPos : target.ServerPosition);
                 }
 
-                if (Menu.GetBool("ComboQ") && Q.IsReady() &&
-                    (!Me.IsDashing() || (Utils.TickCount - lastETime > 300 && !E.IsReady())) &&
+                if (Menu.GetBool("ComboQ") && Q.IsReady() && !Me.IsDashing() &&
                     target.DistanceToPlayer() <= Q.Range + Orbwalking.GetRealAutoAttackRange(Me) &&
                     !Orbwalking.InAutoAttackRange(target) && Utils.TickCount - lastQTime > 500 && Me.CanMoveMent())
                 {

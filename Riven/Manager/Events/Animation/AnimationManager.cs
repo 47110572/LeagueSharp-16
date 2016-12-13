@@ -37,11 +37,6 @@
                 qStack = 0;
                 SpellManager.ResetQA(Menu.Item("Q3Delay", true).GetValue<Slider>().Value);
             }
-
-            if (Args.Animation.Contains("Spells3"))
-            {
-                lastETime = Utils.TickCount;
-            }
         }
     }
 }
