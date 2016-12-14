@@ -153,7 +153,8 @@
 
             var target = sender as Obj_AI_Hero;
 
-            if (target == null || target.Team == ObjectManager.Player.Team || !target.IsValid)
+            if (target == null || target.Team == ObjectManager.Player.Team || !target.IsValid || 
+                Args.Target == null || Args.SData == null)
             {
                 return;
             }
