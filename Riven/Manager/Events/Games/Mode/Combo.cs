@@ -45,10 +45,10 @@
                     }
                 }
 
-                if (Menu.GetBool("ComboQ") && Q.IsReady() && !Me.IsDashing() && Me.CanMoveMent() &&
+                if (Menu.GetBool("ComboQ") && Q.IsReady() && !Me.IsDashing() && Me.CanMoveMent() && qStack == 0 &&
                     target.DistanceToPlayer() <= Q.Range + Orbwalking.GetRealAutoAttackRange(Me) &&
                     target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) + 50 &&
-                    Utils.TickCount - lastQTime > 500)
+                    Utils.TickCount - lastQTime > 900)
                 {
                     if (!Me.IsDashing())
                     {
