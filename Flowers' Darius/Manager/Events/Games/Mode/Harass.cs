@@ -1,4 +1,6 @@
-﻿namespace Flowers_Darius.Manager.Events.Games.Mode
+﻿using LeagueSharp;
+
+namespace Flowers_Darius.Manager.Events.Games.Mode
 {
     using Spells;
     using myCommon;
@@ -11,10 +13,34 @@
         {
             if (ManaManager.HasEnoughMana(Menu.GetSlider("HarassMana")))
             {
-                var target = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
+                var target = TargetSelector.GetTarget(600, TargetSelector.DamageType.Physical);
 
-                if (target.Check(E.Range))
+                if (target.Check(600))
                 {
+                    if (Menu.GetBool("HarassQLock") && Me.HasBuff("dariusqcast") && Me.CountEnemiesInRange(800) < 3)
+                    {
+                        Orbwalker.SetMovement(false);
+                        Orbwalker.SetAttack(false);
+
+                        if (target.DistanceToPlayer() <= 250)
+                        {
+                            Me.IssueOrder(GameObjectOrder.MoveTo, Me.Position.Extend(target.Position, -Q.Range));
+                        }
+                        else if (target.DistanceToPlayer() <= Q.Range)
+                        {
+                            Me.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                        }
+                        else
+                        {
+                            Me.IssueOrder(GameObjectOrder.MoveTo, target.Position);
+                        }
+                    }
+                    else
+                    {
+                        Orbwalker.SetMovement(true);
+                        Orbwalker.SetAttack(true);
+                    }
+
                     if (Menu.GetBool("HarassE") && E.IsReady() && !Orbwalking.InAutoAttackRange(target) &&
                         !target.HaveShiled() && target.DistanceToPlayer() <= E.Range - 30)
                     {

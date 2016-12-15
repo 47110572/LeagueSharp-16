@@ -14,7 +14,6 @@
                 return;
             }
 
-            QMoveMent.Init();
             Auto.Init();
             KillSteal.Init();
 

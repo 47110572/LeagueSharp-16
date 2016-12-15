@@ -42,6 +42,30 @@ namespace Flowers_Darius.Manager.Events.Games.Mode
                     }
                 }
 
+                if (Menu.GetBool("ComboQLock") && Me.HasBuff("dariusqcast") && Me.CountEnemiesInRange(800) < 3)
+                {
+                    Orbwalker.SetMovement(false);
+                    Orbwalker.SetAttack(false);
+
+                    if (target.DistanceToPlayer() <= 250)
+                    {
+                        Me.IssueOrder(GameObjectOrder.MoveTo, Me.Position.Extend(target.Position, -Q.Range));
+                    }
+                    else if (target.DistanceToPlayer() <= Q.Range)
+                    {
+                        Me.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+                    }
+                    else
+                    {
+                        Me.IssueOrder(GameObjectOrder.MoveTo, target.Position);
+                    }
+                }
+                else
+                {
+                    Orbwalker.SetMovement(true);
+                    Orbwalker.SetAttack(true);
+                }
+
                 if (Menu.GetBool("ComboQ") && Q.IsReady() && target.DistanceToPlayer() <= Q.Range &&
                     SpellManager.CanQHit(target) && Me.CanMoveMent())
                 {

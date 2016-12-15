@@ -67,7 +67,6 @@
     <Compile Include="Manager\Events\Games\Mode\JungleClear.cs" />
     <Compile Include="Manager\Events\Games\Mode\KillSteal.cs" />
     <Compile Include="Manager\Events\Games\Mode\LaneClear.cs" />
-    <Compile Include="Manager\Events\Games\Mode\QMoveMent.cs" />
     <Compile Include="Manager\Events\SpellCast\SpellCastManager.cs" />
     <Compile Include="Manager\Menu\MenuManager.cs" />
     <Compile Include="Manager\Spells\SpellManager.cs" />
