@@ -154,8 +154,24 @@
 
         internal static void CastQ(Obj_AI_Base target)
         {
-            canQ = true;
-            qTarget = target;
+            if (target != null && !target.IsDead)
+            {
+                switch (Menu.GetList("QMode"))
+                {
+                    case 0:
+                        Q.Cast(target.Position, true);
+                        break;
+                    case 1:
+                        Q.Cast(Game.CursorPos, true);
+                        break;
+                    case 2:
+                        Q.Cast(Me.Position.Extend(target.Position, Q.Range), true);
+                        break;
+                    default:
+                        Q.Cast(Me.Position.Extend(Game.CursorPos, Q.Range), true);
+                        break;
+                }
+            }
         }
 
         internal static void ResetQA(int time)

@@ -19,33 +19,16 @@
                     SpellManager.GetComboDamage(target) > target.Health)
                 {
                     Me.Spellbook.CastSpell(Ignite, target);
-                }
-
-                if (Menu.GetBool("ComboW") && W.IsReady() &&
-                    target.IsValidTarget(W.Range) && !target.HasBuffOfType(BuffType.SpellShield) &&
-                    (!Q.IsReady() || qStack != 0))
-                {
-                    W.Cast(true);
+                    return;
                 }
 
                 if (Menu.GetBool("ComboE") && E.IsReady() && Me.CanMoveMent() && target.DistanceToPlayer() <= 650 &&
                     target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) + 100)
                 {
-                    if (target.DistanceToPlayer() <= E.Range + (Q.IsReady() && qStack == 0? Q.Range:0))
-                    {
-                        E.Cast(target.Position, true);
-                    }
-                    else if (target.DistanceToPlayer() <= E.Range + (W.IsReady() ? W.Range : 0))
-                    {
-                        E.Cast(target.Position, true);
-                    }
-                    else if (!Q.IsReady() && !W.IsReady() && target.DistanceToPlayer() < E.Range + Me.AttackRange)
-                    {
-                        E.Cast(target.Position, true);
-                    }
+                    EDash(target);
                 }
 
-                if (Menu.GetBool("ComboQ") && Q.IsReady() && !Me.IsDashing() && Me.CanMoveMent() && qStack == 0 &&
+                if (Menu.GetBool("ComboQ") && Q.IsReady() && Me.CanMoveMent() && qStack == 0 &&
                     target.DistanceToPlayer() <= Q.Range + Orbwalking.GetRealAutoAttackRange(Me) &&
                     target.DistanceToPlayer() > Orbwalking.GetRealAutoAttackRange(Me) + 50 &&
                     Utils.TickCount - lastQTime > 900)
@@ -54,6 +37,12 @@
                     {
                         SpellManager.CastQ(target);
                     }
+                }
+
+                if (Menu.GetBool("ComboW") && W.IsReady() &&
+                    target.IsValidTarget(W.Range) && !target.HasBuffOfType(BuffType.SpellShield))
+                {
+                    WLogic(target);
                 }
 
                 if (Menu.GetBool("ComboR") && R.IsReady())
@@ -70,6 +59,63 @@
                         SpellManager.R2Logic(target);
                     }
                 }
+            }
+        }
+
+        private static void WLogic(Obj_AI_Hero target)
+        {
+            if (target == null || target.IsDead || !W.IsReady())
+            {
+                return;
+            }
+
+            if (Menu.GetBool("ComboQW") && qStack != 0)
+            {
+                W.Cast(true);
+            }
+
+            if (!Q.IsReady() && qStack == 0)
+            {
+                W.Cast(true);
+            }
+
+            if (Menu.GetBool("ComboEW") && Me.HasBuff("RivenFeint"))
+            {
+                W.Cast(true);
+            }
+
+            if (!target.IsFacing(Me))
+            {
+                W.Cast(true);
+            }
+        }
+
+        private static void EDash(Obj_AI_Hero target)
+        {
+            if (target == null || target.IsDead || !E.IsReady())
+            {
+                return;
+            }
+
+            if (Menu.GetBool("ComboQ") && Q.IsReady() && qStack == 0 &&
+                target.DistanceToPlayer() < Q.Range + Orbwalking.GetRealAutoAttackRange(Me))
+            {
+                return;
+            }
+
+            if (target.DistanceToPlayer() <= E.Range + (Q.IsReady() && qStack == 0 ? Q.Range : 0))
+            {
+                E.Cast(target.Position, true);
+            }
+
+            if (target.DistanceToPlayer() <= E.Range + (W.IsReady() ? W.Range : 0))
+            {
+                E.Cast(target.Position, true);
+            }
+
+            if (!Q.IsReady() && !W.IsReady() && target.DistanceToPlayer() < E.Range + Me.AttackRange)
+            {
+                E.Cast(target.Position, true);
             }
         }
     }

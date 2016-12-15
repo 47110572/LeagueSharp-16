@@ -65,7 +65,6 @@
     <Compile Include="Manager\Events\Drawings\DrawManager.cs" />
     <Compile Include="Manager\Events\EventManager.cs" />
     <Compile Include="Manager\Events\Games\Mode\Burst.cs" />
-    <Compile Include="Manager\Events\Games\Mode\CastingQ.cs" />
     <Compile Include="Manager\Events\Games\Mode\Combo.cs" />
     <Compile Include="Manager\Events\Games\Mode\Flee.cs" />
     <Compile Include="Manager\Events\Games\Mode\Harass.cs" />

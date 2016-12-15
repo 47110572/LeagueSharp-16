@@ -32,7 +32,6 @@
                 return;
             }
 
-            CastingQ.Init();
             KeepQ.Init();
             KillSteal.Init();
 

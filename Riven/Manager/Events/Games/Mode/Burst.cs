@@ -8,6 +8,7 @@
     {
         internal static void Init()
         {
+            var ForcusTarget = TargetSelector.GetSelectedTarget();
             var target = ForcusTarget;
 
             if (target != null && !target.IsDead && target.IsValidTarget() && !target.IsZombie)

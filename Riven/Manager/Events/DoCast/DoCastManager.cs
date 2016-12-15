@@ -11,30 +11,32 @@
     {
         internal static void InitCombo(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
         {
-            if (!sender.IsMe || Args.SData == null || !Orbwalking.IsAutoAttack(Args.SData.Name) || Args.Target == null ||
-                !Orbwalking.isCombo || !Args.Target.IsEnemy ||  Args.Target.Type != GameObjectType.obj_AI_Hero)
+            if (!sender.IsMe || Args.SData == null || !Orbwalking.IsAutoAttack(Args.SData.Name) || !Orbwalking.isCombo)
             {
                 return;
             }
 
             SpellManager.CastItem(true, true);
+            var ForcusTarget = TargetSelector.GetSelectedTarget();
 
             if (ForcusTarget != null && !ForcusTarget.IsDead && !ForcusTarget.IsZombie)
             {
                 if (Q.IsReady())
                 {
                     SpellManager.CastQ(ForcusTarget);
+                    return;
                 }
-                else if (W.IsReady() && ForcusTarget.IsValidTarget(W.Range) &&
-                         !ForcusTarget.HasBuffOfType(BuffType.SpellShield) &&
-                         (ForcusTarget.IsMelee || ForcusTarget.IsFacing(Me) || !Q.IsReady() ||
-                          Me.HasBuff("RivenFeint") ||
-                          qStack != 0))
+
+                if (W.IsReady() && ForcusTarget.IsValidTarget(W.Range) &&
+                    !ForcusTarget.HasBuffOfType(BuffType.SpellShield) &&
+                    (ForcusTarget.IsMelee || ForcusTarget.IsFacing(Me) || !Q.IsReady() ||
+                     Me.HasBuff("RivenFeint") ||
+                     qStack != 0))
                 {
                     W.Cast();
                 }
             }
-            else
+            else if (Args.Target is Obj_AI_Hero)
             {
                 var target = (Obj_AI_Hero)Args.Target;
 
@@ -43,10 +45,12 @@
                     if (Q.IsReady())
                     {
                         SpellManager.CastQ(target);
+                        return;
                     }
-                    else if (W.IsReady() && target.IsValidTarget(W.Range) && !target.HasBuffOfType(BuffType.SpellShield) &&
-                             (target.IsMelee || target.IsFacing(Me) || !Q.IsReady() || Me.HasBuff("RivenFeint") ||
-                              qStack != 0))
+
+                    if (W.IsReady() && target.IsValidTarget(W.Range) && !target.HasBuffOfType(BuffType.SpellShield) &&
+                        (target.IsMelee || target.IsFacing(Me) || !Q.IsReady() || Me.HasBuff("RivenFeint") ||
+                         qStack != 0))
                     {
                         W.Cast();
                     }
@@ -56,8 +60,7 @@
 
         internal static void InitBurst(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
         {
-            if (!sender.IsMe || Args.SData == null || !Orbwalking.IsAutoAttack(Args.SData.Name) || Args.Target == null ||
-                !Orbwalking.isBurst || !Args.Target.IsEnemy || Args.Target.Type != GameObjectType.obj_AI_Hero)
+            if (!sender.IsMe || Args.SData == null || !Orbwalking.IsAutoAttack(Args.SData.Name) || !Orbwalking.isBurst)
             {
                 return;
             }
@@ -81,13 +84,13 @@
 
         internal static void InitMixed(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
         {
-            if (!sender.IsMe || Args.SData == null || !Orbwalking.IsAutoAttack(Args.SData.Name) || Args.Target == null ||
-                !Orbwalking.isHarass || !Args.Target.IsEnemy || Args.Target.Type != GameObjectType.obj_AI_Hero)
+            if (!sender.IsMe || Args.SData == null || !Orbwalking.IsAutoAttack(Args.SData.Name) || !Orbwalking.isHarass)
             {
                 return;
             }
 
             SpellManager.CastItem(true);
+            var ForcusTarget = TargetSelector.GetSelectedTarget();
 
             if (ForcusTarget != null && !ForcusTarget.IsDead && !ForcusTarget.IsZombie)
             {
@@ -106,7 +109,7 @@
                     }
                 }
             }
-            else
+            else if (Args.Target is Obj_AI_Hero)
             {
                 var target = (Obj_AI_Hero)Args.Target;
 
@@ -132,8 +135,7 @@
 
         internal static void InitClear(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
         {
-            if (!sender.IsMe || Args.SData == null || !Orbwalking.IsAutoAttack(Args.SData.Name) || Args.Target == null ||
-                !Orbwalking.isLaneClear || !Args.Target.IsEnemy)
+            if (!sender.IsMe || Args.SData == null || !Orbwalking.IsAutoAttack(Args.SData.Name) ||!Orbwalking.isLaneClear)
             {
                 return;
             }
@@ -148,7 +150,7 @@
                         SpellManager.CastQ((Obj_AI_Base)Args.Target);
                     }
                 }
-                else
+                else if (Args.Target is Obj_AI_Minion)
                 {
                     var minion = (Obj_AI_Minion)Args.Target;
                     var minions = MinionManager.GetMinions(Me.Position, 500f);
@@ -167,8 +169,8 @@
 
         internal static void InitJungle(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs Args)
         {
-            if (!sender.IsMe || Args.SData == null || !Orbwalking.IsAutoAttack(Args.SData.Name) || Args.Target == null || 
-                !Orbwalking.isLaneClear || Args.Target.Type != GameObjectType.obj_AI_Minion)
+            if (!sender.IsMe || Args.SData == null || !Orbwalking.IsAutoAttack(Args.SData.Name) || !Orbwalking.isLaneClear ||
+                !(Args.Target is Obj_AI_Minion))
             {
                 return;
             }

@@ -30,6 +30,8 @@
             {
                 comboMenu.AddItem(new MenuItem("ComboQ", "Use Q| Gapcloser", true).SetValue(true));
                 comboMenu.AddItem(new MenuItem("ComboW", "Use W", true).SetValue(true));
+                comboMenu.AddItem(new MenuItem("ComboQW", "Use Q1 + W", true).SetValue(false));
+                comboMenu.AddItem(new MenuItem("ComboEW", "Use E + W", true).SetValue(true));
                 comboMenu.AddItem(new MenuItem("ComboE", "Use E", true).SetValue(true));
                 comboMenu.AddItem(new MenuItem("ComboR", "Use R", true).SetValue(true));
                 comboMenu.AddItem(
@@ -93,8 +95,10 @@
                         qDelayMenu.AddItem(new MenuItem("Q1Delay", "Q1 Delay: ", true).SetValue(new Slider(280, 200, 350)));
                         qDelayMenu.AddItem(new MenuItem("Q2Delay", "Q2 Delay: ", true).SetValue(new Slider(280, 200, 350)));
                         qDelayMenu.AddItem(new MenuItem("Q3Delay", "Q3 Delay: ", true).SetValue(new Slider(380, 300, 450)));
-                        qDelayMenu.AddItem(new MenuItem("AutoSetDelay", "Auto Set Q Delay?", true).SetValue(false)).ValueChanged +=
+                        qDelayMenu.AddItem(new MenuItem("AutoSetDelay", "Inlcude the Ping?", true).SetValue(false)).ValueChanged +=
                             DelayChanged;
+                        qDelayMenu.AddItem(new MenuItem("MinDelay", "Set my Min QA Delay?", true).SetValue(false)).ValueChanged +=
+                            myDelayChanged;
                     }
 
                     qMenu.AddItem(new MenuItem("KeepQALive", "Keep Q alive", true).SetValue(true));
@@ -243,6 +247,11 @@
                 Menu.Item("Q2Delay", true).SetValue(new Slider(280, 200, 350));
                 Menu.Item("Q3Delay", true).SetValue(new Slider(380, 300, 450));
             }
+
+            if (Menu.Item("AutoSetDelay", true).GetValue<bool>())
+            {
+                Menu.Item("MinDelay", true).SetValue(false);
+            }
         }
 
         private static void DelayChanged(object obj, OnValueChangeEventArgs Args)
@@ -252,6 +261,16 @@
                 Menu.Item("Q1Delay", true).SetValue(new Slider(280, 200, 350));
                 Menu.Item("Q2Delay", true).SetValue(new Slider(280, 200, 350));
                 Menu.Item("Q3Delay", true).SetValue(new Slider(380, 300, 450));
+            }
+        }
+
+        private static void myDelayChanged(object obj, OnValueChangeEventArgs Args)
+        {
+            if (Args.GetNewValue<bool>())
+            {
+                Menu.Item("Q1Delay", true).SetValue(new Slider(250, 200, 350));
+                Menu.Item("Q2Delay", true).SetValue(new Slider(250, 200, 350));
+                Menu.Item("Q3Delay", true).SetValue(new Slider(350, 300, 450));
             }
         }
     }

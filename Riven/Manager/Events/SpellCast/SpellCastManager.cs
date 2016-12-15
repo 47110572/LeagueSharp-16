@@ -33,6 +33,7 @@
                             }
                             break;
                         case Orbwalking.OrbwalkingMode.Burst:
+                            var ForcusTarget = TargetSelector.GetSelectedTarget();
                             var fortarget = ForcusTarget;
 
                             if (fortarget != null && !fortarget.IsDead && !fortarget.IsZombie)
@@ -69,8 +70,6 @@
                     }
                     break;
                 case "RivenTriCleave":
-                    canQ = false;
-
                     switch (Orbwalker.ActiveMode)
                     {
                         case Orbwalking.OrbwalkingMode.Combo:
@@ -92,6 +91,8 @@
 
                             if (R.IsReady() && R.Instance.Name == "RivenFengShuiEngine")
                             {
+                                var ForcusTarget = TargetSelector.GetSelectedTarget();
+
                                 if (ForcusTarget.IsValidTarget(R.Range))
                                 {
                                     R.Cast(ForcusTarget.Position, true);
@@ -118,6 +119,8 @@
                         case Orbwalking.OrbwalkingMode.Burst:
                             if (R.IsReady() && R.Instance.Name == "RivenFengShuiEngine")
                             {
+                                var ForcusTarget = TargetSelector.GetSelectedTarget();
+
                                 if (ForcusTarget.IsValidTarget(R.Range))
                                 {
                                     R.Cast(ForcusTarget.Position, true);
@@ -174,6 +177,8 @@
                                         R.Cast();
                                         break;
                                     case "RivenIzunaBlade":
+                                        var ForcusTarget = TargetSelector.GetSelectedTarget();
+
                                         if (ForcusTarget.IsValidTarget(R.Range))
                                         {
                                             R.Cast(ForcusTarget.Position, true);
@@ -204,6 +209,8 @@
                             }
                             break;
                         case Orbwalking.OrbwalkingMode.Burst:
+                            var ForcusTarget = TargetSelector.GetSelectedTarget();
+
                             if (ForcusTarget.IsValidTarget())
                             {
                                 if (ForcusTarget.IsValidTarget(Q.Range))
