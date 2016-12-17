@@ -14,13 +14,13 @@
                 if (target.Check(R.Range + E.Range - 100))
                 {
                     if (W.IsReady() && Menu.GetBool("KillStealW") && target.IsValidTarget(W.Range) &&
-                        target.Health < SpellManager.GetWDamage(target))
+                        target.Health < DamageCalculate.GetWDamage(target))
                     {
                         W.Cast(true);
                     }
 
                     if (R.IsReady() && Menu.GetBool("KillStealR") && R.Instance.Name == "RivenIzunaBlade" &&
-                        SpellManager.GetRDamage(target) > target.Health + target.HPRegenRate)
+                        DamageCalculate.GetRDamage(target) > target.Health + target.HPRegenRate)
                     {
                         if (E.IsReady() && Menu.GetBool("KillStealE"))
                         {

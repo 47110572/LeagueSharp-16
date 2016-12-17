@@ -20,109 +20,6 @@
             Flash = Me.GetSpellSlot("SummonerFlash");
         }
 
-        internal static float GetComboDamage(Obj_AI_Hero target)
-        {
-            if (target == null)
-            {
-                return 0;
-            }
-
-            var damage = 0f;
-
-            if (Q.IsReady())
-            {
-                damage += GetQDamage(target);
-            }
-
-            if (W.IsReady())
-            {
-                damage += GetWDamage(target);
-            }
-
-            if (R.IsReady())
-            {
-                damage += GetRDamage(target);
-            }
-
-            return damage;
-        }
-
-        internal static double GetPassive
-        {
-            get
-            {
-                if (Me.Level == 18)
-                {
-                    return 0.5;
-                }
-
-                if (Me.Level >= 15)
-                {
-                    return 0.45;
-                }
-
-                if (Me.Level >= 12)
-                {
-                    return 0.4;
-                }
-
-                if (Me.Level >= 9)
-                {
-                    return 0.35;
-                }
-
-                if (Me.Level >= 6)
-                {
-                    return 0.3;
-                }
-
-                if (Me.Level >= 3)
-                {
-                    return 0.25;
-                }
-
-                return 0.2;
-            }
-        }
-
-        internal static float GetQDamage(Obj_AI_Base target)
-        {
-            if (target == null)
-            {
-                return 0;
-            }
-
-            var qhan = 3 - qStack;
-
-            return (float)(Q.GetDamage(target) * qhan + Me.GetAutoAttackDamage(target) * qhan * (1 + GetPassive));
-        }
-
-        internal static float GetWDamage(Obj_AI_Base target)
-        {
-            if (target == null)
-            {
-                return 0;
-            }
-
-            return W.GetDamage(target);
-        }
-
-        internal static float GetRDamage(Obj_AI_Base target)
-        {
-            if (target == null)
-            {
-                return 0;
-            }
-
-            return (float)Me.CalcDamage(target, Damage.DamageType.Physical,
-                (new double[] { 80, 120, 160 }[R.Level - 1] +
-                 0.6 * Me.FlatPhysicalDamageMod) *
-                (1 + (target.MaxHealth - target.Health) /
-                 target.MaxHealth > 0.75
-                    ? 0.75
-                    : (target.MaxHealth - target.Health) / target.MaxHealth) * 8 / 3);
-        }
-
         internal static void CastItem(bool tiamat = false, bool youmuu = false)
         {
             if (tiamat)
@@ -188,7 +85,7 @@
             });
         }
 
-        internal static void R2Logic(Obj_AI_Base target)
+        internal static void R2Logic(Obj_AI_Hero target)
         {
             if (target == null || R.Instance.Name == "RivenFengShuiEngine")
             {
@@ -200,7 +97,7 @@
                 switch (Menu.GetList("R2Mode"))
                 {
                     case 0:
-                        if (GetRDamage(target) > target.Health && target.DistanceToPlayer() < 600)
+                        if (DamageCalculate.GetRDamage(target) > target.Health && target.DistanceToPlayer() < 600)
                         {
                             var pred = R.GetPrediction(target, true);
 
@@ -212,9 +109,10 @@
                         break;
                     case 1:
                         if (target.HealthPercent < 20 ||
-                            (target.Health > GetRDamage(target) + Me.GetAutoAttackDamage(target) * 2 &&
+                            (target.Health > DamageCalculate.GetRDamage(target) + Me.GetAutoAttackDamage(target) * 2 &&
                              target.HealthPercent < 40) ||
-                            (target.Health <= GetRDamage(target)))
+                            (target.Health <= DamageCalculate.GetRDamage(target)) || 
+                            (target.Health <= DamageCalculate.GetComboDamage(target)*1.3))
                         {
                             var pred = R.GetPrediction(target, true);
 

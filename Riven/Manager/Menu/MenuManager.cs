@@ -1,6 +1,5 @@
 ﻿namespace Flowers_Riven_Reborn.Manager.Menu
 {
-    using Spells;
     using SharpDX;
     using LeagueSharp.Common;
     using myCommon;
@@ -38,7 +37,7 @@
                     new MenuItem("R1Combo", "Use R1", true).SetValue(new KeyBind('G', KeyBindType.Toggle, true))).Permashow();
                 comboMenu.AddItem(
                     new MenuItem("R2Mode", "Use R2 Mode: ", true).SetValue(
-                        new StringList(new[] { "Killable", "Max Damage", "First Cast", "Off" }, 1)));
+                        new StringList(new[] { "Only Killable", "myLogic", "First Cast", "Off" }, 1)));
                 comboMenu.AddItem(new MenuItem("ComboIgnite", "Use Ignite", true).SetValue(true));
             }
 
@@ -230,7 +229,7 @@
                 drawMenu.AddItem(new MenuItem("DrawW", "Draw W Range", true).SetValue(false));
                 drawMenu.AddItem(new MenuItem("DrawBurst", "Draw Burst Range", true).SetValue(true));
                 drawMenu.AddItem(new MenuItem("DrawRStatus", "Draw R Status", true).SetValue(true));
-                DamageIndicator.AddToMenu(drawMenu, SpellManager.GetComboDamage);
+                DamageIndicator.AddToMenu(drawMenu, DamageCalculate.GetComboDamage);
             }
 
             Menu.AddItem(new MenuItem("asdvre1w56", "  "));

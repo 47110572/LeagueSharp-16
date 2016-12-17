@@ -16,7 +16,7 @@
             if (target.Check(900f))
             {
                 if (Menu.GetBool("ComboIgnite") && Ignite != SpellSlot.Unknown && Ignite.IsReady() &&
-                    SpellManager.GetComboDamage(target) > target.Health)
+                    DamageCalculate.GetComboDamage(target) > target.Health)
                 {
                     Me.Spellbook.CastSpell(Ignite, target);
                     return;
