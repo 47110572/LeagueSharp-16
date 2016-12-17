@@ -1,5 +1,6 @@
 ﻿namespace Flowers_Yasuo.Manager.Events.Games.Mode
 {
+    using Common;
     using System.Linq;
     using Spells;
     using LeagueSharp;
@@ -16,9 +17,11 @@
                     HeroManager.Enemies.Where(x => x.IsValidTarget(R.Range))
                         .Count(x => x.HasBuffOfType(BuffType.Knockup) || x.HasBuffOfType(BuffType.Knockback));
 
+                var Allies = HeroManager.Allies.Count(x => x.DistanceToPlayer() <= R.Range);
+
                 if (Enemies >= Menu.Item("AutoRCount", true).GetValue<Slider>().Value &&
                     Me.HealthPercent >= Menu.Item("AutoRMyHp", true).GetValue<Slider>().Value &&
-                    Me.CountEnemiesInRange(1500) <= Menu.Item("AutoRRangeCount", true).GetValue<Slider>().Value)
+                    Allies >= Menu.Item("AutoRRangeCount", true).GetValue<Slider>().Value)
                 {
                     R.Cast();
                 }
