@@ -41,7 +41,8 @@
                 }
                 else
                 {
-                    if (E.IsReady() && Menu.GetBool("HarassE") && target.IsValidTarget(E.Range + Q.Range) && Me.CanMoveMent())
+                    if (E.IsReady() && Menu.GetBool("HarassE") && Me.CanMoveMent() &&
+                        target.DistanceToPlayer() <= E.Range + (Q.IsReady() ? Q.Range : Me.AttackRange))
                     {
                         E.Cast(target.Position, true);
                     }
