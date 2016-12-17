@@ -14,6 +14,12 @@
                 return;
             }
 
+            if (!Me.HasBuff("dariusqcast"))
+            {
+                Orbwalker.SetMovement(true);
+                Orbwalker.SetAttack(true);
+            }
+
             Auto.Init();
             KillSteal.Init();
 
