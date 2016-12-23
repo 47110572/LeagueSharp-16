@@ -284,14 +284,14 @@
                         return;
                     }
 
-                    var dashVector = Player.Position +
-                                         Vector3.Normalize(target.ServerPosition - Player.Position) * 425;
-                    if (Player.Distance(target.ServerPosition) <= R.Range &&
-                        Player.GetSpellDamage(target, SpellSlot.R) > target.Health && R.IsReady() && _rOn &&
-                        target.Distance(dashVector) < 425 && R.IsReady())
-                    {
-                        R.Cast(dashVector);
-                    }
+                    // var dashVector = Player.Position +
+                                         // Vector3.Normalize(target.ServerPosition - Player.Position) * 425;
+                    // if (Player.Distance(target.ServerPosition) <= R.Range &&
+                        // Player.GetSpellDamage(target, SpellSlot.R) > target.Health && R.IsReady() && _rOn &&
+                        // target.Distance(dashVector) < 425 && R.IsReady())
+                    // {
+                        // R.Cast(dashVector);
+                    // }
                 }
             }
         }
