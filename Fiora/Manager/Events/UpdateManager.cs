@@ -71,7 +71,7 @@
                         x.Health < W.GetDamage(x));
 
             if (Menu.Item("KillStealW", true).GetValue<bool>() && W.IsReady() && KillStealW != null &&
-                W.CanCast(KillStealW))
+                W.CanCast(KillStealW) && !Me.UnderTurret(true))
             {
                 W.Cast(KillStealW.Position);
             }
