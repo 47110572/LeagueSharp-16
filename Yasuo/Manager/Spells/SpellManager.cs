@@ -7,7 +7,6 @@
     using LeagueSharp;
     using LeagueSharp.Common;
     using static Common.Common;
-    using SpellData = Evade.EvadeTargetManager.SpellData;
 
     internal class SpellManager : Logic
     {
@@ -73,16 +72,14 @@
                 MinionManager.GetMinions(Me.Position, E.Range, MinionTypes.All, MinionTeam.NotAlly)
                     .Where(CanCastE));
 
-            if (dashtargets.Any())
+            if (dashtargets.Any(x => UnderTurret || !UnderTower(PosAfterE(x))))
             {
-                var dash = dashtargets.Where(x =>x.IsValidTarget(E.Range))
-                    .OrderBy(x => target.Position.Distance(PosAfterE(x)))
-                    .FirstOrDefault(x => Evade.EvadeManager.IsSafe(PosAfterE(x).To2D()).IsSafe);
+                var dash = dashtargets.Where(
+                        x => x.IsValidTarget(E.Range) && Evade.EvadeManager.IsSafe(PosAfterE(x).To2D()).IsSafe)
+                    .MinOrDefault(x => target.Position.Distance(PosAfterE(x)));
 
-                if (dash != null && dash.DistanceToPlayer() <= E.Range && CanCastE(dash) &&
-                    target.DistanceToPlayer() >= GapcloserDis &&
-                    target.Position.Distance(PosAfterE(dash)) <= target.DistanceToPlayer() && 
-                    Me.IsFacing(dash) && (UnderTurret || !UnderTower(PosAfterE(dash))))
+                if (dash.IsValidTarget(E.Range) && CanCastE(dash) && target.DistanceToPlayer() >= GapcloserDis &&
+                    target.ServerPosition.Distance(PosAfterE(dash)) <= target.DistanceToPlayer())
                 {
                     E.CastOnUnit(dash, true);
                 }
@@ -105,15 +102,14 @@
                     MinionManager.GetMinions(Me.Position, E.Range, MinionTypes.All, MinionTeam.NotAlly)
                         .Where(CanCastE));
 
-                if (dashtargets.Any())
+                if (dashtargets.Any(x => UnderTurret || !UnderTower(PosAfterE(x))))
                 {
                     var dash =
                         dashtargets.Where(x => x.IsValidTarget(E.Range) && Evade.EvadeManager.IsSafe(PosAfterE(x).To2D()).IsSafe)
                             .MinOrDefault(x => PosAfterE(x).Distance(Game.CursorPos));
 
-                    if (dash != null && dash.DistanceToPlayer() <= E.Range && CanCastE(dash) &&
-                        target.DistanceToPlayer() >= GapcloserDis && Me.IsFacing(dash) &&
-                        (UnderTurret || !UnderTower(PosAfterE(dash))))
+                    if (dash.IsValidTarget(E.Range) && CanCastE(dash) && target.DistanceToPlayer() >= GapcloserDis && 
+                        target.ServerPosition.Distance(PosAfterE(dash)) <= target.DistanceToPlayer())
                     {
                         E.CastOnUnit(dash, true);
                     }
@@ -184,7 +180,6 @@
                            100*(Me.Crit >= 0.85f ? (Items.HasItem(3031) ? 2.25 : 1.8) : 1))
                        : 0);
         }
-
 
         internal static double GetEDmg(Obj_AI_Base target)
         {

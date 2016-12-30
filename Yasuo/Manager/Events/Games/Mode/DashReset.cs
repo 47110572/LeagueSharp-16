@@ -8,18 +8,10 @@
     {
         internal static void Init()
         {
-            if (Me.IsDead)
+            if (Utils.TickCount - lastECast > 500)
             {
                 isDashing = false;
                 lastEPos = Vector3.Zero;
-            }
-            else
-            {
-                if (Utils.TickCount - lastECast - Game.Ping > 500)
-                {
-                    isDashing = false;
-                    lastEPos = Vector3.Zero;
-                }
             }
         }
     }
