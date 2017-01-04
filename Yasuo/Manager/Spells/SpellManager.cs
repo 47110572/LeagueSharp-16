@@ -72,11 +72,13 @@
                 MinionManager.GetMinions(Me.Position, E.Range, MinionTypes.All, MinionTeam.NotAlly)
                     .Where(CanCastE));
 
-            if (dashtargets.Any(x => UnderTurret || !UnderTower(PosAfterE(x))))
+            if (dashtargets.Any())
             {
                 var dash = dashtargets.Where(
-                        x => x.IsValidTarget(E.Range) && Evade.EvadeManager.IsSafe(PosAfterE(x).To2D()).IsSafe)
-                    .MinOrDefault(x => target.Position.Distance(PosAfterE(x)));
+                        x => x.IsValidTarget(E.Range) &&
+                             Evade.EvadeManager.IsSafe(PosAfterE(x).To2D()).IsSafe &&
+                             (UnderTurret || !UnderTower(PosAfterE(x)))
+                             .MinOrDefault(x => target.Position.Distance(PosAfterE(x)));
 
                 if (dash.IsValidTarget(E.Range) && CanCastE(dash) && target.DistanceToPlayer() >= GapcloserDis &&
                     target.ServerPosition.Distance(PosAfterE(dash)) <= target.DistanceToPlayer())
@@ -102,10 +104,12 @@
                     MinionManager.GetMinions(Me.Position, E.Range, MinionTypes.All, MinionTeam.NotAlly)
                         .Where(CanCastE));
 
-                if (dashtargets.Any(x => UnderTurret || !UnderTower(PosAfterE(x))))
+                if (dashtargets.Any())
                 {
                     var dash =
-                        dashtargets.Where(x => x.IsValidTarget(E.Range) && Evade.EvadeManager.IsSafe(PosAfterE(x).To2D()).IsSafe)
+                        dashtargets.Where(x => x.IsValidTarget(E.Range) && 
+                            Evade.EvadeManager.IsSafe(PosAfterE(x).To2D()).IsSafe &&
+                            (UnderTurret || !UnderTower(PosAfterE(x)))
                             .MinOrDefault(x => PosAfterE(x).Distance(Game.CursorPos));
 
                     if (dash.IsValidTarget(E.Range) && CanCastE(dash) && target.DistanceToPlayer() >= GapcloserDis && 
