@@ -44,7 +44,7 @@
 
                 if (Menu.Item("LastHitE", true).GetValue<bool>() && E.IsReady())
                 {
-                    if (minion.IsValidTarget(E.Range) && minion.Health < E.GetDamage(minion)
+                    if (minion.IsValidTarget(E.Range) && minion.Health < SpellManager.GetEDmg(minion)
                         && SpellManager.CanCastE(minion) &&
                         (Menu.Item("LastHitETurret", true).GetValue<bool>() || !UnderTower(PosAfterE(minion))))
                     {

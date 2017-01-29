@@ -28,7 +28,7 @@
                         minions.Where(
                             x =>
                                 x.DistanceToPlayer() <= E.Range && SpellManager.CanCastE(x) &&
-                                x.Health <= (Q.IsReady() ? Q.GetDamage(x) + E.GetDamage(x) : E.GetDamage(x))))
+                                x.Health <= (Q.IsReady() ? Q.GetDamage(x) + SpellManager.GetEDmg(x) : SpellManager.GetEDmg(x))))
                     {
                         if (Menu.Item("LaneClearETurret", true).GetValue<bool>() || !UnderTower(PosAfterE(min)))
                         {
