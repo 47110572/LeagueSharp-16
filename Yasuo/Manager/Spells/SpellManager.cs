@@ -193,7 +193,7 @@
 
             var stacksPassive = Me.Buffs.Find(b => b.DisplayName.Equals("YasuoDashScalar"));
             var Estacks = stacksPassive?.Count ?? 0;
-            var damage = (E.Level * 20 + 50) * (1 + 0.25 * Estacks) + Me.FlatMagicDamageMod * 0.6;
+            var damage = (E.Level*10 + 50)*(1 + 0.25*Estacks) + Me.FlatMagicDamageMod*0.6 + Me.FlatPhysicalDamageMod*0.2;
 
             return Me.CalcDamage(target, Damage.DamageType.Magical, damage);
         }
